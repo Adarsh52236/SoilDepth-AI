@@ -1,0 +1,177 @@
+# SoilDepth-AI Preprocessing Pipeline Configuration
+# Fully declarative, auditable, and scientifically constrained configuration.
+
+pipeline_name: "SoilDepth-AI-Preprocessing"
+pipeline_version: "0.1.0"
+adapter: "generic_tabular"
+
+# 1. Dataset Schema & Constraints
+schema:
+  name: "field_sensor_soil_moisture_schema"
+  version: "1.0.0"
+  description: "Standard schema for field sensor soil moisture and environmental covariates."
+  columns:
+    station_id:
+      canonical_name: "station_id"
+      source_names: ["station", "site_id", "sensor_node", "station_name"]
+      role: "id"
+      data_type: "string"
+      required: true
+      description: "Unique sensor station identifier"
+
+    timestamp_utc:
+      canonical_name: "timestamp_utc"
+      source_names: ["timestamp", "datetime", "date_time", "time", "date"]
+      role: "timestamp"
+      data_type: "datetime"
+      required: true
+      description: "Observation timestamp in UTC"
+
+    latitude:
+      canonical_name: "latitude"
+      source_names: ["lat", "latitude_deg", "y"]
+      role: "latitude"
+      data_type: "float"
+      required: true
+      min_value: -90.0
+      max_value: 90.0
+      unit: "deg"
+      target_unit: "deg"
+
+    longitude:
+      canonical_name: "longitude"
+      source_names: ["lon", "long", "longitude_deg", "x"]
+      role: "longitude"
+      data_type: "float"
+      required: true
+      min_value: -180.0
+      max_value: 180.0
+      unit: "deg"
+      target_unit: "deg"
+
+    depth_m:
+      canonical_name: "depth_m"
+      source_names: ["depth", "sensor_depth", "depth_cm"]
+      role: "depth"
+      data_type: "float"
+      required: false
+      min_value: 0.0
+      max_value: 5.0
+      unit: "m"
+      target_unit: "m"
+
+    soil_moisture:
+      canonical_name: "soil_moisture"
+      source_names: ["sm", "vwc", "sm_pct", "soil_moisture_pct", "sm_m3m3", "soil_moisture_val"]
+      role: "target"
+      data_type: "float"
+      required: true
+      min_value: 0.0
+      max_value: 1.0
+      unit: "%"
+      target_unit: "m3/m3"
+      description: "Volumetric water content (VWC) in m3/m3"
+
+    air_temperature_c:
+      canonical_name: "air_temperature_c"
+      source_names: ["t2m", "air_temp", "temperature", "temp_c"]
+      role: "feature"
+      data_type: "float"
+      required: false
+      min_value: -50.0
+      max_value: 60.0
+      unit: "K"
+      target_unit: "degC"
+
+    precipitation_mm:
+      canonical_name: "precipitation_mm"
+      source_names: ["tp", "precipitation", "precip", "rainfall"]
+      role: "feature"
+      data_type: "float"
+      required: false
+      min_value: 0.0
+      max_value: 1000.0
+      unit: "mm"
+      target_unit: "mm"
+
+# 2. Ingestion Settings
+ingestion:
+  format: "auto"
+  encoding: "utf-8"
+  delimiter: null
+  chunk_size: null
+
+# 3. Data Cleaning & Sanitization Rules
+cleaning:
+  deduplicate: true
+  dedup_keys: ["station_id", "timestamp_utc", "depth_m"]
+  dedup_keep: "first"
+  strip_whitespace: true
+  sentinel_null_values:
+    - -999
+    - -9999
+    - -9999.0
+    - "-999"
+    - "-9999"
+    - "NA"
+    - "N/A"
+    - "null"
+    - "NULL"
+    - "nan"
+    - ""
+
+  # Scientific rule: Never impute missing target values for supervised ML
+  missing_target_policy: "drop_row"
+  missing_numeric_policy: "keep"
+  missing_numeric_fill_value: null
+  missing_categorical_policy: "fill_value"
+  missing_categorical_fill_value: "UNKNOWN"
+
+  # Outlier and physical bound handling
+  outlier_method: "bounds"
+  outlier_action: "flag_only" # Options: flag_only, clip, drop_row, nullify
+  outlier_iqr_multiplier: 1.5
+  outlier_zscore_threshold: 3.0
+
+  # Coordinates
+  validate_coordinates: true
+  invalid_coordinate_action: "drop_row"
+
+# 4. Feature Transformations & Time-Series Operations
+transformations:
+  normalize_units: true
+  timezone: "UTC"
+  timestamp_format: null
+
+  # Lags must strictly be positive integers (peering into future is prohibited)
+  lags:
+    precipitation_mm: [1, 2, 3]
+
+  rolling_windows:
+    - column: "precipitation_mm"
+      window: 3
+      agg: "mean"
+      min_periods: 1
+      new_column_name: "precipitation_roll_mean_3d"
+
+  # Downstream leakage-aware splitting (optional)
+  split:
+    method: "temporal"
+    train_ratio: 0.70
+    val_ratio: 0.15
+    test_ratio: 0.15
+    temporal_column: "timestamp_utc"
+    group_column: "station_id"
+    split_column_name: "split"
+
+# 5. Model-Readiness & Data Leakage Checks
+readiness:
+  check_target_health: true
+  max_target_missing_ratio: 0.05
+  check_constant_features: true
+  variance_threshold: 0.000001
+  check_id_leakage: true
+  check_temporal_leakage: true
+  check_split_overlap: true
+  check_high_correlation: true
+  high_correlation_threshold: 0.98
