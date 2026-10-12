@@ -50,6 +50,7 @@ class QualityReport:
     column_profiles: dict[str, ColumnProfile] = field(default_factory=dict)
     audit_trail: list[CleaningAuditEntry] = field(default_factory=list)
     metrics: dict[str, Any] = field(default_factory=dict)
+    input_sha256: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Convert report to JSON-serializable dictionary."""
@@ -78,24 +79,30 @@ class QualityReport:
             f"- **Execution Timestamp:** {self.run_timestamp}",
             f"- **Duration:** {self.execution_duration_seconds:.2f} seconds",
             f"- **Input:** `{self.input_source}`",
-            f"- **Output:** `{self.output_destination}`",
-            f"- **Overall Pipeline Status:** {status_badge}",
-            "",
-            "---",
-            "",
-            "## 1. Summary Metrics",
-            "",
-            "| Metric | Value |",
-            "| :--- | :--- |",
-            f"| Initial Row Count | **{self.initial_row_count:,}** |",
-            f"| Final Cleaned Row Count | **{self.final_row_count:,}** |",
-            f"| Total Dropped Rows | **{self.dropped_row_count:,}** |",
-            f"| Total Columns Processed | **{len(self.column_profiles)}** |",
-            f"| Schema Violations (Errors) | **{len(self.schema_errors)}** |",
-            f"| Schema Warnings | **{len(self.schema_warnings)}** |",
-            f"| Model Readiness Warnings | **{len(self.model_readiness_warnings)}** |",
-            "",
         ]
+        if self.input_sha256:
+            md.append(f"- **Input SHA-256 Provenance:** `{self.input_sha256}`")
+        md.extend(
+            [
+                f"- **Output:** `{self.output_destination}`",
+                f"- **Overall Pipeline Status:** {status_badge}",
+                "",
+                "---",
+                "",
+                "## 1. Summary Metrics",
+                "",
+                "| Metric | Value |",
+                "| :--- | :--- |",
+                f"| Initial Row Count | **{self.initial_row_count:,}** |",
+                f"| Final Cleaned Row Count | **{self.final_row_count:,}** |",
+                f"| Total Dropped Rows | **{self.dropped_row_count:,}** |",
+                f"| Total Columns Processed | **{len(self.column_profiles)}** |",
+                f"| Schema Violations (Errors) | **{len(self.schema_errors)}** |",
+                f"| Schema Warnings | **{len(self.schema_warnings)}** |",
+                f"| Model Readiness Warnings | **{len(self.model_readiness_warnings)}** |",
+                "",
+            ]
+        )
 
         # Dropped row breakdown
         if self.dropped_row_reasons:
@@ -235,6 +242,16 @@ def generate_quality_report(
 
     total_dropped = initial_rows - final_rows
 
+    sha256_hash: str | None = None
+    try:
+        p = Path(input_source)
+        if p.is_file():
+            import hashlib
+
+            sha256_hash = hashlib.sha256(p.read_bytes()).hexdigest()
+    except Exception:
+        sha256_hash = None
+
     return QualityReport(
         pipeline_name=pipeline_name,
         pipeline_version=pipeline_version,
@@ -253,4 +270,5 @@ def generate_quality_report(
         column_profiles=col_profiles,
         audit_trail=audit_trail,
         metrics={**schema_validation.metrics, **model_validation.metrics},
+        input_sha256=sha256_hash,
     )

@@ -9,7 +9,12 @@ import numpy as np
 import pandas as pd
 
 from soildepth_preprocessing.config import CleaningConfig
-from soildepth_preprocessing.schema import ColumnRole, DataType, SchemaDefinition
+from soildepth_preprocessing.schema import (
+    ColumnRole,
+    ColumnSpec,
+    DataType,
+    SchemaDefinition,
+)
 
 
 @dataclass
@@ -106,6 +111,26 @@ def deduplicate_dataframe(
     elif config.dedup_keep == "last":
         keep_arg = "last"
 
+    # Detect conflicting duplicate observations if subset is used
+    if subset and config.report_conflicting_duplicates:
+        key_dups = df.duplicated(subset=subset, keep=False)
+        exact_dups = df.duplicated(keep=False)
+        conflicts = key_dups & ~exact_dups
+        conflict_count = int(conflicts.sum())
+        if conflict_count > 0:
+            audit_entries.append(
+                CleaningAuditEntry(
+                    stage="deduplication",
+                    column=",".join(subset),
+                    action="conflicting_duplicate_detected",
+                    rows_affected=conflict_count,
+                    details=(
+                        f"Detected {conflict_count} records with identical key values ({subset}) "
+                        "but conflicting observations across other columns."
+                    ),
+                )
+            )
+
     dups_mask = df.duplicated(subset=subset, keep=keep_arg)
     dup_count = int(dups_mask.sum())
 
@@ -193,62 +218,132 @@ def validate_and_clean_coordinates(
     return df, audit_entries, dropped_count
 
 
+def is_soil_moisture_column(col_name: str, spec: ColumnSpec) -> bool:
+    """Validate whether a column physically represents volumetric soil moisture."""
+    if spec.role == ColumnRole.TARGET:
+        return True
+    name_l = col_name.lower()
+    canon_l = spec.canonical_name.lower()
+    moisture_tokens = ("soil_moisture", "sm_", "_sm", "vwc", "soil_water", "volumetric_water")
+    if any(t in name_l or t in canon_l for t in moisture_tokens):
+        return True
+    return bool(spec.description and "soil moisture" in spec.description.lower())
+
+
 def convert_units(
     df: pd.DataFrame,
     schema: SchemaDefinition,
+    preserve_raw: bool = False,
 ) -> tuple[pd.DataFrame, list[CleaningAuditEntry]]:
-    """Convert columns between units according to schema specifications."""
+    """Convert columns between units according to rigorous physical and semantic rules.
+
+    Raises ValueError if an invalid or dimensionally incompatible conversion is requested,
+    such as attempting to convert a non-soil-moisture percentage to volumetric water content (m3/m3),
+    or converting across mismatched physical dimensions (e.g. temperature to distance).
+    """
     audit_entries: list[CleaningAuditEntry] = []
     df = df.copy()
 
     for col_name, spec in schema.columns.items():
         if col_name not in df.columns or not spec.unit or not spec.target_unit:
             continue
-        if spec.unit.lower() == spec.target_unit.lower():
+        if spec.unit.strip().lower() == spec.target_unit.strip().lower():
             continue
 
-        src_u = spec.unit.lower()
-        dst_u = spec.target_unit.lower()
+        src_u = spec.unit.strip().lower()
+        dst_u = spec.target_unit.strip().lower()
         series_num = pd.to_numeric(df[col_name], errors="coerce")
+
+        if preserve_raw and f"raw_{col_name}" not in df.columns:
+            df[f"raw_{col_name}"] = df[col_name].copy()
 
         converted = False
         action_note = ""
 
-        # Soil moisture percentage to volumetric water content (m3/m3)
+        # 1. Volumetric soil moisture (% <-> m3/m3)
         if src_u in ("%", "percentage") and dst_u in ("m3/m3", "m3m3", "volumetric"):
+            if not is_soil_moisture_column(col_name, spec):
+                raise ValueError(
+                    f"Semantically invalid unit conversion: Column '{col_name}' represents "
+                    f"'{spec.description or spec.canonical_name}', not volumetric soil moisture. "
+                    "Cannot convert general percentage to volumetric water content (m3/m3). "
+                    "Use target_unit='fraction' for general percentages."
+                )
             df[col_name] = series_num / 100.0
             converted = True
-            action_note = "Divided percentage by 100 to yield m3/m3"
+            action_note = "Divided volumetric percentage by 100 to yield m3/m3"
 
-        # Volumetric water content (m3/m3) to percentage
         elif src_u in ("m3/m3", "m3m3", "volumetric") and dst_u in ("%", "percentage"):
+            if not is_soil_moisture_column(col_name, spec):
+                raise ValueError(
+                    f"Semantically invalid unit conversion: Column '{col_name}' is not soil moisture."
+                )
             df[col_name] = series_num * 100.0
             converted = True
-            action_note = "Multiplied m3/m3 by 100 to yield percentage"
+            action_note = "Multiplied m3/m3 by 100 to yield volumetric percentage"
 
-        # Temperature Kelvin to Celsius
+        # 2. General dimensionless percentage to fraction (e.g. clay %, sand %, slope %)
+        elif src_u in ("%", "percentage") and dst_u in ("fraction", "ratio", "decimal", "0-1"):
+            df[col_name] = series_num / 100.0
+            converted = True
+            action_note = "Divided percentage by 100 to yield decimal fraction"
+
+        elif src_u in ("fraction", "ratio", "decimal", "0-1") and dst_u in ("%", "percentage"):
+            df[col_name] = series_num * 100.0
+            converted = True
+            action_note = "Multiplied fraction by 100 to yield percentage"
+
+        # 3. Temperature conversions
         elif src_u in ("k", "kelvin") and dst_u in ("degc", "c", "celsius"):
             df[col_name] = series_num - 273.15
             converted = True
             action_note = "Subtracted 273.15 to convert Kelvin to Celsius"
 
-        # Depth cm to m
+        elif src_u in ("degc", "c", "celsius") and dst_u in ("k", "kelvin"):
+            df[col_name] = series_num + 273.15
+            converted = True
+            action_note = "Added 273.15 to convert Celsius to Kelvin"
+
+        elif src_u in ("degf", "f", "fahrenheit") and dst_u in ("degc", "c", "celsius"):
+            df[col_name] = (series_num - 32.0) * (5.0 / 9.0)
+            converted = True
+            action_note = "Converted Fahrenheit to Celsius ((F - 32) * 5/9)"
+
+        # 4. Length and depth conversions
         elif src_u in ("cm", "centimeter", "centimeters") and dst_u in ("m", "meter", "meters"):
             df[col_name] = series_num / 100.0
             converted = True
             action_note = "Divided cm by 100 to yield meters"
 
-        # Depth mm to m
         elif src_u in ("mm", "millimeter", "millimeters") and dst_u in ("m", "meter", "meters"):
             df[col_name] = series_num / 1000.0
             converted = True
             action_note = "Divided mm by 1000 to yield meters"
 
-        # Precipitation meters to mm
+        elif src_u in ("m", "meter", "meters") and dst_u in ("cm", "centimeter", "centimeters"):
+            df[col_name] = series_num * 100.0
+            converted = True
+            action_note = "Multiplied meters by 100 to yield cm"
+
         elif src_u in ("m", "meter", "meters") and dst_u in ("mm", "millimeter", "millimeters"):
             df[col_name] = series_num * 1000.0
             converted = True
             action_note = "Multiplied meters by 1000 to yield mm"
+
+        elif src_u in ("mm", "millimeter", "millimeters") and dst_u in (
+            "cm",
+            "centimeter",
+            "centimeters",
+        ):
+            df[col_name] = series_num / 10.0
+            converted = True
+            action_note = "Divided mm by 10 to yield cm"
+
+        else:
+            raise ValueError(
+                f"Dimensionally incompatible or unsupported unit conversion: "
+                f"Cannot convert column '{col_name}' from '{spec.unit}' to '{spec.target_unit}'."
+            )
 
         if converted:
             audit_entries.append(
@@ -382,6 +477,51 @@ def handle_missing_values(
     audit_entries: list[CleaningAuditEntry] = []
     dropped_reasons: dict[str, int] = {}
     df = df.copy()
+
+    # 0. ID and TIMESTAMP missingness handling
+    if config.missing_id_policy == "drop_row":
+        id_cols = [
+            c.canonical_name
+            for c in schema.get_columns_by_role(ColumnRole.ID)
+            if c.canonical_name in df.columns
+        ]
+        for col in id_cols:
+            id_null_mask = df[col].isna()
+            null_count = int(id_null_mask.sum())
+            if null_count > 0:
+                df = df[~id_null_mask].reset_index(drop=True)
+                dropped_reasons[f"missing_id_{col}"] = null_count
+                audit_entries.append(
+                    CleaningAuditEntry(
+                        stage="missing_id_handling",
+                        column=col,
+                        action="drop_row",
+                        rows_affected=null_count,
+                        details=f"Dropped {null_count} rows with missing identifier '{col}'",
+                    )
+                )
+
+    if config.missing_timestamp_policy == "drop_row":
+        ts_cols = [
+            c.canonical_name
+            for c in schema.get_columns_by_role(ColumnRole.TIMESTAMP)
+            if c.canonical_name in df.columns
+        ]
+        for col in ts_cols:
+            ts_null_mask = df[col].isna()
+            null_count = int(ts_null_mask.sum())
+            if null_count > 0:
+                df = df[~ts_null_mask].reset_index(drop=True)
+                dropped_reasons[f"missing_timestamp_{col}"] = null_count
+                audit_entries.append(
+                    CleaningAuditEntry(
+                        stage="missing_timestamp_handling",
+                        column=col,
+                        action="drop_row",
+                        rows_affected=null_count,
+                        details=f"Dropped {null_count} rows with missing timestamp '{col}'",
+                    )
+                )
 
     # 1. Target column missingness handling
     target_cols = [
@@ -540,7 +680,7 @@ def clean_dataset(
         dropped_reasons["invalid_coordinates"] = dropped_coords
 
     # Step 4: Unit conversions
-    df_clean, units_audit = convert_units(df_clean, schema)
+    df_clean, units_audit = convert_units(df_clean, schema, preserve_raw=config.preserve_raw_values)
     audit_trail.extend(units_audit)
 
     # Step 5: Outliers & bounds

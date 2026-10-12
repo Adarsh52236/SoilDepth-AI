@@ -59,8 +59,13 @@ class ValidationResult:
 def validate_schema(
     df: pd.DataFrame,
     schema: SchemaDefinition,
+    is_cleaned: bool = False,
 ) -> ValidationResult:
-    """Validate DataFrame against structural requirements of the schema."""
+    """Validate DataFrame against structural requirements of the schema.
+
+    When is_cleaned=False, columns with pending unit conversions (e.g. % to m3/m3) skip
+    canonical target bounds checking until post-cleaning validation to prevent false alarms.
+    """
     result = ValidationResult(is_valid=True)
 
     # 1. Check required canonical columns
@@ -102,6 +107,15 @@ def validate_schema(
                     column=col_name,
                     message=f"{num_coerced} values could not be parsed as numeric.",
                 )
+
+            # Skip checking canonical target bounds on pre-converted units
+            has_pending_unit_conversion = bool(
+                spec.unit
+                and spec.target_unit
+                and spec.unit.strip().lower() != spec.target_unit.strip().lower()
+            )
+            if not is_cleaned and has_pending_unit_conversion:
+                continue
 
             valid_nums = numeric_series.dropna()
             if not valid_nums.empty:

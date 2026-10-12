@@ -63,7 +63,7 @@ class PreprocessingPipeline:
         active_schema = self.adapter.schema
 
         # 2. Structural schema validation
-        schema_validation = validate_schema(adapted_df, active_schema)
+        schema_validation = validate_schema(adapted_df, active_schema, is_cleaned=False)
 
         # 3. Data sanitization, deduplication, and outlier handling
         cleaning_result = clean_dataset(
@@ -71,6 +71,15 @@ class PreprocessingPipeline:
             schema=active_schema,
             config=self.config.cleaning,
         )
+
+        # Post-cleaning scientific physical bounds check
+        post_validation = validate_schema(cleaning_result.data, active_schema, is_cleaned=True)
+        for w in post_validation.warnings:
+            if w not in schema_validation.warnings:
+                schema_validation.warnings.append(w)
+        for err in post_validation.errors:
+            if err not in schema_validation.errors:
+                schema_validation.errors.append(err)
 
         # 4. Feature engineering and temporal transformations
         ts_cols = [

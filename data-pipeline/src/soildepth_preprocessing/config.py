@@ -29,6 +29,7 @@ class CleaningConfig(BaseModel):
     deduplicate: bool = True
     dedup_keys: list[str] | None = None
     dedup_keep: Literal["first", "last", "drop_all"] = "first"
+    report_conflicting_duplicates: bool = True
 
     # Missing value handling
     strip_whitespace: bool = True
@@ -52,10 +53,15 @@ class CleaningConfig(BaseModel):
     )
     # Target columns must NEVER be automatically imputed
     missing_target_policy: Literal["drop_row", "keep"] = "drop_row"
+    missing_id_policy: Literal["drop_row", "keep"] = "drop_row"
+    missing_timestamp_policy: Literal["drop_row", "keep"] = "drop_row"
     missing_numeric_policy: Literal["keep", "drop_row", "fill_value", "interpolate"] = "keep"
     missing_numeric_fill_value: float | None = None
     missing_categorical_policy: Literal["keep", "drop_row", "fill_value"] = "keep"
     missing_categorical_fill_value: str = "MISSING"
+
+    # Provenance
+    preserve_raw_values: bool = False
 
     # Outliers and physical limits
     outlier_method: Literal["none", "bounds", "iqr", "zscore"] = "bounds"
