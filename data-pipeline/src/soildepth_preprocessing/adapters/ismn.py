@@ -115,7 +115,13 @@ class ISMNAdapter(BaseDataAdapter):
                     role=ColumnRole.METADATA,
                     data_type=DataType.STRING,
                     required=False,
-                    allowed_values=["G", "M", "D", "C"],  # G=Good, M=Dubious, D=Bad, C=Corrupt
+                    allowed_values=[
+                        "G",
+                        "M",
+                        "D",
+                        "C",
+                        "U",
+                    ],  # G=Good, M=Dubious, D=Bad, C=Corrupt, U=Unchecked
                 ),
                 "sensor": ColumnSpec(
                     canonical_name="sensor",
@@ -148,5 +154,11 @@ class ISMNAdapter(BaseDataAdapter):
         ):
             df["depth_from_m"] = df["depth_from_m"] / 100.0
             df["depth_to_m"] = df["depth_to_m"] / 100.0
+
+        # Normalize ISMN quality flag codes (e.g. D05 -> D, C01 -> C) to primary class character
+        if "quality_flag" in df.columns:
+            df["quality_flag"] = df["quality_flag"].apply(
+                lambda x: str(x)[0].upper() if pd.notna(x) and str(x) else x
+            )
 
         return df

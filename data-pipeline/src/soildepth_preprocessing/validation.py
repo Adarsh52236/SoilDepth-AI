@@ -136,6 +136,17 @@ def validate_schema(
                             message=f"{max_violations} values exceed scientific maximum {spec.max_value}.",
                         )
 
+        # Permitted categorical / discrete allowed values check
+        if spec.allowed_values is not None:
+            permitted_strs = {str(v) for v in spec.allowed_values}
+            invalid_vals = non_null.astype(str)[~non_null.astype(str).isin(permitted_strs)]
+            if not invalid_vals.empty:
+                result.add_warning(
+                    category="schema_invalid_category",
+                    column=col_name,
+                    message=f"{len(invalid_vals)} values not in permitted set: {spec.allowed_values}.",
+                )
+
     return result
 
 
