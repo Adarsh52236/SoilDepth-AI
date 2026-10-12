@@ -39,6 +39,7 @@ SUPPORTED_EXTENSIONS: dict[str, str] = {
     ".jsonl": "jsonl",
     ".xlsx": "excel",
     ".xls": "excel",
+    ".stm": "ismn_stm",
 }
 
 
@@ -46,7 +47,7 @@ def detect_file_format(file_path: Path, config_format: str = "auto") -> str:
     """Detect file format using configuration override, extension, or content sniffing."""
     if config_format != "auto":
         fmt = config_format.lower()
-        valid = {"csv", "tsv", "parquet", "json", "jsonl", "excel"}
+        valid = {"csv", "tsv", "parquet", "json", "jsonl", "excel", "ismn_stm"}
         if fmt not in valid:
             raise UnsupportedFormatError(
                 f"Requested format '{config_format}' is not supported. Supported: {sorted(valid)}"
@@ -101,6 +102,117 @@ def map_schema_dtypes_to_pandas(schema: SchemaDefinition | None) -> dict[str, An
     return dtype_map if dtype_map else None
 
 
+def read_ismn_stm(file_path: Path, encoding: str = "utf-8") -> pd.DataFrame:
+    """Parse an authentic International Soil Moisture Network (ISMN) ASCII (.stm) file.
+
+    Supports both standard ISMN 'Header+values' layout and CEOP multi-column layout.
+    """
+    try:
+        with file_path.open("r", encoding=encoding, errors="replace") as f:
+            lines = [
+                line.strip()
+                for line in f.read().replace("\r\n", "\n").replace("\r", "\n").split("\n")
+                if line.strip()
+            ]
+    except OSError as err:
+        raise CorruptFileError(f"Failed to read ISMN file '{file_path}': {err}") from err
+
+    if not lines:
+        return pd.DataFrame()
+
+    first_tokens = lines[0].split()
+
+    # Check for CEOP format: begins with two timestamps (Date1 Time1 Date2 Time2)
+    if (
+        len(first_tokens) >= 14
+        and "/" in first_tokens[0]
+        and ":" in first_tokens[1]
+        and "/" in first_tokens[2]
+        and ":" in first_tokens[3]
+    ):
+        ceop_rows = []
+        for line in lines:
+            parts = line.split()
+            if len(parts) >= 13:
+                ts = f"{parts[0]} {parts[1]}"
+                network = parts[4]
+                station = parts[6]
+                lat = float(parts[7])
+                lon = float(parts[8])
+                elev = float(parts[9])
+                d_from = float(parts[10])
+                d_to = float(parts[11])
+                val = float(parts[12])
+                qflag = parts[13] if len(parts) > 13 else "U"
+                ceop_rows.append((network, station, ts, lat, lon, elev, d_from, d_to, val, qflag))
+        return pd.DataFrame(
+            ceop_rows,
+            columns=[
+                "network",
+                "station_id",
+                "timestamp_utc",
+                "latitude",
+                "longitude",
+                "elevation_m",
+                "depth_from_m",
+                "depth_to_m",
+                "soil_moisture",
+                "quality_flag",
+            ],
+        )
+
+    # Standard ISMN Header + values format:
+    # Header tokens: network, subnetwork, station, latitude, longitude, elevation, depth_from, depth_to, sensor...
+    if len(first_tokens) < 8:
+        raise CorruptFileError(
+            f"ISMN header line in '{file_path}' has fewer than 8 expected tokens: {lines[0]}"
+        )
+
+    network = first_tokens[0]
+    station = first_tokens[2]
+    try:
+        lat = float(first_tokens[3])
+        lon = float(first_tokens[4])
+        elev = float(first_tokens[5])
+        d_from = float(first_tokens[6])
+        d_to = float(first_tokens[7])
+    except ValueError as err:
+        raise CorruptFileError(
+            f"Failed to parse numeric metadata coordinates/depth in ISMN header: {err}"
+        ) from err
+
+    sensor = " ".join(first_tokens[8:]).strip("'\"") if len(first_tokens) > 8 else "in_situ_sensor"
+
+    records = []
+    for line in lines[1:]:
+        parts = line.split()
+        if len(parts) >= 3:
+            ts = f"{parts[0]} {parts[1]}"
+            try:
+                val = float(parts[2])
+            except ValueError:
+                val = float("nan")
+            qflag = parts[3] if len(parts) > 3 else "U"
+            records.append((network, station, ts, lat, lon, elev, d_from, d_to, sensor, val, qflag))
+
+    return pd.DataFrame(
+        records,
+        columns=[
+            "network",
+            "station_id",
+            "timestamp_utc",
+            "latitude",
+            "longitude",
+            "elevation_m",
+            "depth_from_m",
+            "depth_to_m",
+            "sensor",
+            "soil_moisture",
+            "quality_flag",
+        ],
+    )
+
+
 def read_tabular(
     file_path: str | Path,
     config: IngestionConfig | None = None,
@@ -140,6 +252,9 @@ def read_tabular(
                 path,
                 sheet_name=config.sheet_name if config.sheet_name is not None else 0,
             )
+
+        if detected_format == "ismn_stm":
+            return read_ismn_stm(path, encoding=config.encoding)
 
         raise UnsupportedFormatError(f"Unsupported format: {detected_format}")
 

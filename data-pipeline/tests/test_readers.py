@@ -128,3 +128,36 @@ def test_corrupt_file_handling(tmp_path: Path) -> None:
     bad_file.write_text("Not a real parquet binary header")
     with pytest.raises(CorruptFileError):
         read_tabular(bad_file)
+
+
+def test_read_ismn_stm_header_values(tmp_path: Path) -> None:
+    stm_content = (
+        "SMOSMANIA SMOSMANIA Narbonne 43.15000 2.95670 112.00 0.05 0.05 ThetaProbe-ML2X\n"
+        "2007/01/01 01:00 0.2140 U M\n"
+        "2007/01/01 02:00 0.2135 G M\n"
+    )
+    file_path = tmp_path / "test_sensor.stm"
+    file_path.write_text(stm_content, encoding="utf-8")
+
+    df = read_tabular(file_path)
+    assert len(df) == 2
+    assert "station_id" in df.columns
+    assert df["station_id"].iloc[0] == "Narbonne"
+    assert df["latitude"].iloc[0] == 43.15
+    assert df["depth_from_m"].iloc[0] == 0.05
+    assert df["soil_moisture"].iloc[0] == 0.2140
+    assert df["quality_flag"].iloc[1] == "G"
+
+
+def test_read_ismn_stm_ceop(tmp_path: Path) -> None:
+    ceop_content = (
+        "2013/08/13 10:00 2013/08/13 10:00 FR_Aqui FR_Aqui fraye 44.46700 -0.72690 52.42 0.05 0.05 0.0345 G M\n"
+        "2013/08/13 11:00 2013/08/13 11:00 FR_Aqui FR_Aqui fraye 44.46700 -0.72690 52.42 0.05 0.05 0.0787 G M\n"
+    )
+    file_path = tmp_path / "test_ceop.stm"
+    file_path.write_text(ceop_content, encoding="utf-8")
+
+    df = read_tabular(file_path)
+    assert len(df) == 2
+    assert df["station_id"].iloc[0] == "fraye"
+    assert df["soil_moisture"].iloc[0] == 0.0345

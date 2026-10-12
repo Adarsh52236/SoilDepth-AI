@@ -164,3 +164,24 @@ def test_model_readiness_split_entity_overlap(standard_schema: SchemaDefinition)
     )
     res = validate_model_readiness(df, standard_schema, config)
     assert any("split_entity_overlap" in w.lower() for w in res.warnings)
+
+
+def test_schema_allowed_values_validation() -> None:
+    schema = SchemaDefinition(
+        name="test_categorical",
+        columns={
+            "flag": ColumnSpec(
+                canonical_name="flag",
+                role=ColumnRole.METADATA,
+                data_type=DataType.STRING,
+                allowed_values=["G", "M", "D"],
+            )
+        },
+    )
+    df_valid = pd.DataFrame({"flag": ["G", "M"]})
+    res_valid = validate_schema(df_valid, schema)
+    assert len(res_valid.warnings) == 0
+
+    df_invalid = pd.DataFrame({"flag": ["G", "INVALID_FLAG"]})
+    res_invalid = validate_schema(df_invalid, schema)
+    assert any("permitted set" in w for w in res_invalid.warnings)
