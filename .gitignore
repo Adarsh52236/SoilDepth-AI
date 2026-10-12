@@ -63,6 +63,7 @@ Thumbs.db
 # Project data artifacts (keep directory structure with .gitkeep)
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/sample_soil_moisture.csv
 data/processed/*
 !data/processed/.gitkeep
 data/reports/*
