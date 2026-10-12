@@ -16,6 +16,9 @@ class BaseDataAdapter(ABC):
     name: ClassVar[str] = "base"
     description: ClassVar[str] = "Base adapter interface"
     is_ground_truth: ClassVar[bool] = False
+    data_modality: ClassVar[str] = "tabular"
+    raster_supported: ClassVar[bool] = False
+    implementation_status: ClassVar[str] = "implemented_tabular"
 
     def __init__(self, schema: SchemaDefinition | None = None) -> None:
         self.schema = schema or self.get_default_schema()
@@ -31,11 +34,14 @@ class BaseDataAdapter(ABC):
         pass
 
     def get_metadata(self) -> dict[str, Any]:
-        """Return adapter provenance, source semantics, and ground-truth status."""
+        """Return adapter provenance, source semantics, modality and ground-truth status."""
         return {
             "adapter_name": self.name,
             "description": self.description,
             "is_ground_truth": self.is_ground_truth,
+            "data_modality": self.data_modality,
+            "raster_supported": self.raster_supported,
+            "implementation_status": self.implementation_status,
         }
 
 

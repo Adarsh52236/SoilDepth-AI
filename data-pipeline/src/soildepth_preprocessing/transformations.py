@@ -232,7 +232,7 @@ def apply_transformations(
     """Orchestrate all configured feature engineering and time transformations."""
     df = df.copy()
 
-    # 1. Normalize timestamp if available
+    # 1. Normalize timestamp if available and ensure strict chronological ordering
     if timestamp_col and timestamp_col in df.columns:
         df = normalize_datetimes(
             df,
@@ -240,6 +240,10 @@ def apply_transformations(
             target_tz=config.timezone,
             date_format=config.timestamp_format,
         )
+        if group_col and group_col in df.columns:
+            df = df.sort_values(by=[group_col, timestamp_col]).reset_index(drop=True)
+        else:
+            df = df.sort_values(by=[timestamp_col]).reset_index(drop=True)
 
     # 2. Lagged features
     if config.lags:
