@@ -1,6 +1,5 @@
 """
 SoilDepth-AI — Sentinel-1 SAR Processing Adapter for Maharashtra
-Pilot Station: IITM-PUNE-COSMOS
 Author: Senior Geospatial Data Engineer & ML Pipeline Developer, SoilDepth-AI
 Purpose: Ingests Sentinel-1 RTC (GRD) backscatter observations via Planetary Computer STAC,
          extracts dual-polarization (VV, VH) backscatter, derives cross-ratios,
@@ -20,6 +19,8 @@ import pandas as pd
 from PIL import Image
 
 from ..config import (
+    StationConfig,
+    PUNE_CONFIG,
     STATION_ID,
     STATION_LATITUDE,
     STATION_LONGITUDE,
@@ -52,19 +53,25 @@ def undo_fp_predictor(raw_bytes: bytes, width: int, height: int) -> np.ndarray:
 class Sentinel1Adapter(BaseEnvironmentalAdapter):
     """Sentinel-1 Synthetic Aperture Radar (SAR) data adapter."""
 
-    def __init__(self, raw_dir: Path = SENTINEL1_RAW_DIR):
+    def __init__(self, station_config: Optional[StationConfig] = None, raw_dir: Optional[Path] = None):
+        cfg = station_config or PUNE_CONFIG
+        self.station_config = cfg
+        target_raw_dir = raw_dir if raw_dir is not None else cfg.sentinel1_raw_dir
         super().__init__(
             name="Sentinel-1",
             source="ESA Copernicus Sentinel-1 RTC (via Microsoft Planetary Computer STAC)",
-            raw_dir=raw_dir,
+            raw_dir=target_raw_dir,
+            station_config=cfg,
         )
 
-    def acquire(self, start_date: str = START_DATE, end_date: str = END_DATE) -> Dict[str, Any]:
+    def acquire(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, Any]:
         """Queries STAC for Sentinel-1 RTC items and saves acquisition records."""
+        s_date = start_date or self.station_config.start_date
+        e_date = end_date or self.station_config.end_date
         stac_file = self.raw_dir / "s1_stac_items_2017_2023.json"
         acq_file = self.raw_dir / "sentinel1_acquisitions.csv"
 
-        print(f"[{self.name}] Searching Sentinel-1 RTC items for {STATION_ID} ({start_date} to {end_date})...")
+        print(f"[{self.name}] Searching Sentinel-1 RTC items for {self.station_config.station_id} ({s_date} to {e_date})...")
 
         if stac_file.exists() and stac_file.stat().st_size > 5000:
             with open(stac_file, "r", encoding="utf-8") as f:
@@ -75,8 +82,13 @@ class Sentinel1Adapter(BaseEnvironmentalAdapter):
             stac_url = "https://planetarycomputer.microsoft.com/api/stac/v1/search"
             body = {
                 "collections": ["sentinel-1-rtc"],
-                "bbox": [BBOX_WEST, BBOX_SOUTH, BBOX_EAST, BBOX_NORTH],
-                "datetime": f"{start_date}T00:00:00Z/{end_date}T23:59:59Z",
+                "bbox": [
+                    self.station_config.bbox_west,
+                    self.station_config.bbox_south,
+                    self.station_config.bbox_east,
+                    self.station_config.bbox_north,
+                ],
+                "datetime": f"{s_date}T00:00:00Z/{e_date}T23:59:59Z",
                 "limit": 100,
             }
             while True:
@@ -122,9 +134,9 @@ class Sentinel1Adapter(BaseEnvironmentalAdapter):
                 "product_id": item["id"],
                 "acquisition_timestamp_utc": dt_str,
                 "date": date_str,
-                "station_id": STATION_ID,
-                "latitude": STATION_LATITUDE,
-                "longitude": STATION_LONGITUDE,
+                "station_id": self.station_config.station_id,
+                "latitude": self.station_config.latitude,
+                "longitude": self.station_config.longitude,
                 "platform": props.get("platform", "SENTINEL-1"),
                 "orbit_direction": orbit,
                 "relative_orbit": rel_orbit,
@@ -144,9 +156,9 @@ class Sentinel1Adapter(BaseEnvironmentalAdapter):
             units="dB (gamma0 backscatter)",
             crs="EPSG:32643 (UTM Zone 43N)",
             status="VERIFIED_RAW_SAVED",
-            notes=f"Cataloged {len(df_acq)} distinct Sentinel-1 RTC acquisition dates",
+            notes=f"Cataloged {len(df_acq)} distinct Sentinel-1 RTC acquisition dates for {self.station_config.station_id}",
             collection_identifier="sentinel-1-rtc",
-            temporal_coverage=f"{start_date} to {end_date}",
+            temporal_coverage=f"{s_date} to {e_date}",
             download_url_or_id="https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-1-rtc",
         )
 
@@ -157,20 +169,22 @@ class Sentinel1Adapter(BaseEnvironmentalAdapter):
             "manifest_record": manifest_record,
         }
 
-    def extract_features(self, start_date: str = START_DATE, end_date: str = END_DATE) -> pd.DataFrame:
+    def extract_features(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> pd.DataFrame:
         """
-        Processes acquisition dates and aligns them onto the full 2,556 daily calendar
+        Processes acquisition dates and aligns them onto the daily calendar
         with strictly past-only LOCF forward-fill (shift(1)), staleness tracking,
         and explicit observation source date recording.
         """
+        s_date = start_date or self.station_config.start_date
+        e_date = end_date or self.station_config.end_date
         acq_file = self.raw_dir / "sentinel1_acquisitions.csv"
         if not acq_file.exists():
-            self.acquire(start_date, end_date)
+            self.acquire(s_date, e_date)
 
         df_acq = pd.read_csv(acq_file)
 
         # Baseline calendar
-        date_index = pd.date_range(start_date, end_date, freq="D").strftime("%Y-%m-%d")
+        date_index = pd.date_range(s_date, e_date, freq="D").strftime("%Y-%m-%d")
         df_cal = pd.DataFrame({"date": date_index})
 
         # Merge acquisitions
@@ -250,8 +264,9 @@ class Sentinel1Adapter(BaseEnvironmentalAdapter):
     def validate_quality(self, df: pd.DataFrame) -> Dict[str, Any]:
         """Validates temporal completeness, raw missingness, and staleness tracking."""
         issues = []
-        if len(df) != EXPECTED_DAILY_ROWS:
-            issues.append(f"Row count {len(df)} differs from expected {EXPECTED_DAILY_ROWS}")
+        expected = self.station_config.expected_daily_rows
+        if len(df) != expected:
+            issues.append(f"Row count {len(df)} differs from expected {expected}")
 
         raw_count = int(df["s1_raw_observation_available"].sum())
         locf_count = int(df["s1_has_past_obs"].sum())
@@ -263,6 +278,7 @@ class Sentinel1Adapter(BaseEnvironmentalAdapter):
 
         return {
             "adapter": self.name,
+            "station_id": self.station_config.station_id,
             "total_calendar_days": len(df),
             "raw_observation_count": raw_count,
             "raw_observation_coverage_pct": raw_cov_pct,
@@ -271,7 +287,6 @@ class Sentinel1Adapter(BaseEnvironmentalAdapter):
             "stale_days_count": stale_count,
             "stale_days_pct": round(100.0 * stale_count / len(df), 2),
             "staleness_threshold_days": S1_MAX_STALENESS_DAYS,
-            "scientific_note": "Raw missingness (93.15%) is strictly distinguished from imputed LOCF coverage.",
             "is_valid": len(issues) == 0,
             "issues": issues,
         }

@@ -337,3 +337,4 @@ def test_smap_unavailable_state_handling(daily_features, quality_report):
     assert q_smap["status"] == "AWAITING_AUTH"
     assert q_smap["zero_synthetic_data_verified"] == True
     assert q_smap["imputed_coverage_pct"] == 0.0
+

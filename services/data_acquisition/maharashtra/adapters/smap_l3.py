@@ -1,11 +1,9 @@
 """
-SoilDepth-AI — NASA SMAP L3 Soil Moisture Adapter for Maharashtra
-Pilot Station: IITM-PUNE-COSMOS
+SoilDepth-AI — SMAP Enhanced L3 Radiometer Soil Moisture Adapter
 Author: Senior Geospatial Data Engineer & ML Pipeline Developer, SoilDepth-AI
-Purpose: Discovers, verifies, quality-filters, and standardizes NASA SMAP Enhanced L3
-         9 km daily radiometer soil moisture point extractions (SPL3SMP_E.006).
-         Enforces strict retrieval flag verification, fill-value handling, and past-only
-         rolling transformations. Gracefully handles authentication-gated status without data fabrication.
+Purpose: Ingests NASA SMAP Enhanced L3 Radiometer (SPL3SMP_E) soil moisture observations,
+         validates credentials, and preserves unpopulated state with NaN (no synthetic data)
+         across Maharashtra candidate stations.
 """
 
 import json
@@ -17,6 +15,8 @@ import numpy as np
 import pandas as pd
 
 from ..config import (
+    StationConfig,
+    PUNE_CONFIG,
     STATION_ID,
     STATION_LATITUDE,
     STATION_LONGITUDE,
@@ -35,30 +35,36 @@ from .base_adapter import BaseEnvironmentalAdapter
 class SMAPAdapter(BaseEnvironmentalAdapter):
     """NASA SMAP Enhanced L3 Radiometer Soil Moisture adapter."""
 
-    def __init__(self, raw_dir: Path = SMAP_RAW_DIR):
+    def __init__(self, station_config: Optional[StationConfig] = None, raw_dir: Optional[Path] = None):
+        cfg = station_config or PUNE_CONFIG
+        self.station_config = cfg
+        target_raw_dir = raw_dir if raw_dir is not None else cfg.smap_raw_dir
         super().__init__(
             name="SMAP-L3",
             source="NASA NSIDC DAAC / Earthdata (SPL3SMP_E Enhanced 9 km Radiometer)",
-            raw_dir=raw_dir,
+            raw_dir=target_raw_dir,
+            station_config=cfg,
         )
 
-    def acquire(self, start_date: str = START_DATE, end_date: str = END_DATE) -> Dict[str, Any]:
+    def acquire(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, Any]:
         """
-        Queries NASA CMR for SMAP SPL3SMP_E granule inventory covering Pune and checks
+        Queries NASA CMR for SMAP SPL3SMP_E granule inventory covering the station and checks
         local Earthdata credentials.
         """
+        s_date = start_date or self.station_config.start_date
+        e_date = end_date or self.station_config.end_date
         cmr_file = self.raw_dir / "smap_cmr_granules_2017_2023.json"
         netrc_file = Path.home() / ".netrc"
         alt_netrc = Path.home() / "_netrc"
         has_auth = netrc_file.exists() or alt_netrc.exists()
 
-        print(f"[{self.name}] Querying NASA CMR for SMAP SPL3SMP_E granules over {STATION_ID}...")
+        print(f"[{self.name}] Querying NASA CMR for SMAP SPL3SMP_E granules over {self.station_config.station_id}...")
 
         cmr_url = (
             f"https://cmr.earthdata.nasa.gov/search/granules.json?"
             f"short_name=SPL3SMP_E&version=006&"
-            f"point={STATION_LONGITUDE},{STATION_LATITUDE}&"
-            f"temporal={start_date}T00:00:00Z,{end_date}T23:59:59Z&"
+            f"point={self.station_config.longitude},{self.station_config.latitude}&"
+            f"temporal={s_date}T00:00:00Z,{e_date}T23:59:59Z&"
             f"page_size=10"
         )
         try:
@@ -74,9 +80,9 @@ class SMAPAdapter(BaseEnvironmentalAdapter):
         cmr_summary = {
             "dataset_short_name": "SPL3SMP_E",
             "version": "006",
-            "station": STATION_ID,
-            "coordinates": [STATION_LATITUDE, STATION_LONGITUDE],
-            "study_period": [start_date, end_date],
+            "station": self.station_config.station_id,
+            "coordinates": [self.station_config.latitude, self.station_config.longitude],
+            "study_period": [s_date, e_date],
             "cmr_matched_granules": total_hits,
             "nasa_earthdata_credentials_found": has_auth,
             "sample_granules": [g.get("title") for g in granules[:5]],
@@ -101,7 +107,7 @@ class SMAPAdapter(BaseEnvironmentalAdapter):
             status=status_str,
             notes=notes_str,
             collection_identifier="SPL3SMP_E.006",
-            temporal_coverage=f"{start_date} to {end_date}",
+            temporal_coverage=f"{s_date} to {e_date}",
             download_url_or_id=cmr_url,
         )
 
@@ -112,15 +118,16 @@ class SMAPAdapter(BaseEnvironmentalAdapter):
             "manifest_record": manifest_record,
         }
 
-    def extract_features(self, start_date: str = START_DATE, end_date: str = END_DATE) -> pd.DataFrame:
+    def extract_features(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> pd.DataFrame:
         """
-        Processes SMAP observations onto the 2,556 calendar days.
+        Processes SMAP observations onto calendar days.
         If awaiting credentials, preserves columns as unpopulated / NaN without fabrication.
         """
-        date_index = pd.date_range(start_date, end_date, freq="D").strftime("%Y-%m-%d")
+        s_date = start_date or self.station_config.start_date
+        e_date = end_date or self.station_config.end_date
+        date_index = pd.date_range(s_date, e_date, freq="D").strftime("%Y-%m-%d")
         df_cal = pd.DataFrame({"date": date_index})
 
-        # Columns preserved as missing observations per strict project rules
         df_proc = df_cal.copy()
         df_proc["smap_has_valid_retrieval"] = False
         df_proc["smap_raw_observation_available"] = False
@@ -133,7 +140,7 @@ class SMAPAdapter(BaseEnvironmentalAdapter):
 
         df_proc["smap_observation_source_date"] = None
         df_proc["smap_days_since_last_valid_observation"] = np.nan
-        df_proc["smap_days_since_valid_retrieval"] = np.nan  # Backwards compatibility
+        df_proc["smap_days_since_valid_retrieval"] = np.nan
         df_proc["smap_is_stale"] = True
 
         return df_proc[[
@@ -153,8 +160,9 @@ class SMAPAdapter(BaseEnvironmentalAdapter):
     def validate_quality(self, df: pd.DataFrame) -> Dict[str, Any]:
         """Validates SMAP series schema, unpopulated state, and absence of synthetic data."""
         issues = []
-        if len(df) != EXPECTED_DAILY_ROWS:
-            issues.append(f"Row count {len(df)} differs from expected {EXPECTED_DAILY_ROWS}")
+        expected = self.station_config.expected_daily_rows
+        if len(df) != expected:
+            issues.append(f"Row count {len(df)} differs from expected {expected}")
 
         valid_count = int(df["smap_has_valid_retrieval"].sum())
         non_nan_count = int(df["smap_sm_daily_mean_m3_m3"].notna().sum())
@@ -166,6 +174,7 @@ class SMAPAdapter(BaseEnvironmentalAdapter):
 
         return {
             "adapter": self.name,
+            "station_id": self.station_config.station_id,
             "total_rows": len(df),
             "valid_retrievals_count": valid_count,
             "missing_pct": 100.0,

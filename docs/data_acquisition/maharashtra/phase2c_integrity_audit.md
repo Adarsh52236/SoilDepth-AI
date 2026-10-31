@@ -249,3 +249,4 @@ This independent scientific audit evaluated the multi-modal environmental predic
 
 #### Condition for Proceeding to Model 2 Training:
 - **Condition:** Environmental feature tables (`daily_environmental_features.csv` and `static_environmental_features.csv`) are approved for inference and predictor preparation. However, **Model training for Maharashtra cannot begin until official COSMOS-India ground-truth observations are acquired and cryptographically verified.**
+

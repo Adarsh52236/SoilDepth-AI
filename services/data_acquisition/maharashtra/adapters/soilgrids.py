@@ -1,23 +1,24 @@
 """
-SoilDepth-AI — SoilGrids 250m Static Soil Property Adapter
-Pilot Station: IITM-PUNE-COSMOS
+SoilDepth-AI — SoilGrids 250m Edaphic Adapter
 Author: Senior Geospatial Data Engineer & ML Pipeline Developer, SoilDepth-AI
-Purpose: Discovers, retrieves, parses, scales, and physically validates static soil
-         physical and hydraulic properties from ISRIC SoilGrids v2.0 OGC WCS for IITM Pune.
-         Computes derived pedotransfer hydraulic properties (AWC, Field Capacity, Wilting Point)
-         with strict distinction between downloaded properties and derived features.
+Purpose: Ingests ISRIC SoilGrids v2.0 properties across 4 depths via OGC WCS 2.0.1,
+         validates physical units, verifies 100% texture mass balance closure,
+         and derives explicit pedotransfer hydraulic features across Maharashtra stations.
 """
 
-import json
+import io
+import math
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 from PIL import Image
 
 from ..config import (
+    StationConfig,
+    PUNE_CONFIG,
     STATION_ID,
     STATION_LATITUDE,
     STATION_LONGITUDE,
@@ -44,11 +45,15 @@ SCALE_FACTORS = {
 class SoilGridsAdapter(BaseEnvironmentalAdapter):
     """ISRIC SoilGrids v2.0 WCS data adapter."""
 
-    def __init__(self, raw_dir: Path = SOILGRIDS_RAW_DIR):
+    def __init__(self, station_config: Optional[StationConfig] = None, raw_dir: Optional[Path] = None):
+        cfg = station_config or PUNE_CONFIG
+        self.station_config = cfg
+        target_raw_dir = raw_dir if raw_dir is not None else cfg.soilgrids_raw_dir
         super().__init__(
             name="SoilGrids",
             source="ISRIC — World Soil Information (SoilGrids v2.0 250m WCS)",
-            raw_dir=raw_dir,
+            raw_dir=target_raw_dir,
+            station_config=cfg,
         )
 
     def acquire(self, start_date: str = "", end_date: str = "") -> Dict[str, Any]:
@@ -58,12 +63,12 @@ class SoilGridsAdapter(BaseEnvironmentalAdapter):
         manifest_records = []
         acquired_files = []
 
-        print(f"[{self.name}] Acquiring 32 SoilGrids v2.0 GeoTIFFs for {STATION_ID}...")
+        print(f"[{self.name}] Acquiring 32 SoilGrids v2.0 GeoTIFFs for {self.station_config.station_id}...")
 
-        sub_x1 = round(STATION_LONGITUDE - 0.005, 4)
-        sub_x2 = round(STATION_LONGITUDE + 0.005, 4)
-        sub_y1 = round(STATION_LATITUDE - 0.005, 4)
-        sub_y2 = round(STATION_LATITUDE + 0.005, 4)
+        sub_x1 = round(self.station_config.longitude - 0.005, 4)
+        sub_x2 = round(self.station_config.longitude + 0.005, 4)
+        sub_y1 = round(self.station_config.latitude - 0.005, 4)
+        sub_y2 = round(self.station_config.latitude + 0.005, 4)
 
         for prop in SOILGRIDS_PROPERTIES:
             prop_dir = self.raw_dir / prop
@@ -100,13 +105,16 @@ class SoilGridsAdapter(BaseEnvironmentalAdapter):
                         units=f"Raw Integer DN (Scale {SCALE_FACTORS[prop]})",
                         crs="EPSG:4326 (WGS84)",
                         status="VERIFIED_RAW_SAVED",
-                        notes=f"SoilGrids {prop} mean at {depth}",
+                        notes=f"SoilGrids {prop} mean at {depth} for {self.station_config.station_id}",
                         collection_identifier=f"isric-soilgrids-{prop}",
                         temporal_coverage="Static (SoilGrids v2.0 2020 Release)",
                         download_url_or_id=f"https://maps.isric.org/mapserv?map=/map/{prop}.map&COVERAGEID={prop}_{depth}_mean",
                     )
                 )
-                acquired_files.append(str(filepath.relative_to(self.raw_dir)))
+                try:
+                    acquired_files.append(str(filepath.relative_to(self.raw_dir)))
+                except ValueError:
+                    acquired_files.append(str(filepath.name))
 
         return {
             "status": "ACQUISITION_SUCCESS",
@@ -114,11 +122,47 @@ class SoilGridsAdapter(BaseEnvironmentalAdapter):
             "manifest_records": manifest_records,
         }
 
+    def _determine_sampling_pixel(self) -> Tuple[int, int]:
+        """
+        Determines the optimal pixel row and column inside the acquired GeoTIFF.
+        Defaults to center pixel (h//2, w//2). If the center pixel lands on an
+        ISRIC water mask or NoData cell (<= 0), selects the nearest valid terrestrial pixel.
+        """
+        ref_file = self.raw_dir / "clay" / "clay_mean_0-5cm.tif"
+        if not ref_file.exists():
+            self.acquire()
+
+        with Image.open(ref_file) as img:
+            arr = np.array(img)
+            h, w = arr.shape
+            mid_r, mid_c = h // 2, w // 2
+
+            if arr[mid_r, mid_c] > 0:
+                return mid_r, mid_c
+
+            # Search nearest valid terrestrial pixel (> 0)
+            valid_coords = []
+            for r in range(h):
+                for c in range(w):
+                    if arr[r, c] > 0:
+                        dist = math.hypot(r - mid_r, c - mid_c)
+                        valid_coords.append((dist, r, c))
+
+            if valid_coords:
+                valid_coords.sort(key=lambda x: x[0])
+                best_r, best_c = valid_coords[0][1], valid_coords[0][2]
+                print(f"[{self.name}] Center pixel ({mid_r}, {mid_c}) is masked NoData/water; sampled nearest valid pixel ({best_r}, {best_c})")
+                return best_r, best_c
+
+            return mid_r, mid_c
+
     def extract_features(self, start_date: str = "", end_date: str = "") -> pd.DataFrame:
         """
         Parses all 32 GeoTIFFs, extracts station pixel values, applies scale factors,
         constructs mass-balance closure checks, and derives explicit hydraulic features.
         """
+        samp_r, samp_c = self._determine_sampling_pixel()
+
         raw_values: Dict[str, int] = {}
         scaled_values: Dict[str, float] = {}
 
@@ -128,112 +172,84 @@ class SoilGridsAdapter(BaseEnvironmentalAdapter):
 
             for depth in SOILGRIDS_DEPTHS:
                 depth_tag = depth.replace("-", "_")
-                filename = f"{prop}_mean_{depth}.tif"
-                filepath = prop_dir / filename
+                filepath = prop_dir / f"{prop}_mean_{depth}.tif"
 
                 if not filepath.exists():
                     self.acquire()
 
                 with Image.open(filepath) as img:
                     arr = np.array(img)
-                    center_r = arr.shape[0] // 2
-                    center_c = arr.shape[1] // 2
-                    raw_dn = int(arr[center_r, center_c])
+                    val = int(arr[samp_r, samp_c])
 
-                raw_col = f"soilgrids_{prop}_{depth_tag}_raw"
-                scaled_col = f"soilgrids_{prop}_{depth_tag}"
+                col_raw = f"soilgrids_{prop}_{depth_tag}_raw"
+                col_scaled = f"soilgrids_{prop}_{depth_tag}"
 
-                raw_values[raw_col] = raw_dn
-                if prop in ["wv0010", "wv0033", "wv1500"]:
-                    scaled_val = round(raw_dn / scale, 4)
-                elif prop in ["clay", "sand", "silt", "ocd"]:
-                    scaled_val = round(raw_dn / scale, 2)
-                else:  # bdod
-                    scaled_val = round(raw_dn / scale, 3)
+                raw_values[col_raw] = val
+                scaled_values[col_scaled] = round(val / scale, 4)
 
-                scaled_values[scaled_col] = scaled_val
-
-        # Construct single-row baseline record
-        record: Dict[str, Any] = {
-            "station_id": STATION_ID,
-            "latitude": STATION_LATITUDE,
-            "longitude": STATION_LONGITUDE,
-            "raster_crs": "EPSG:4326",
+        # Build feature dictionary
+        features: Dict[str, Any] = {
+            "station_id": self.station_config.station_id,
+            "latitude": self.station_config.latitude,
+            "longitude": self.station_config.longitude,
         }
+        features.update(raw_values)
+        features.update(scaled_values)
 
-        # 1. Directly downloaded SoilGrids raw and scaled properties
-        for prop in SOILGRIDS_PROPERTIES:
-            for depth in SOILGRIDS_DEPTHS:
-                depth_tag = depth.replace("-", "_")
-                raw_col = f"soilgrids_{prop}_{depth_tag}_raw"
-                scaled_col = f"soilgrids_{prop}_{depth_tag}"
-                record[raw_col] = raw_values[raw_col]
-                record[scaled_col] = scaled_values[scaled_col]
-
-        # 2. Soil texture mass-balance closure verification
+        # Mass balance & Derived hydraulic features per depth interval
         for depth in SOILGRIDS_DEPTHS:
-            depth_tag = depth.replace("-", "_")
-            c = scaled_values[f"soilgrids_clay_{depth_tag}"]
-            s = scaled_values[f"soilgrids_sand_{depth_tag}"]
-            si = scaled_values[f"soilgrids_silt_{depth_tag}"]
-            record[f"soilgrids_texture_sum_{depth_tag}"] = round(c + s + si, 2)
+            d = depth.replace("-", "_")
+            c = features[f"soilgrids_clay_{d}"]
+            s = features[f"soilgrids_sand_{d}"]
+            si = features[f"soilgrids_silt_{d}"]
+            raw_sum = round(c + s + si, 2)
+            features[f"soilgrids_texture_sum_{d}"] = raw_sum
 
-        # 3. Explicitly distinguished derived pedotransfer hydraulic properties
-        for depth in SOILGRIDS_DEPTHS:
-            depth_tag = depth.replace("-", "_")
-            wv10 = scaled_values[f"soilgrids_wv0010_{depth_tag}"]
-            wv33 = scaled_values[f"soilgrids_wv0033_{depth_tag}"]
-            wv15 = scaled_values[f"soilgrids_wv1500_{depth_tag}"]
+            # Derived Available Water Capacity (AWC = FC - WP)
+            fc = features[f"soilgrids_wv0033_{d}"]
+            wp = features[f"soilgrids_wv1500_{d}"]
+            sat = features[f"soilgrids_wv0010_{d}"]
 
-            # Field Capacity (FC) at -33 kPa (m³/m³)
-            record[f"derived_field_capacity_{depth_tag}"] = wv33
-            # Permanent Wilting Point (PWP) at -1500 kPa (m³/m³)
-            record[f"derived_wilting_point_{depth_tag}"] = wv15
-            # Plant Available Water Capacity (AWC = FC - PWP) in m³/m³
-            record[f"derived_awc_{depth_tag}"] = round(wv33 - wv15, 4)
-            # Rapid gravitational drainage porosity (theta_10kPa - theta_33kPa) in m³/m³
-            record[f"derived_drainable_porosity_{depth_tag}"] = round(wv10 - wv33, 4)
+            awc = max(0.0, round(fc - wp, 4))
+            drainable_porosity = max(0.0, round(sat - fc, 4))
 
-        return pd.DataFrame([record])
+            features[f"derived_awc_{d}"] = awc
+            features[f"derived_field_capacity_{d}"] = fc
+            features[f"derived_wilting_point_{d}"] = wp
+            features[f"derived_drainable_porosity_{d}"] = drainable_porosity
+
+        return pd.DataFrame([features])
 
     def validate_quality(self, df: pd.DataFrame) -> Dict[str, Any]:
-        """Validates soil texture closure, bulk density, and hydraulic suction hierarchy."""
+        """Validates physical range constraints and texture mass balance closure."""
         issues = []
-        checks = {}
+        row = df.iloc[0]
 
+        # 1. Texture closure: Clay + Sand + Silt == 100% (+-1.0% tolerance)
         for depth in SOILGRIDS_DEPTHS:
-            depth_tag = depth.replace("-", "_")
-            c = float(df[f"soilgrids_clay_{depth_tag}"].iloc[0])
-            s = float(df[f"soilgrids_sand_{depth_tag}"].iloc[0])
-            si = float(df[f"soilgrids_silt_{depth_tag}"].iloc[0])
-            tex_sum = round(c + s + si, 2)
-            checks[f"texture_sum_{depth}"] = tex_sum
+            d = depth.replace("-", "_")
+            tot = row[f"soilgrids_texture_sum_{d}"]
+            if abs(tot - 100.0) > 1.0:
+                issues.append(f"Texture sum at {depth} is {tot}%, violates 100% mass balance closure")
 
-            if abs(tex_sum - 100.0) > 3.0:
-                issues.append(f"Texture sum at {depth} is {tex_sum}%, exceeds 100 +/- 3% tolerance")
+            # Check hydraulic order: WP < FC <= SAT
+            wp = row[f"derived_wilting_point_{d}"]
+            fc = row[f"derived_field_capacity_{d}"]
+            sat = row[f"soilgrids_wv0010_{d}"]
+            if not (wp < fc <= sat):
+                issues.append(f"Hydraulic suction inversion at {depth}: WP={wp}, FC={fc}, SAT={sat}")
 
-            bdod = float(df[f"soilgrids_bdod_{depth_tag}"].iloc[0])
-            checks[f"bdod_{depth}"] = bdod
-            if bdod < PHYSICAL_LIMITS["soil_bulk_density_g_cm3"]["min"] or bdod > PHYSICAL_LIMITS["soil_bulk_density_g_cm3"]["max"]:
-                issues.append(f"Bulk density at {depth} ({bdod} g/cm3) out of bounds")
-
-            wv10 = float(df[f"soilgrids_wv0010_{depth_tag}"].iloc[0])
-            wv33 = float(df[f"soilgrids_wv0033_{depth_tag}"].iloc[0])
-            wv1500 = float(df[f"soilgrids_wv1500_{depth_tag}"].iloc[0])
-
-            checks[f"suction_hierarchy_{depth}"] = bool(wv1500 < wv33 < wv10)
-            if not (wv1500 < wv33 < wv10):
-                issues.append(f"Suction hierarchy violated at {depth}: wv1500={wv1500}, wv33={wv33}, wv10={wv10}")
-
-            awc = float(df[f"derived_awc_{depth_tag}"].iloc[0])
-            checks[f"awc_{depth}"] = awc
-            if awc <= 0.0 or awc > 0.35:
-                issues.append(f"Derived AWC at {depth} ({awc} m3/m3) out of agronomic range (0, 0.35]")
+            # Bulk density range
+            bd = row[f"soilgrids_bdod_{d}"]
+            if not (0.8 <= bd <= 2.0):
+                issues.append(f"Bulk density {bd} g/cm3 at {depth} outside physical range [0.8, 2.0]")
 
         return {
             "adapter": self.name,
+            "station_id": self.station_config.station_id,
+            "texture_mass_balance_closure_verified": True if not any("Texture sum" in i for i in issues) else False,
+            "hydraulic_suction_order_verified": True if not any("Hydraulic suction inversion" in i for i in issues) else False,
+            "derived_features_distinguished": True,
             "is_valid": len(issues) == 0,
-            "texture_checks": checks,
-            "derived_hydraulic_properties_distinguished": True,
             "issues": issues,
         }

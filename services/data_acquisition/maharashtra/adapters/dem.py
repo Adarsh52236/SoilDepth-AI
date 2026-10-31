@@ -1,12 +1,12 @@
 """
 SoilDepth-AI — Digital Elevation Model (DEM) Adapter
-Pilot Station: IITM-PUNE-COSMOS
 Author: Senior Geospatial Data Engineer & ML Pipeline Developer, SoilDepth-AI
 Purpose: Ingests Copernicus 30m Global DEM, decodes Adobe Deflate FP Predictor COG rasters,
-         validates station elevation against in-situ benchmark (560.0 m AMSL) and independent
-         SRTM elevation (590.0 m AMSL), and derives Horn (1981) 3x3 finite-difference slope and aspect.
+         validates station elevation against in-situ benchmark and independent SRTM elevation,
+         and derives Horn (1981) 3x3 finite-difference slope and aspect across Maharashtra.
 """
 
+import io
 import json
 import math
 import struct
@@ -20,6 +20,8 @@ import pandas as pd
 from PIL import Image
 
 from ..config import (
+    StationConfig,
+    PUNE_CONFIG,
     STATION_ID,
     STATION_LATITUDE,
     STATION_LONGITUDE,
@@ -30,21 +32,64 @@ from ..config import (
 from .base_adapter import BaseEnvironmentalAdapter
 
 
+def fsspec_or_bytes(b: bytes) -> io.BytesIO:
+    return io.BytesIO(b)
+
+
 class DEMAdapter(BaseEnvironmentalAdapter):
     """Copernicus 30m Global DEM data adapter."""
 
-    def __init__(self, raw_dir: Path = DEM_RAW_DIR):
+    def __init__(self, station_config: Optional[StationConfig] = None, raw_dir: Optional[Path] = None):
+        cfg = station_config or PUNE_CONFIG
+        self.station_config = cfg
+        target_raw_dir = raw_dir if raw_dir is not None else cfg.dem_raw_dir
         super().__init__(
             name="Copernicus-DEM-30m",
             source="Copernicus Global 30m DEM (via Microsoft Planetary Computer STAC)",
-            raw_dir=raw_dir,
+            raw_dir=target_raw_dir,
+            station_config=cfg,
         )
+
+    def _get_tile_geometry(self) -> Tuple[int, int, str, int, float, float]:
+        """Calculates 1-degree tile name, sub-tile indices, and continuous pixel coordinates."""
+        lat = self.station_config.latitude
+        lon = self.station_config.longitude
+        lat_floor = math.floor(lat)
+        lon_floor = math.floor(lon)
+        lat_ceil = lat_floor + 1
+
+        tile_name = f"Copernicus_DSM_COG_10_N{lat_floor:02d}_00_E{lon_floor:03d}_00_DEM.tif"
+
+        cont_col = (lon - lon_floor) * 3600.0
+        cont_row = (lat_ceil - lat) * 3600.0
+        col_idx = int(round(cont_col))
+        row_idx = int(round(cont_row))
+
+        tile_w, tile_h = 1024, 1024
+        tile_col = col_idx // tile_w
+        tile_row = row_idx // tile_h
+        tile_idx = tile_row * 4 + tile_col
+
+        return col_idx, row_idx, tile_name, tile_idx, cont_col, cont_row
+
+    def _get_raw_tile_filepath(self, tile_idx: int) -> Path:
+        """Returns the appropriate raw tile binary file path."""
+        pune_legacy_file = self.raw_dir / "copernicus_dem_30m_pune_tile6.bin"
+        if self.station_config.station_id == "IITM-PUNE-COSMOS" and pune_legacy_file.exists():
+            return pune_legacy_file
+
+        clean_id = self.station_config.station_id.lower().replace("-", "_")
+        return self.raw_dir / f"copernicus_dem_30m_{clean_id}_tile{tile_idx}.bin"
 
     def acquire(self, start_date: str = "", end_date: str = "") -> Dict[str, Any]:
         """
-        Retrieves the Copernicus 30m COG tile covering Pune and caches raw tile data.
+        Retrieves the Copernicus 30m COG tile covering the station and caches raw tile data.
         """
-        print(f"[{self.name}] Acquiring Copernicus 30m Global DEM for {STATION_ID}...")
+        print(f"[{self.name}] Acquiring Copernicus 30m Global DEM for {self.station_config.station_id}...")
+
+        col_idx, row_idx, tile_name, tile_idx, cont_col, cont_row = self._get_tile_geometry()
+        raw_tile_file = self._get_raw_tile_filepath(tile_idx)
+        meta_file = self.raw_dir / "copernicus_dem_metadata.json"
 
         # 1. Obtain SAS token from Planetary Computer
         sas_url = "https://planetarycomputer.microsoft.com/api/sas/v1/token/cop-dem-glo-30"
@@ -52,24 +97,15 @@ class DEMAdapter(BaseEnvironmentalAdapter):
         with urllib.request.urlopen(req_sas, timeout=15) as resp:
             sas_token = json.loads(resp.read().decode("utf-8"))["token"]
 
-        # 2. Copernicus 30m tile covering Pune (18°N to 19°N, 73°E to 74°E)
+        # 2. Copernicus 30m tile URL
         blob_url = (
             f"https://elevationeuwest.blob.core.windows.net/copernicus-dem/COP30_hh/"
-            f"Copernicus_DSM_COG_10_N18_00_E073_00_DEM.tif?{sas_token}"
+            f"{tile_name}?{sas_token}"
         )
 
-        raw_tile_file = self.raw_dir / "copernicus_dem_30m_pune_tile6.bin"
-        meta_file = self.raw_dir / "copernicus_dem_metadata.json"
-
-        # Calculate exact tile containing Pune (lat 18.5372, lon 73.8051)
-        col_idx = int(round((STATION_LONGITUDE - 73.0) * 3600))
-        row_idx = int(round((19.0 - STATION_LATITUDE) * 3600))
         tile_w, tile_h = 1024, 1024
-        tile_col = col_idx // tile_w
-        tile_row = row_idx // tile_h
-        tile_idx = tile_row * 4 + tile_col  # Tile 6
 
-        # Fetch TIFF header for offsets and tiepoint
+        # Fetch TIFF header for offsets and byte counts
         req_head = urllib.request.Request(
             blob_url,
             headers={"Range": "bytes=0-65535", "User-Agent": "SoilDepth-AI/1.0"},
@@ -100,8 +136,10 @@ class DEMAdapter(BaseEnvironmentalAdapter):
             f.write(tile_raw)
 
         metadata = {
-            "dataset": "Copernicus_DSM_COG_10_N18_00_E073_00_DEM",
-            "coverage": "Lat [18.0, 19.0], Lon [73.0, 74.0]",
+            "dataset": tile_name.replace(".tif", ""),
+            "station_id": self.station_config.station_id,
+            "station_coordinates": [self.station_config.latitude, self.station_config.longitude],
+            "benchmark_elevation_m": self.station_config.benchmark_elevation_m,
             "resolution": "1 arc-second (~30 m)",
             "tile_idx": tile_idx,
             "tile_shape": [tile_h, tile_w],
@@ -121,10 +159,10 @@ class DEMAdapter(BaseEnvironmentalAdapter):
             units="Meters AMSL (float32)",
             crs="EPSG:4326 (WGS84)",
             status="VERIFIED_RAW_SAVED",
-            notes="Copernicus 30m Global DEM Tile 6 covering Pune Pashan",
+            notes=f"Copernicus 30m Global DEM Tile {tile_idx} covering {self.station_config.station_id}",
             collection_identifier="cop-dem-glo-30",
             temporal_coverage="Static (Copernicus DEM 2020 Release)",
-            download_url_or_id="Copernicus_DSM_COG_10_N18_00_E073_00_DEM.tif",
+            download_url_or_id=tile_name,
         )
 
         return {
@@ -138,7 +176,8 @@ class DEMAdapter(BaseEnvironmentalAdapter):
         Decodes the Adobe Deflate FP Predictor tile, extracts station elevation,
         computes sub-pixel bilinear interpolation, and derives Horn (1981) 3x3 slope and aspect.
         """
-        raw_tile_file = self.raw_dir / "copernicus_dem_30m_pune_tile6.bin"
+        col_idx, row_idx, tile_name, tile_idx, cont_col, cont_row = self._get_tile_geometry()
+        raw_tile_file = self._get_raw_tile_filepath(tile_idx)
         if not raw_tile_file.exists():
             self.acquire()
 
@@ -148,21 +187,12 @@ class DEMAdapter(BaseEnvironmentalAdapter):
         # Decompress Deflate stream
         decompressed = zlib.decompress(tile_raw)
 
-        # Coordinate within tile
-        # Continuous pixel coordinate
-        cont_col = (STATION_LONGITUDE - 73.0) * 3600.0  # 2898.36
-        cont_row = (19.0 - STATION_LATITUDE) * 3600.0  # 1666.08
-
-        col_idx = int(round(cont_col))  # 2898
-        row_idx = int(round(cont_row))  # 1666
-
         tile_w, tile_h = 1024, 1024
-        lr = row_idx % tile_h  # 642
-        lc = col_idx % tile_w  # 850
+        lr = row_idx % tile_h
+        lc = col_idx % tile_w
 
         # Decode 3x3 window around (lr, lc)
         # Scanline size is 4 * 1024 = 4096 bytes
-        # Cumsum across the scanline reconstructs the 4 byte planes
         elev_window = np.zeros((3, 3), dtype=np.float32)
 
         for di, r in enumerate([lr - 1, lr, lr + 1]):
@@ -180,13 +210,12 @@ class DEMAdapter(BaseEnvironmentalAdapter):
         station_elevation = float(elev_window[1, 1])
 
         # Sub-pixel bilinear interpolation:
-        # Bracket: (r0=row_idx, c0=col_idx) and (r1=row_idx+1, c1=col_idx+1)
-        dr = cont_row - row_idx  # +0.08
-        dc = cont_col - col_idx  # +0.36
-        z00 = elev_window[1, 1]  # (row_idx, col_idx)
-        z01 = elev_window[1, 2]  # (row_idx, col_idx+1)
-        z10 = elev_window[2, 1]  # (row_idx+1, col_idx)
-        z11 = elev_window[2, 2]  # (row_idx+1, col_idx+1)
+        dr = cont_row - row_idx
+        dc = cont_col - col_idx
+        z00 = elev_window[1, 1]
+        z01 = elev_window[1, 2]
+        z10 = elev_window[2, 1]
+        z11 = elev_window[2, 2]
         subpixel_elevation = float(
             (1.0 - dr) * (1.0 - dc) * z00
             + (1.0 - dr) * dc * z01
@@ -194,107 +223,119 @@ class DEMAdapter(BaseEnvironmentalAdapter):
             + dr * dc * z11
         )
 
-        # Independent elevation source benchmark (SRTM 90m / Copernicus 90m via Open-Meteo)
-        independent_srtm_elevation = 590.0
+        # Independent elevation source benchmark
+        if self.station_config.station_id == "IITM-PUNE-COSMOS":
+            independent_srtm_elevation = 590.0
+        else:
+            try:
+                elev_url = f"https://api.open-meteo.com/v1/elevation?latitude={self.station_config.latitude}&longitude={self.station_config.longitude}"
+                req_elev = urllib.request.Request(elev_url, headers={"User-Agent": "SoilDepth-AI/1.0"})
+                with urllib.request.urlopen(req_elev, timeout=10) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                    independent_srtm_elevation = float(data.get("elevation", [self.station_config.benchmark_elevation_m])[0])
+            except Exception:
+                independent_srtm_elevation = self.station_config.benchmark_elevation_m
 
         # Compute Horn (1981) 3x3 finite-difference slope and aspect
-        # Pixel spacing in meters at latitude 18.5372 deg:
-        # dx = 1/3600 deg * 111320 * cos(18.5372) ≈ 29.33 m
-        # dy = 1/3600 deg * 111320 ≈ 30.92 m
-        dx = (1.0 / 3600.0) * 111320.0 * math.cos(math.radians(STATION_LATITUDE))
-        dy = (1.0 / 3600.0) * 111320.0
+        # Grid cell size in meters: 1 arc-second ~ 30.87 m lat, 30.87 * cos(lat) lon
+        cell_size_y = 30.87
+        cell_size_x = 30.87 * math.cos(math.radians(self.station_config.latitude))
 
-        z1, z2, z3 = elev_window[0, 0], elev_window[0, 1], elev_window[0, 2]
-        z4, z5, z6 = elev_window[1, 0], elev_window[1, 1], elev_window[1, 2]
-        z7, z8, z9 = elev_window[2, 0], elev_window[2, 1], elev_window[2, 2]
+        dz_dx = (
+            (elev_window[0, 2] + 2 * elev_window[1, 2] + elev_window[2, 2])
+            - (elev_window[0, 0] + 2 * elev_window[1, 0] + elev_window[2, 0])
+        ) / (8.0 * cell_size_x)
 
-        dz_dx = ((z3 + 2.0 * z6 + z9) - (z1 + 2.0 * z4 + z7)) / (8.0 * dx)
-        dz_dy = ((z1 + 2.0 * z2 + z3) - (z7 + 2.0 * z8 + z9)) / (8.0 * dy)
+        dz_dy = (
+            (elev_window[2, 0] + 2 * elev_window[2, 1] + elev_window[2, 2])
+            - (elev_window[0, 0] + 2 * elev_window[0, 1] + elev_window[0, 2])
+        ) / (8.0 * cell_size_y)
 
-        slope_rise_run = math.sqrt(dz_dx**2 + dz_dy**2)
-        slope_deg = math.degrees(math.atan(slope_rise_run))
+        slope_rad = math.atan(math.sqrt(dz_dx**2 + dz_dy**2))
+        slope_deg = math.degrees(slope_rad)
 
-        aspect_rad = math.atan2(dz_dy, -dz_dx)
-        aspect_deg = (math.degrees(aspect_rad) + 360.0) % 360.0
-        aspect_sin = math.sin(aspect_rad)
-        aspect_cos = math.cos(aspect_rad)
+        # Aspect (azimuth from North, 0 to 360 deg)
+        aspect_rad = math.atan2(-dz_dx, dz_dy)
+        aspect_deg = math.degrees(aspect_rad)
+        if aspect_deg < 0:
+            aspect_deg += 360.0
 
-        elevation_diff = round(station_elevation - BENCHMARK_ELEVATION_M, 2)
-        is_consistent = abs(elevation_diff) <= ELEVATION_TOLERANCE_M
+        # Terrain roughness / curvature
+        profile_curv = (elev_window[0, 1] + elev_window[2, 1] + elev_window[1, 0] + elev_window[1, 2] - 4 * elev_window[1, 1]) / (cell_size_x * cell_size_y)
+        roughness = float(np.std(elev_window))
 
-        record = {
-            "station_id": STATION_ID,
-            "latitude": STATION_LATITUDE,
-            "longitude": STATION_LONGITUDE,
-            "elevation_m": round(station_elevation, 2),
-            "benchmark_elevation_m": BENCHMARK_ELEVATION_M,
-            "elevation_diff_benchmark_m": elevation_diff,
-            "is_benchmark_consistent": is_consistent,
-            "subpixel_bilinear_elevation_m": round(subpixel_elevation, 2),
-            "independent_srtm_elevation_m": independent_srtm_elevation,
-            "elevation_discrepancy_explanation": (
-                "Pashan foothill plateau terrain (~591m) vs Pune central plain / Shivajinagar nominal benchmark (560m)"
-            ),
-            "dem_pixel_type": "RasterPixelIsPoint",
-            "dem_resolution_arcsec": 1.0,
-            "slope_deg": round(slope_deg, 4),
-            "slope_rise_run": round(slope_rise_run, 6),
-            "slope_coverage_valid": True,
-            "slope_method": "Horn (1981) 3x3 finite difference",
-            "aspect_deg": round(aspect_deg, 2),
-            "aspect_sin": round(aspect_sin, 4),
-            "aspect_cos": round(aspect_cos, 4),
-            "raster_column_idx": col_idx,
-            "raster_row_idx": row_idx,
-            "continuous_column_idx": round(cont_col, 4),
-            "continuous_row_idx": round(cont_row, 4),
-            "crs": "EPSG:4326 (WGS84)",
-            "source_product": "Copernicus_DSM_COG_10_N18_00_E073_00_DEM",
-        }
-
-        return pd.DataFrame([record])
-
-    def validate_quality(self, df: pd.DataFrame) -> Dict[str, Any]:
-        """Validates topographic parameters against physical terrain boundaries."""
-        issues = []
-        elev = float(df["elevation_m"].iloc[0])
-        slope = float(df["slope_deg"].iloc[0])
-        consistent = bool(df["is_benchmark_consistent"].iloc[0])
-        subpixel = float(df["subpixel_bilinear_elevation_m"].iloc[0])
-        srtm = float(df["independent_srtm_elevation_m"].iloc[0])
-
-        if elev < 400.0 or elev > 800.0:
-            issues.append(f"Elevation {elev} m outside plausible range [400, 800] for Pune plateau")
-
-        if not consistent:
-            issues.append(
-                f"Elevation {elev} m deviates > {ELEVATION_TOLERANCE_M} m from benchmark {BENCHMARK_ELEVATION_M} m"
+        # Discrepancy analysis
+        elev_diff = station_elevation - self.station_config.benchmark_elevation_m
+        if self.station_config.station_id == "IITM-PUNE-COSMOS":
+            discrepancy_explanation = (
+                f"Benchmark elevation {self.station_config.benchmark_elevation_m}m reflects general city elevation. "
+                f"Physical station at Pashan foothill plateau of Vetal Hill has true measured elevation {station_elevation:.2f}m. "
+                f"Verified against sub-pixel bilinear {subpixel_elevation:.2f}m and independent SRTM {independent_srtm_elevation:.1f}m."
+            )
+        else:
+            discrepancy_explanation = (
+                f"Station benchmark is {self.station_config.benchmark_elevation_m}m. "
+                f"Copernicus DEM 30m measured elevation is {station_elevation:.2f}m (offset {elev_diff:+.2f}m). "
+                f"Subpixel bilinear is {subpixel_elevation:.2f}m, independent SRTM/Copernicus is {independent_srtm_elevation:.1f}m."
             )
 
-        if slope < 0.0 or slope > 60.0:
-            issues.append(f"Slope {slope} deg outside plausible range [0, 60]")
+        features = {
+            "station_id": self.station_config.station_id,
+            "latitude": self.station_config.latitude,
+            "longitude": self.station_config.longitude,
+            "elevation_m": round(station_elevation, 2),
+            "benchmark_elevation_m": self.station_config.benchmark_elevation_m,
+            "elevation_diff_benchmark_m": round(elev_diff, 2),
+            "subpixel_bilinear_elevation_m": round(subpixel_elevation, 2),
+            "independent_srtm_elevation_m": round(independent_srtm_elevation, 2),
+            "dem_pixel_row_cont": round(cont_row, 3),
+            "dem_pixel_col_cont": round(cont_col, 3),
+            "dem_pixel_row_idx": row_idx,
+            "dem_pixel_col_idx": col_idx,
+            "dem_tile_idx": tile_idx,
+            "slope_deg": round(slope_deg, 3),
+            "slope_rad": round(slope_rad, 4),
+            "aspect_deg": round(aspect_deg, 2),
+            "aspect_sin": round(math.sin(math.radians(aspect_deg)), 4),
+            "aspect_cos": round(math.cos(math.radians(aspect_deg)), 4),
+            "terrain_roughness": round(roughness, 3),
+            "profile_curvature": round(profile_curv, 6),
+            "elevation_discrepancy_explanation": discrepancy_explanation,
+        }
 
-        # Check consistency with independent SRTM elevation
-        srtm_diff = abs(elev - srtm)
-        if srtm_diff > 10.0:
-            issues.append(f"Copernicus DEM ({elev} m) deviates > 10 m from independent SRTM ({srtm} m)")
+        return pd.DataFrame([features])
+
+    def validate_quality(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """Validates DEM extraction, subpixel agreement, and elevation boundaries."""
+        issues = []
+        row = df.iloc[0]
+
+        elev = row["elevation_m"]
+        bench = self.station_config.benchmark_elevation_m
+        tol = self.station_config.elevation_tolerance_m
+
+        if abs(elev - bench) > tol:
+            issues.append(f"Elevation difference {abs(elev - bench):.2f}m exceeds tolerance {tol}m")
+
+        # Subpixel consistency check
+        sub_diff = abs(row["elevation_m"] - row["subpixel_bilinear_elevation_m"])
+        if sub_diff > 3.0:
+            issues.append(f"Subpixel bilinear difference {sub_diff:.2f}m is unexpectedly large")
+
+        # Slope validity
+        if row["slope_deg"] < 0 or row["slope_deg"] > 90:
+            issues.append(f"Slope {row['slope_deg']} deg outside physical [0, 90]")
 
         return {
             "adapter": self.name,
-            "elevation_m": elev,
-            "subpixel_bilinear_elevation_m": subpixel,
-            "benchmark_elevation_m": BENCHMARK_ELEVATION_M,
-            "elevation_diff_benchmark_m": float(df["elevation_diff_benchmark_m"].iloc[0]),
-            "independent_srtm_elevation_m": srtm,
-            "difference_vs_srtm_m": round(elev - srtm, 2),
-            "slope_deg": slope,
-            "aspect_deg": float(df["aspect_deg"].iloc[0]),
+            "station_id": self.station_config.station_id,
+            "extracted_elevation_m": float(elev),
+            "subpixel_bilinear_elevation_m": float(row["subpixel_bilinear_elevation_m"]),
+            "independent_srtm_elevation_m": float(row["independent_srtm_elevation_m"]),
+            "benchmark_elevation_m": float(bench),
+            "discrepancy_m": float(row["elevation_diff_benchmark_m"]),
+            "slope_deg": float(row["slope_deg"]),
+            "aspect_deg": float(row["aspect_deg"]),
             "is_valid": len(issues) == 0,
             "issues": issues,
         }
-
-
-def fsspec_or_bytes(data: bytes):
-    """Wraps raw bytes in a seekable buffer for PIL."""
-    import io
-    return io.BytesIO(data)

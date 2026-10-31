@@ -16,10 +16,11 @@ import pandas as pd
 class BaseEnvironmentalAdapter(ABC):
     """Abstract base class for modular environmental data adapters."""
 
-    def __init__(self, name: str, source: str, raw_dir: Path):
+    def __init__(self, name: str, source: str, raw_dir: Path, station_config: Optional[Any] = None):
         self.name = name
         self.source = source
         self.raw_dir = raw_dir
+        self.station_config = station_config
         self.raw_dir.mkdir(parents=True, exist_ok=True)
         self.retrieval_metadata: Dict[str, Any] = {}
 
@@ -62,12 +63,17 @@ class BaseEnvironmentalAdapter(ABC):
         processing_version: str = "Phase 2C (Data Integrity Audited)",
     ) -> Dict[str, Any]:
         """Creates a standardized manifest entry for immutable audit tracking."""
+        try:
+            rel_path = str(filepath.relative_to(filepath.parents[4]))
+        except (ValueError, IndexError):
+            rel_path = str(filepath.name)
+
         return {
             "adapter": self.name,
             "source": self.source,
             "collection_identifier": collection_identifier or self.name,
             "filename": filepath.name,
-            "relative_path": str(filepath.relative_to(filepath.parents[4])),
+            "relative_path": rel_path,
             "size_bytes": filepath.stat().st_size if filepath.exists() else 0,
             "sha256": self.compute_sha256(filepath) if filepath.exists() else "UNAVAILABLE",
             "spatial_resolution": spatial_resolution,

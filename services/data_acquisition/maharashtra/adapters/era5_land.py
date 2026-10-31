@@ -1,12 +1,9 @@
 """
-SoilDepth-AI — ERA5-Land Data Acquisition Adapter for Maharashtra
-Pilot Station: IITM-PUNE-COSMOS
+SoilDepth-AI — ERA5-Land Reanalysis Weather Adapter
 Author: Senior Geospatial Data Engineer & ML Pipeline Developer, SoilDepth-AI
-Purpose: Ingests ECMWF ERA5-Land hourly meteorological reanalysis, saves raw files,
-         applies certified physical unit transformations, computes daily aggregates,
-         constructs strictly past-only antecedent memory features (shift(1)),
-         and validates data completeness over the 2017–2023 timeline.
-         Guarantees zero usage of ERA5-Land deep soil moisture variables.
+Purpose: Ingests ECMWF ERA5-Land hourly reanalysis, aggregates to daily totals/means,
+         computes antecedent memory features with strictly past-only shift(1) windows,
+         and verifies zero deep soil moisture leakage across Maharashtra stations.
 """
 
 import json
@@ -19,6 +16,8 @@ import numpy as np
 import pandas as pd
 
 from ..config import (
+    StationConfig,
+    PUNE_CONFIG,
     STATION_ID,
     STATION_LATITUDE,
     STATION_LONGITUDE,
@@ -35,23 +34,29 @@ from .base_adapter import BaseEnvironmentalAdapter
 class ERA5LandAdapter(BaseEnvironmentalAdapter):
     """ECMWF ERA5-Land Reanalysis data adapter."""
 
-    def __init__(self, raw_dir: Path = ERA5_RAW_DIR):
+    def __init__(self, station_config: Optional[StationConfig] = None, raw_dir: Optional[Path] = None):
+        cfg = station_config or PUNE_CONFIG
+        self.station_config = cfg
+        target_raw_dir = raw_dir if raw_dir is not None else cfg.era5_raw_dir
         super().__init__(
             name="ERA5-Land",
             source="ECMWF Copernicus Climate Change Service (via Open-Meteo Archive API)",
-            raw_dir=raw_dir,
+            raw_dir=target_raw_dir,
+            station_config=cfg,
         )
 
-    def acquire(self, start_date: str = START_DATE, end_date: str = END_DATE) -> Dict[str, Any]:
+    def acquire(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, Any]:
         """
         Retrieves hourly ERA5-Land reanalysis year-by-year and stores unmodified JSON files.
         """
-        start_year = int(start_date[:4])
-        end_year = int(end_date[:4])
+        s_date = start_date or self.station_config.start_date
+        e_date = end_date or self.station_config.end_date
+        start_year = int(s_date[:4])
+        end_year = int(e_date[:4])
         manifest_records = []
         downloaded_years = []
 
-        print(f"[{self.name}] Acquiring hourly reanalysis for {STATION_ID} ({start_date} to {end_date})...")
+        print(f"[{self.name}] Acquiring hourly reanalysis for {self.station_config.station_id} ({s_date} to {e_date})...")
 
         for year in range(start_year, end_year + 1):
             year_start = f"{year}-01-01"
@@ -63,7 +68,7 @@ class ERA5LandAdapter(BaseEnvironmentalAdapter):
             else:
                 url = (
                     f"https://archive-api.open-meteo.com/v1/archive?"
-                    f"latitude={STATION_LATITUDE}&longitude={STATION_LONGITUDE}&"
+                    f"latitude={self.station_config.latitude}&longitude={self.station_config.longitude}&"
                     f"start_date={year_start}&end_date={year_end}&"
                     f"hourly=temperature_2m,dew_point_2m,precipitation,wind_speed_10m,wind_direction_10m,shortwave_radiation&"
                     f"wind_speed_unit=ms&timezone=UTC"
@@ -83,7 +88,7 @@ class ERA5LandAdapter(BaseEnvironmentalAdapter):
                 units="°C, mm, m/s, W/m², deg",
                 crs="EPSG:4326 (WGS84)",
                 status="VERIFIED_RAW_SAVED",
-                notes=f"Year {year} ECMWF ERA5-Land hourly point reanalysis",
+                notes=f"Year {year} ECMWF ERA5-Land hourly point reanalysis for {self.station_config.station_id}",
                 collection_identifier="reanalysis-era5-land",
                 temporal_coverage=f"{year_start} to {year_end}",
                 download_url_or_id=f"https://archive-api.open-meteo.com/v1/archive?start_date={year_start}&end_date={year_end}&hourly=temperature_2m,dew_point_2m,precipitation,wind_speed_10m,wind_direction_10m,shortwave_radiation",
@@ -97,14 +102,16 @@ class ERA5LandAdapter(BaseEnvironmentalAdapter):
             "manifest_records": manifest_records,
         }
 
-    def extract_features(self, start_date: str = START_DATE, end_date: str = END_DATE) -> pd.DataFrame:
+    def extract_features(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> pd.DataFrame:
         """
         Parses raw hourly JSON files into a standardized daily weather feature table
         with antecedent memory and cyclical transformations.
         Guarantees zero target or ERA5 deep soil moisture leakage.
         """
-        start_year = int(start_date[:4])
-        end_year = int(end_date[:4])
+        s_date = start_date or self.station_config.start_date
+        e_date = end_date or self.station_config.end_date
+        start_year = int(s_date[:4])
+        end_year = int(e_date[:4])
 
         all_times: List[str] = []
         all_t2m: List[float] = []
@@ -159,7 +166,7 @@ class ERA5LandAdapter(BaseEnvironmentalAdapter):
 
         daily_rows = []
         for date_str, group in df_hourly.groupby("date", sort=True):
-            if date_str < start_date or date_str > end_date:
+            if date_str < s_date or date_str > e_date:
                 continue
 
             count_hours = len(group)
@@ -182,10 +189,10 @@ class ERA5LandAdapter(BaseEnvironmentalAdapter):
 
             daily_rows.append({
                 "date": date_str,
-                "station_id": STATION_ID,
-                "latitude": STATION_LATITUDE,
-                "longitude": STATION_LONGITUDE,
-                "elevation_m": BENCHMARK_ELEVATION_M,
+                "station_id": self.station_config.station_id,
+                "latitude": self.station_config.latitude,
+                "longitude": self.station_config.longitude,
+                "elevation_m": self.station_config.benchmark_elevation_m,
                 "era5_hourly_count": count_hours,
                 "is_complete": (count_hours == 24),
                 "temperature_2m_mean_c": round(t_mean, 3),
@@ -211,7 +218,7 @@ class ERA5LandAdapter(BaseEnvironmentalAdapter):
 
         # Days since rain > 1.0 mm (causal accumulator)
         days_since = []
-        current_streak = 10.0  # Initialized to default prior
+        current_streak = 10.0
         precip_vals = df_daily["precipitation_total_mm"].values
         for i in range(len(precip_vals)):
             if i > 0:
@@ -239,8 +246,9 @@ class ERA5LandAdapter(BaseEnvironmentalAdapter):
         """Applies rigorous quality, completeness, and boundary checks."""
         issues = []
         row_count = len(df)
-        if row_count != EXPECTED_DAILY_ROWS:
-            issues.append(f"Row count {row_count} differs from expected {EXPECTED_DAILY_ROWS}")
+        expected = self.station_config.expected_daily_rows
+        if row_count != expected:
+            issues.append(f"Row count {row_count} differs from expected {expected}")
 
         # Check bounds
         t_min = df["temperature_2m_mean_c"].min()
@@ -263,8 +271,9 @@ class ERA5LandAdapter(BaseEnvironmentalAdapter):
 
         return {
             "adapter": self.name,
+            "station_id": self.station_config.station_id,
             "row_count": row_count,
-            "expected_rows": EXPECTED_DAILY_ROWS,
+            "expected_rows": expected,
             "hourly_timesteps_verified": row_count * 24,
             "incomplete_days": int(incomplete_days),
             "temperature_range_c": [float(t_min), float(t_max)],

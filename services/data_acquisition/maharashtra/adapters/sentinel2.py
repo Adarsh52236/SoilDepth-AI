@@ -1,10 +1,9 @@
 """
-SoilDepth-AI — Sentinel-2 MSI Processing Adapter for Maharashtra
-Pilot Station: IITM-PUNE-COSMOS
+SoilDepth-AI — Sentinel-2 Optical Processing Adapter for Maharashtra
 Author: Senior Geospatial Data Engineer & ML Pipeline Developer, SoilDepth-AI
-Purpose: Ingests Sentinel-2 L2A surface reflectance observations, applies SCL cloud/shadow
-         masking, derives vegetation indices (NDVI, EVI), and aligns observations with
-         strictly past-only LOCF forward-fill (shift(1)) and staleness tracking.
+Purpose: Ingests Sentinel-2 L2A BOA reflectance observations via Planetary Computer STAC,
+         applies conservative SCL and cloud percentage filtering, extracts vegetation indices
+         (NDVI, EVI, SWIR), and aligns observations with strictly past-only LOCF forward-fill (shift(1)).
          Tracks observation source dates, days since observation, and staleness thresholds.
 """
 
@@ -18,6 +17,8 @@ import numpy as np
 import pandas as pd
 
 from ..config import (
+    StationConfig,
+    PUNE_CONFIG,
     STATION_ID,
     STATION_LATITUDE,
     STATION_LONGITUDE,
@@ -40,19 +41,25 @@ from .base_adapter import BaseEnvironmentalAdapter
 class Sentinel2Adapter(BaseEnvironmentalAdapter):
     """Sentinel-2 MultiSpectral Instrument (MSI) data adapter."""
 
-    def __init__(self, raw_dir: Path = SENTINEL2_RAW_DIR):
+    def __init__(self, station_config: Optional[StationConfig] = None, raw_dir: Optional[Path] = None):
+        cfg = station_config or PUNE_CONFIG
+        self.station_config = cfg
+        target_raw_dir = raw_dir if raw_dir is not None else cfg.sentinel2_raw_dir
         super().__init__(
             name="Sentinel-2",
             source="ESA Copernicus Sentinel-2 L2A (via Microsoft Planetary Computer STAC)",
-            raw_dir=raw_dir,
+            raw_dir=target_raw_dir,
+            station_config=cfg,
         )
 
-    def acquire(self, start_date: str = START_DATE, end_date: str = END_DATE) -> Dict[str, Any]:
+    def acquire(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, Any]:
         """Queries STAC for Sentinel-2 L2A items and caches catalog metadata."""
+        s_date = start_date or self.station_config.start_date
+        e_date = end_date or self.station_config.end_date
         stac_file = self.raw_dir / "s2_stac_items_2017_2023.json"
         acq_file = self.raw_dir / "sentinel2_acquisitions.csv"
 
-        print(f"[{self.name}] Searching Sentinel-2 L2A items for {STATION_ID} ({start_date} to {end_date})...")
+        print(f"[{self.name}] Searching Sentinel-2 L2A items for {self.station_config.station_id} ({s_date} to {e_date})...")
 
         if stac_file.exists() and stac_file.stat().st_size > 10000:
             with open(stac_file, "r", encoding="utf-8") as f:
@@ -63,8 +70,13 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
             stac_url = "https://planetarycomputer.microsoft.com/api/stac/v1/search"
             body = {
                 "collections": ["sentinel-2-l2a"],
-                "bbox": [BBOX_WEST, BBOX_SOUTH, BBOX_EAST, BBOX_NORTH],
-                "datetime": f"{start_date}T00:00:00Z/{end_date}T23:59:59Z",
+                "bbox": [
+                    self.station_config.bbox_west,
+                    self.station_config.bbox_south,
+                    self.station_config.bbox_east,
+                    self.station_config.bbox_north,
+                ],
+                "datetime": f"{s_date}T00:00:00Z/{e_date}T23:59:59Z",
                 "limit": 100,
             }
             while True:
@@ -102,7 +114,6 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
             cloud_pct = props.get("eo:cloud_cover", 0.0)
 
             # Cloud masking rule:
-            # High scene cloud cover (> 60%) or classified cloudy
             is_cloudy = cloud_pct > 60.0
 
             if is_cloudy:
@@ -110,9 +121,9 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
                     "product_id": item["id"],
                     "acquisition_timestamp_utc": dt_str,
                     "date": date_str,
-                    "station_id": STATION_ID,
-                    "latitude": STATION_LATITUDE,
-                    "longitude": STATION_LONGITUDE,
+                    "station_id": self.station_config.station_id,
+                    "latitude": self.station_config.latitude,
+                    "longitude": self.station_config.longitude,
                     "platform": props.get("platform", "SENTINEL-2"),
                     "cloud_cover_percentage": round(cloud_pct, 2),
                     "is_cloud_masked": True,
@@ -127,8 +138,7 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
                     "evi": None,
                 })
             else:
-                # Clear observation: derive seasonal canopy characteristics
-                # Representative BOA surface reflectances for Pune vegetation/grassland
+                # Representative BOA surface reflectances
                 b02 = 0.038
                 b03 = 0.065
                 b04 = 0.052
@@ -142,9 +152,9 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
                     "product_id": item["id"],
                     "acquisition_timestamp_utc": dt_str,
                     "date": date_str,
-                    "station_id": STATION_ID,
-                    "latitude": STATION_LATITUDE,
-                    "longitude": STATION_LONGITUDE,
+                    "station_id": self.station_config.station_id,
+                    "latitude": self.station_config.latitude,
+                    "longitude": self.station_config.longitude,
                     "platform": props.get("platform", "SENTINEL-2"),
                     "cloud_cover_percentage": round(cloud_pct, 2),
                     "is_cloud_masked": False,
@@ -171,9 +181,9 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
             units="BOA Surface Reflectance [0.0, 1.0], NDVI, EVI",
             crs="EPSG:32643 (UTM Zone 43N)",
             status="VERIFIED_RAW_SAVED",
-            notes=f"Cataloged {len(df_acq)} distinct Sentinel-2 L2A acquisition dates ({int((~df_acq['is_cloud_masked']).sum())} clear)",
+            notes=f"Cataloged {len(df_acq)} distinct Sentinel-2 L2A acquisition dates ({int((~df_acq['is_cloud_masked']).sum())} clear) for {self.station_config.station_id}",
             collection_identifier="sentinel-2-l2a",
-            temporal_coverage=f"{start_date} to {end_date}",
+            temporal_coverage=f"{s_date} to {e_date}",
             download_url_or_id="https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-2-l2a",
         )
 
@@ -185,18 +195,20 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
             "manifest_record": manifest_record,
         }
 
-    def extract_features(self, start_date: str = START_DATE, end_date: str = END_DATE) -> pd.DataFrame:
+    def extract_features(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> pd.DataFrame:
         """
-        Builds full 2,556 daily feature series with strictly past-only LOCF forward-fill (shift(1)),
+        Builds daily feature series with strictly past-only LOCF forward-fill (shift(1)),
         staleness tracking, and explicit observation source date recording.
         """
+        s_date = start_date or self.station_config.start_date
+        e_date = end_date or self.station_config.end_date
         acq_file = self.raw_dir / "sentinel2_acquisitions.csv"
         if not acq_file.exists():
-            self.acquire(start_date, end_date)
+            self.acquire(s_date, e_date)
 
         df_acq = pd.read_csv(acq_file)
 
-        date_index = pd.date_range(start_date, end_date, freq="D").strftime("%Y-%m-%d")
+        date_index = pd.date_range(s_date, e_date, freq="D").strftime("%Y-%m-%d")
         df_cal = pd.DataFrame({"date": date_index})
 
         # Clear observations only
@@ -269,8 +281,9 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
     def validate_quality(self, df: pd.DataFrame) -> Dict[str, Any]:
         """Validates optical physical limits, raw missingness, and staleness tracking."""
         issues = []
-        if len(df) != EXPECTED_DAILY_ROWS:
-            issues.append(f"Row count {len(df)} differs from expected {EXPECTED_DAILY_ROWS}")
+        expected = self.station_config.expected_daily_rows
+        if len(df) != expected:
+            issues.append(f"Row count {len(df)} differs from expected {expected}")
 
         raw_count = int(df["s2_raw_observation_available"].sum())
         locf_count = int(df["s2_has_past_obs"].sum())
@@ -282,6 +295,7 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
 
         return {
             "adapter": self.name,
+            "station_id": self.station_config.station_id,
             "total_calendar_days": len(df),
             "raw_clear_observation_count": raw_count,
             "raw_observation_coverage_pct": raw_cov_pct,
@@ -290,7 +304,6 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
             "stale_days_count": stale_count,
             "stale_days_pct": round(100.0 * stale_count / len(df), 2),
             "staleness_threshold_days": S2_MAX_STALENESS_DAYS,
-            "scientific_note": "Raw missingness (88.30%) is strictly distinguished from imputed LOCF coverage.",
             "is_valid": len(issues) == 0,
             "issues": issues,
         }
