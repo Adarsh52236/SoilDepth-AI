@@ -1,0 +1,74 @@
+{
+  "audit_timestamp_utc": "2026-10-25T08:03:54.635488Z",
+  "network": "SCAN (Soil Climate Analysis Network)",
+  "provider": "USDA-NRCS / International Soil Moisture Network (ISMN)",
+  "temporal_range_covered": "2015-01-01 to 2023-12-31",
+  "total_extracted_files": 2457,
+  "total_stm_time_series_files": 1787,
+  "total_raw_observation_rows": 40010708,
+  "observations_by_layer": {
+    "surface_0_10cm": {
+      "total_observations": 10359229,
+      "stations_count": 218,
+      "stm_files_count": 456,
+      "actual_sensor_depth": "0.0508 m (2.0 inches / 5.08 cm)",
+      "point_sensor_proxy_verdict": "GENUINE_5CM_SURFACE_PROXY (Eligible for satellite optical/radar matchups)",
+      "readiness_status": "READY_FOR_FEATURE_ALIGNMENT"
+    },
+    "middle_10_30cm": {
+      "total_observations": 20161881,
+      "stations_count": 219,
+      "stm_files_count": 866,
+      "actual_sensor_depths": [
+        "0.1016 m (4 in / 10.16 cm)",
+        "0.2032 m (8 in / 20.32 cm)",
+        "0.1524 m (6 in)",
+        "0.2540 m (10 in)"
+      ],
+      "depth_mapping_recommendation": "Discrete multi-sensor series. Must train on explicit depths or use justified depth interpolation.",
+      "readiness_status": "READY_FOR_FEATURE_ALIGNMENT"
+    },
+    "deep_30_60cm": {
+      "total_observations": 9489598,
+      "stations_count": 215,
+      "stm_files_count": 465,
+      "actual_sensor_depths": [
+        "0.5080 m (20 in / 50.80 cm)",
+        "0.3048 m (12 in / 30.48 cm)",
+        "0.3810 m (15 in / 38.10 cm)"
+      ],
+      "root_zone_proxy_verdict": "GENUINE_50CM_ROOT_ZONE_PROFILE (449 out of 465 files installed at exactly 50.8 cm)",
+      "readiness_status": "READY_FOR_FEATURE_ALIGNMENT"
+    }
+  },
+  "station_metrics": {
+    "total_unique_stations": 220,
+    "full_three_layer_profile_stations": 213,
+    "ready_candidate_stations": 189,
+    "review_required_stations": 26,
+    "insufficient_coverage_stations": 5
+  },
+  "satellite_era_compatibility": {
+    "sentinel1_overlap_pct": 100.0,
+    "sentinel2_overlap_pct": 100.0,
+    "smap_overlap_pct": 100.0,
+    "era5_land_overlap_pct": 100.0
+  },
+  "quality_flag_distribution": {
+    "ismn_good_pct": 100.0,
+    "provider_valid_v_pct": 99.08,
+    "provider_edited_e_pct": 0.92,
+    "provider_estimate_k_pct": 0.0
+  },
+  "reproducibility": {
+    "deterministic_dedup_key": [
+      "network",
+      "station",
+      "nominal_depth_cm",
+      "sensor_model",
+      "timestamp_utc"
+    ],
+    "zero_target_imputation_enforced": true,
+    "internal_estimate_k_flags_action": "EXCLUDE flag 'K' from supervised training labels to prevent label leakage/synthetic targets"
+  }
+}

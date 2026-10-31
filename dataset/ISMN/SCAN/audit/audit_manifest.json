@@ -1,0 +1,31 @@
+{
+  "manifest_type": "ISMN_SCAN_AUDIT_MANIFEST",
+  "version": "1.0.0",
+  "audit_timestamp_utc": "2026-10-25T08:03:54.635488Z",
+  "auditor": "SoilDepth-AI Senior Data Engineering Subsystem",
+  "software_environment": {
+    "python_version": "3.11.0rc2 (main, Sep 11 2022, 20:22:52) [MSC v.1933 64 bit (AMD64)]",
+    "numpy_version": "2.4.6",
+    "platform": "win32"
+  },
+  "input_datasets": {
+    "raw_directory": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\ISMN\\SCAN\\raw",
+    "extracted_directory": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\ISMN\\SCAN\\extracted",
+    "total_stm_files": 1787,
+    "total_observation_rows": 40010708
+  },
+  "generated_reports": [
+    "scan_audit_report.md",
+    "archive_inventory.csv",
+    "file_inventory.csv",
+    "station_inventory.csv",
+    "sensor_depth_coverage.csv",
+    "temporal_coverage.csv",
+    "quality_flag_summary.csv",
+    "duplicate_and_missingness_report.csv",
+    "cross_download_overlap.csv",
+    "station_depth_readiness.csv",
+    "depth_readiness_summary.json",
+    "audit_manifest.json"
+  ]
+}

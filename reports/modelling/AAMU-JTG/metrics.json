@@ -1,0 +1,1686 @@
+{
+  "sm_5cm": {
+    "depth_key": "sm_5cm",
+    "nominal_depth_cm": 5.08,
+    "depth_m": 0.0508,
+    "train_samples_weather": 1908,
+    "train_samples_lag": 1789,
+    "val_samples_weather": 333,
+    "val_samples_common": 313,
+    "test_samples_common": 573,
+    "models": {
+      "Historical_Mean": {
+        "depth": "sm_5cm",
+        "config": "Historical Mean Baseline",
+        "n_samples": 573,
+        "n_total": 573,
+        "n_excluded": 0,
+        "mae": 0.06311,
+        "rmse": 0.07463,
+        "r2": -0.0828,
+        "bias": 0.02064,
+        "pearson_r": 0.0,
+        "mean_true": 0.25877,
+        "mean_pred": 0.27941,
+        "std_true": 0.07172,
+        "std_pred": 0.0,
+        "start_date": "2022-01-01",
+        "end_date": "2023-11-16",
+        "val_metrics": {
+          "n_samples": 313,
+          "n_total": 313,
+          "n_excluded": 0,
+          "mae": 0.04838,
+          "rmse": 0.05644,
+          "r2": -0.0038,
+          "bias": -0.00347,
+          "pearson_r": 0.0,
+          "mean_true": 0.28288,
+          "mean_pred": 0.27941,
+          "std_true": 0.05634,
+          "std_pred": 0.0,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-31"
+        }
+      },
+      "Climatology": {
+        "depth": "sm_5cm",
+        "config": "DOY Climatology Baseline",
+        "n_samples": 573,
+        "n_total": 573,
+        "n_excluded": 0,
+        "mae": 0.0498,
+        "rmse": 0.06124,
+        "r2": 0.2709,
+        "bias": 0.01647,
+        "pearson_r": 0.5692,
+        "mean_true": 0.25877,
+        "mean_pred": 0.27524,
+        "std_true": 0.07172,
+        "std_pred": 0.03961,
+        "start_date": "2022-01-01",
+        "end_date": "2023-11-16",
+        "val_metrics": {
+          "n_samples": 313,
+          "n_total": 313,
+          "n_excluded": 0,
+          "mae": 0.05091,
+          "rmse": 0.06252,
+          "r2": -0.2314,
+          "bias": -0.00365,
+          "pearson_r": 0.205,
+          "mean_true": 0.28288,
+          "mean_pred": 0.27923,
+          "std_true": 0.05634,
+          "std_pred": 0.04078,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-31"
+        }
+      },
+      "Persistence": {
+        "depth": "sm_5cm",
+        "config": "Persistence Baseline (t-1)",
+        "n_samples": 573,
+        "n_total": 573,
+        "n_excluded": 0,
+        "mae": 0.02069,
+        "rmse": 0.03106,
+        "r2": 0.8124,
+        "bias": -0.00041,
+        "pearson_r": 0.9053,
+        "mean_true": 0.25877,
+        "mean_pred": 0.25836,
+        "std_true": 0.07172,
+        "std_pred": 0.07096,
+        "start_date": "2022-01-01",
+        "end_date": "2023-11-16",
+        "val_metrics": {
+          "n_samples": 313,
+          "n_total": 313,
+          "n_excluded": 0,
+          "mae": 0.01915,
+          "rmse": 0.0274,
+          "r2": 0.7635,
+          "bias": 0.00025,
+          "pearson_r": 0.8792,
+          "mean_true": 0.28288,
+          "mean_pred": 0.28313,
+          "std_true": 0.05634,
+          "std_pred": 0.05502,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-31"
+        }
+      },
+      "XGBoost_Weather_Only": {
+        "depth": "sm_5cm",
+        "config": "XGBoost (Weather + Memory + Seasonality + Edaphics)",
+        "best_iteration": 72,
+        "n_samples": 573,
+        "n_total": 573,
+        "n_excluded": 0,
+        "mae": 0.03796,
+        "rmse": 0.04959,
+        "r2": 0.522,
+        "bias": 0.01148,
+        "pearson_r": 0.7401,
+        "mean_true": 0.25877,
+        "mean_pred": 0.27025,
+        "std_true": 0.07172,
+        "std_pred": 0.05221,
+        "start_date": "2022-01-01",
+        "end_date": "2023-11-16",
+        "val_metrics": {
+          "n_samples": 313,
+          "n_total": 313,
+          "n_excluded": 0,
+          "mae": 0.03228,
+          "rmse": 0.03934,
+          "r2": 0.5125,
+          "bias": 0.00767,
+          "pearson_r": 0.7321,
+          "mean_true": 0.28288,
+          "mean_pred": 0.29055,
+          "std_true": 0.05634,
+          "std_pred": 0.03727,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-31"
+        }
+      },
+      "XGBoost_Lag_Augmented": {
+        "depth": "sm_5cm",
+        "config": "XGBoost (Weather + Memory + Seasonality + Edaphics + Lag-1)",
+        "best_iteration": 226,
+        "n_samples": 573,
+        "n_total": 573,
+        "n_excluded": 0,
+        "mae": 0.01667,
+        "rmse": 0.02542,
+        "r2": 0.8744,
+        "bias": 0.00077,
+        "pearson_r": 0.9352,
+        "mean_true": 0.25877,
+        "mean_pred": 0.25954,
+        "std_true": 0.07172,
+        "std_pred": 0.06756,
+        "start_date": "2022-01-01",
+        "end_date": "2023-11-16",
+        "val_metrics": {
+          "n_samples": 313,
+          "n_total": 313,
+          "n_excluded": 0,
+          "mae": 0.01229,
+          "rmse": 0.0189,
+          "r2": 0.8875,
+          "bias": -5e-05,
+          "pearson_r": 0.9421,
+          "mean_true": 0.28288,
+          "mean_pred": 0.28282,
+          "std_true": 0.05634,
+          "std_pred": 0.05285,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-31"
+        }
+      },
+      "XGBoost_Full_Multimodal": {
+        "depth": "sm_5cm",
+        "config": "XGBoost Full Multimodal (58 Features: Weather + HWSD + SoilGrids + DEM + SMAP + S1 + S2)",
+        "best_iteration": 145,
+        "n_samples": 573,
+        "n_total": 573,
+        "n_excluded": 0,
+        "mae": 0.04855,
+        "rmse": 0.06303,
+        "r2": 0.2278,
+        "bias": 0.02364,
+        "pearson_r": 0.6471,
+        "mean_true": 0.25877,
+        "mean_pred": 0.28241,
+        "std_true": 0.07172,
+        "std_pred": 0.06697,
+        "start_date": "2022-01-01",
+        "end_date": "2023-11-16",
+        "val_metrics": {
+          "n_samples": 313,
+          "n_total": 313,
+          "n_excluded": 0,
+          "mae": 0.02772,
+          "rmse": 0.03437,
+          "r2": 0.6279,
+          "bias": 0.0162,
+          "pearson_r": 0.8454,
+          "mean_true": 0.28288,
+          "mean_pred": 0.29908,
+          "std_true": 0.05634,
+          "std_pred": 0.04401,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-31"
+        }
+      }
+    },
+    "residual_diagnostics": {
+      "Historical_Mean": {
+        "validation": {
+          "n_samples": 313,
+          "residual_mean": -0.00347,
+          "residual_std": 0.05634,
+          "residual_median": -0.01539,
+          "residual_q25": -0.04819,
+          "residual_q75": 0.04245,
+          "residual_iqr": 0.09063,
+          "residual_max_abs": 0.14749,
+          "residual_skewness": 0.4811
+        },
+        "test": {
+          "n_samples": 573,
+          "residual_mean": 0.02064,
+          "residual_std": 0.07172,
+          "residual_median": 0.01326,
+          "residual_q25": -0.03972,
+          "residual_q75": 0.08741,
+          "residual_iqr": 0.12712,
+          "residual_max_abs": 0.16011,
+          "residual_skewness": 0.0857
+        }
+      },
+      "Climatology": {
+        "validation": {
+          "n_samples": 313,
+          "residual_mean": -0.00365,
+          "residual_std": 0.06241,
+          "residual_median": -0.00907,
+          "residual_q25": -0.0505,
+          "residual_q75": 0.03788,
+          "residual_iqr": 0.08838,
+          "residual_max_abs": 0.15475,
+          "residual_skewness": 0.2616
+        },
+        "test": {
+          "n_samples": 573,
+          "residual_mean": 0.01647,
+          "residual_std": 0.05899,
+          "residual_median": 0.01397,
+          "residual_q25": -0.02928,
+          "residual_q75": 0.05977,
+          "residual_iqr": 0.08906,
+          "residual_max_abs": 0.16695,
+          "residual_skewness": 0.1341
+        }
+      },
+      "Persistence": {
+        "validation": {
+          "n_samples": 313,
+          "residual_mean": 0.00025,
+          "residual_std": 0.0274,
+          "residual_median": 0.00821,
+          "residual_q25": -0.0035,
+          "residual_q75": 0.01558,
+          "residual_iqr": 0.01908,
+          "residual_max_abs": 0.11454,
+          "residual_skewness": -1.9542
+        },
+        "test": {
+          "n_samples": 573,
+          "residual_mean": -0.00041,
+          "residual_std": 0.03106,
+          "residual_median": 0.00695,
+          "residual_q25": -0.00321,
+          "residual_q75": 0.01671,
+          "residual_iqr": 0.01992,
+          "residual_max_abs": 0.15725,
+          "residual_skewness": -2.0451
+        }
+      },
+      "XGBoost_Weather_Only": {
+        "validation": {
+          "n_samples": 313,
+          "residual_mean": 0.00767,
+          "residual_std": 0.03858,
+          "residual_median": 0.00875,
+          "residual_q25": -0.02092,
+          "residual_q75": 0.03438,
+          "residual_iqr": 0.05529,
+          "residual_max_abs": 0.10797,
+          "residual_skewness": 0.0701
+        },
+        "test": {
+          "n_samples": 573,
+          "residual_mean": 0.01148,
+          "residual_std": 0.04824,
+          "residual_median": 0.00536,
+          "residual_q25": -0.01871,
+          "residual_q75": 0.04336,
+          "residual_iqr": 0.06207,
+          "residual_max_abs": 0.14245,
+          "residual_skewness": 0.1661
+        }
+      },
+      "XGBoost_Lag_Augmented": {
+        "validation": {
+          "n_samples": 313,
+          "residual_mean": -5e-05,
+          "residual_std": 0.0189,
+          "residual_median": 0.00135,
+          "residual_q25": -0.00536,
+          "residual_q75": 0.00863,
+          "residual_iqr": 0.01398,
+          "residual_max_abs": 0.10966,
+          "residual_skewness": -1.2829
+        },
+        "test": {
+          "n_samples": 573,
+          "residual_mean": 0.00077,
+          "residual_std": 0.02541,
+          "residual_median": 0.00335,
+          "residual_q25": -0.00617,
+          "residual_q75": 0.01354,
+          "residual_iqr": 0.01971,
+          "residual_max_abs": 0.13752,
+          "residual_skewness": -1.4711
+        }
+      },
+      "XGBoost_Full_Multimodal": {
+        "validation": {
+          "n_samples": 313,
+          "residual_mean": 0.0162,
+          "residual_std": 0.03031,
+          "residual_median": 0.01621,
+          "residual_q25": -0.00534,
+          "residual_q75": 0.03627,
+          "residual_iqr": 0.04161,
+          "residual_max_abs": 0.08969,
+          "residual_skewness": -0.0109
+        },
+        "test": {
+          "n_samples": 573,
+          "residual_mean": 0.02364,
+          "residual_std": 0.05842,
+          "residual_median": 0.02447,
+          "residual_q25": -0.01114,
+          "residual_q75": 0.05173,
+          "residual_iqr": 0.06287,
+          "residual_max_abs": 0.17887,
+          "residual_skewness": 0.0112
+        }
+      }
+    },
+    "model_selection": {
+      "depth_key": "sm_5cm",
+      "selected_best_overall_model": "XGBoost_Lag_Augmented",
+      "selected_best_overall_val_rmse": 0.0189,
+      "selected_best_rs_model": "XGBoost_Full_Multimodal",
+      "selected_best_rs_val_rmse": 0.03437,
+      "selected_best_ar_model": "XGBoost_Lag_Augmented",
+      "selected_best_ar_val_rmse": 0.0189,
+      "validation_ranking": [
+        [
+          "XGBoost_Lag_Augmented",
+          0.0189
+        ],
+        [
+          "Persistence",
+          0.0274
+        ],
+        [
+          "XGBoost_Full_Multimodal",
+          0.03437
+        ],
+        [
+          "XGBoost_Weather_Only",
+          0.03934
+        ],
+        [
+          "Historical_Mean",
+          0.05644
+        ],
+        [
+          "Climatology",
+          0.06252
+        ]
+      ],
+      "untouched_test_performance_best_overall": {
+        "model": "XGBoost_Lag_Augmented",
+        "mae": 0.01667,
+        "rmse": 0.02542,
+        "r2": 0.8744,
+        "bias": 0.00077,
+        "pearson_r": 0.9352
+      },
+      "untouched_test_performance_best_rs": {
+        "model": "XGBoost_Full_Multimodal",
+        "mae": 0.04855,
+        "rmse": 0.06303,
+        "r2": 0.2278,
+        "bias": 0.02364,
+        "pearson_r": 0.6471
+      }
+    },
+    "generated_plots": [
+      "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\reports\\modelling\\AAMU-JTG\\plots\\sm_5cm_scatter_pred_vs_obs.png",
+      "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\reports\\modelling\\AAMU-JTG\\plots\\sm_5cm_residuals_distribution.png",
+      "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\reports\\modelling\\AAMU-JTG\\plots\\sm_5cm_timeseries_hydrograph.png"
+    ]
+  },
+  "sm_10cm": {
+    "depth_key": "sm_10cm",
+    "nominal_depth_cm": 10.16,
+    "depth_m": 0.1016,
+    "train_samples_weather": 1958,
+    "train_samples_lag": 1864,
+    "val_samples_weather": 342,
+    "val_samples_common": 328,
+    "test_samples_common": 634,
+    "models": {
+      "Historical_Mean": {
+        "depth": "sm_10cm",
+        "config": "Historical Mean Baseline",
+        "n_samples": 634,
+        "n_total": 634,
+        "n_excluded": 0,
+        "mae": 0.04753,
+        "rmse": 0.06265,
+        "r2": -0.1746,
+        "bias": 0.02416,
+        "pearson_r": 0.0,
+        "mean_true": 0.31595,
+        "mean_pred": 0.34011,
+        "std_true": 0.05781,
+        "std_pred": 0.0,
+        "start_date": "2022-01-01",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 328,
+          "n_total": 328,
+          "n_excluded": 0,
+          "mae": 0.02799,
+          "rmse": 0.03474,
+          "r2": -0.0173,
+          "bias": -0.00453,
+          "pearson_r": 0.0,
+          "mean_true": 0.34464,
+          "mean_pred": 0.34011,
+          "std_true": 0.03444,
+          "std_pred": 0.0,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-31"
+        }
+      },
+      "Climatology": {
+        "depth": "sm_10cm",
+        "config": "DOY Climatology Baseline",
+        "n_samples": 634,
+        "n_total": 634,
+        "n_excluded": 0,
+        "mae": 0.03841,
+        "rmse": 0.05226,
+        "r2": 0.1826,
+        "bias": 0.02332,
+        "pearson_r": 0.5984,
+        "mean_true": 0.31595,
+        "mean_pred": 0.33927,
+        "std_true": 0.05781,
+        "std_pred": 0.02807,
+        "start_date": "2022-01-01",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 328,
+          "n_total": 328,
+          "n_excluded": 0,
+          "mae": 0.03007,
+          "rmse": 0.03726,
+          "r2": -0.1703,
+          "bias": -0.00464,
+          "pearson_r": 0.3137,
+          "mean_true": 0.34464,
+          "mean_pred": 0.34,
+          "std_true": 0.03444,
+          "std_pred": 0.02805,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-31"
+        }
+      },
+      "Persistence": {
+        "depth": "sm_10cm",
+        "config": "Persistence Baseline (t-1)",
+        "n_samples": 634,
+        "n_total": 634,
+        "n_excluded": 0,
+        "mae": 0.01099,
+        "rmse": 0.0179,
+        "r2": 0.9041,
+        "bias": -0.00057,
+        "pearson_r": 0.9517,
+        "mean_true": 0.31595,
+        "mean_pred": 0.31539,
+        "std_true": 0.05781,
+        "std_pred": 0.05732,
+        "start_date": "2022-01-01",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 328,
+          "n_total": 328,
+          "n_excluded": 0,
+          "mae": 0.00958,
+          "rmse": 0.01525,
+          "r2": 0.804,
+          "bias": -0.00045,
+          "pearson_r": 0.9012,
+          "mean_true": 0.34464,
+          "mean_pred": 0.34418,
+          "std_true": 0.03444,
+          "std_pred": 0.03412,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-31"
+        }
+      },
+      "XGBoost_Weather_Only": {
+        "depth": "sm_10cm",
+        "config": "XGBoost (Weather + Memory + Seasonality + Edaphics)",
+        "best_iteration": 65,
+        "n_samples": 634,
+        "n_total": 634,
+        "n_excluded": 0,
+        "mae": 0.0277,
+        "rmse": 0.0371,
+        "r2": 0.5882,
+        "bias": 0.01593,
+        "pearson_r": 0.815,
+        "mean_true": 0.31595,
+        "mean_pred": 0.33188,
+        "std_true": 0.05781,
+        "std_pred": 0.04656,
+        "start_date": "2022-01-01",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 328,
+          "n_total": 328,
+          "n_excluded": 0,
+          "mae": 0.01886,
+          "rmse": 0.02421,
+          "r2": 0.5058,
+          "bias": 0.00396,
+          "pearson_r": 0.7208,
+          "mean_true": 0.34464,
+          "mean_pred": 0.3486,
+          "std_true": 0.03444,
+          "std_pred": 0.02402,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-31"
+        }
+      },
+      "XGBoost_Lag_Augmented": {
+        "depth": "sm_10cm",
+        "config": "XGBoost (Weather + Memory + Seasonality + Edaphics + Lag-1)",
+        "best_iteration": 130,
+        "n_samples": 634,
+        "n_total": 634,
+        "n_excluded": 0,
+        "mae": 0.01041,
+        "rmse": 0.01498,
+        "r2": 0.9329,
+        "bias": 0.00248,
+        "pearson_r": 0.967,
+        "mean_true": 0.31595,
+        "mean_pred": 0.31843,
+        "std_true": 0.05781,
+        "std_pred": 0.05483,
+        "start_date": "2022-01-01",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 328,
+          "n_total": 328,
+          "n_excluded": 0,
+          "mae": 0.00718,
+          "rmse": 0.01096,
+          "r2": 0.8988,
+          "bias": 0.00046,
+          "pearson_r": 0.9482,
+          "mean_true": 0.34464,
+          "mean_pred": 0.3451,
+          "std_true": 0.03444,
+          "std_pred": 0.03228,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-31"
+        }
+      },
+      "XGBoost_Full_Multimodal": {
+        "depth": "sm_10cm",
+        "config": "XGBoost Full Multimodal (58 Features: Weather + HWSD + SoilGrids + DEM + SMAP + S1 + S2)",
+        "best_iteration": 95,
+        "n_samples": 634,
+        "n_total": 634,
+        "n_excluded": 0,
+        "mae": 0.02805,
+        "rmse": 0.03927,
+        "r2": 0.5384,
+        "bias": 0.02298,
+        "pearson_r": 0.8345,
+        "mean_true": 0.31595,
+        "mean_pred": 0.33893,
+        "std_true": 0.05781,
+        "std_pred": 0.048,
+        "start_date": "2022-01-01",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 328,
+          "n_total": 328,
+          "n_excluded": 0,
+          "mae": 0.01749,
+          "rmse": 0.02421,
+          "r2": 0.5058,
+          "bias": 0.01145,
+          "pearson_r": 0.8126,
+          "mean_true": 0.34464,
+          "mean_pred": 0.35609,
+          "std_true": 0.03444,
+          "std_pred": 0.02077,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-31"
+        }
+      }
+    },
+    "residual_diagnostics": {
+      "Historical_Mean": {
+        "validation": {
+          "n_samples": 328,
+          "residual_mean": -0.00453,
+          "residual_std": 0.03444,
+          "residual_median": -0.01329,
+          "residual_q25": -0.02657,
+          "residual_q75": 0.0104,
+          "residual_iqr": 0.03697,
+          "residual_max_abs": 0.09507,
+          "residual_skewness": 1.108
+        },
+        "test": {
+          "n_samples": 634,
+          "residual_mean": 0.02416,
+          "residual_std": 0.05781,
+          "residual_median": 0.00867,
+          "residual_q25": -0.02125,
+          "residual_q75": 0.0651,
+          "residual_iqr": 0.08634,
+          "residual_max_abs": 0.15565,
+          "residual_skewness": 0.6366
+        }
+      },
+      "Climatology": {
+        "validation": {
+          "n_samples": 328,
+          "residual_mean": -0.00464,
+          "residual_std": 0.03697,
+          "residual_median": -0.00935,
+          "residual_q25": -0.0307,
+          "residual_q75": 0.01776,
+          "residual_iqr": 0.04847,
+          "residual_max_abs": 0.09974,
+          "residual_skewness": 0.417
+        },
+        "test": {
+          "n_samples": 634,
+          "residual_mean": 0.02332,
+          "residual_std": 0.04677,
+          "residual_median": 0.01255,
+          "residual_q25": -0.00961,
+          "residual_q75": 0.05382,
+          "residual_iqr": 0.06343,
+          "residual_max_abs": 0.15155,
+          "residual_skewness": 0.6765
+        }
+      },
+      "Persistence": {
+        "validation": {
+          "n_samples": 328,
+          "residual_mean": -0.00045,
+          "residual_std": 0.01524,
+          "residual_median": 0.00406,
+          "residual_q25": -0.00092,
+          "residual_q75": 0.00685,
+          "residual_iqr": 0.00777,
+          "residual_max_abs": 0.09267,
+          "residual_skewness": -2.6117
+        },
+        "test": {
+          "n_samples": 634,
+          "residual_mean": -0.00057,
+          "residual_std": 0.01789,
+          "residual_median": 0.00396,
+          "residual_q25": -0.00086,
+          "residual_q75": 0.00842,
+          "residual_iqr": 0.00928,
+          "residual_max_abs": 0.11508,
+          "residual_skewness": -2.7963
+        }
+      },
+      "XGBoost_Weather_Only": {
+        "validation": {
+          "n_samples": 328,
+          "residual_mean": 0.00396,
+          "residual_std": 0.02389,
+          "residual_median": 0.00256,
+          "residual_q25": -0.01135,
+          "residual_q75": 0.01928,
+          "residual_iqr": 0.03063,
+          "residual_max_abs": 0.06431,
+          "residual_skewness": 0.2639
+        },
+        "test": {
+          "n_samples": 634,
+          "residual_mean": 0.01593,
+          "residual_std": 0.0335,
+          "residual_median": 0.01148,
+          "residual_q25": -0.00604,
+          "residual_q75": 0.03329,
+          "residual_iqr": 0.03933,
+          "residual_max_abs": 0.12388,
+          "residual_skewness": 0.5993
+        }
+      },
+      "XGBoost_Lag_Augmented": {
+        "validation": {
+          "n_samples": 328,
+          "residual_mean": 0.00046,
+          "residual_std": 0.01095,
+          "residual_median": 0.00072,
+          "residual_q25": -0.00332,
+          "residual_q75": 0.00556,
+          "residual_iqr": 0.00888,
+          "residual_max_abs": 0.06073,
+          "residual_skewness": -1.2107
+        },
+        "test": {
+          "n_samples": 634,
+          "residual_mean": 0.00248,
+          "residual_std": 0.01477,
+          "residual_median": 0.00299,
+          "residual_q25": -0.00324,
+          "residual_q75": 0.01007,
+          "residual_iqr": 0.01331,
+          "residual_max_abs": 0.07366,
+          "residual_skewness": -0.9963
+        }
+      },
+      "XGBoost_Full_Multimodal": {
+        "validation": {
+          "n_samples": 328,
+          "residual_mean": 0.01145,
+          "residual_std": 0.02133,
+          "residual_median": 0.00681,
+          "residual_q25": -0.00218,
+          "residual_q75": 0.02184,
+          "residual_iqr": 0.02401,
+          "residual_max_abs": 0.07589,
+          "residual_skewness": 0.775
+        },
+        "test": {
+          "n_samples": 634,
+          "residual_mean": 0.02298,
+          "residual_std": 0.03185,
+          "residual_median": 0.01639,
+          "residual_q25": 0.00258,
+          "residual_q75": 0.03595,
+          "residual_iqr": 0.03336,
+          "residual_max_abs": 0.12187,
+          "residual_skewness": 1.0072
+        }
+      }
+    },
+    "model_selection": {
+      "depth_key": "sm_10cm",
+      "selected_best_overall_model": "XGBoost_Lag_Augmented",
+      "selected_best_overall_val_rmse": 0.01096,
+      "selected_best_rs_model": "XGBoost_Weather_Only",
+      "selected_best_rs_val_rmse": 0.02421,
+      "selected_best_ar_model": "XGBoost_Lag_Augmented",
+      "selected_best_ar_val_rmse": 0.01096,
+      "validation_ranking": [
+        [
+          "XGBoost_Lag_Augmented",
+          0.01096
+        ],
+        [
+          "Persistence",
+          0.01525
+        ],
+        [
+          "XGBoost_Weather_Only",
+          0.02421
+        ],
+        [
+          "XGBoost_Full_Multimodal",
+          0.02421
+        ],
+        [
+          "Historical_Mean",
+          0.03474
+        ],
+        [
+          "Climatology",
+          0.03726
+        ]
+      ],
+      "untouched_test_performance_best_overall": {
+        "model": "XGBoost_Lag_Augmented",
+        "mae": 0.01041,
+        "rmse": 0.01498,
+        "r2": 0.9329,
+        "bias": 0.00248,
+        "pearson_r": 0.967
+      },
+      "untouched_test_performance_best_rs": {
+        "model": "XGBoost_Weather_Only",
+        "mae": 0.0277,
+        "rmse": 0.0371,
+        "r2": 0.5882,
+        "bias": 0.01593,
+        "pearson_r": 0.815
+      }
+    },
+    "generated_plots": [
+      "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\reports\\modelling\\AAMU-JTG\\plots\\sm_10cm_scatter_pred_vs_obs.png",
+      "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\reports\\modelling\\AAMU-JTG\\plots\\sm_10cm_residuals_distribution.png",
+      "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\reports\\modelling\\AAMU-JTG\\plots\\sm_10cm_timeseries_hydrograph.png"
+    ]
+  },
+  "sm_20cm": {
+    "depth_key": "sm_20cm",
+    "nominal_depth_cm": 20.32,
+    "depth_m": 0.2032,
+    "train_samples_weather": 1691,
+    "train_samples_lag": 1572,
+    "val_samples_weather": 240,
+    "val_samples_common": 216,
+    "test_samples_common": 527,
+    "models": {
+      "Historical_Mean": {
+        "depth": "sm_20cm",
+        "config": "Historical Mean Baseline",
+        "n_samples": 527,
+        "n_total": 527,
+        "n_excluded": 0,
+        "mae": 0.02896,
+        "rmse": 0.04229,
+        "r2": -0.172,
+        "bias": 0.0162,
+        "pearson_r": 0.0,
+        "mean_true": 0.36121,
+        "mean_pred": 0.37742,
+        "std_true": 0.03907,
+        "std_pred": 0.0,
+        "start_date": "2022-01-14",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 216,
+          "n_total": 216,
+          "n_excluded": 0,
+          "mae": 0.024,
+          "rmse": 0.02555,
+          "r2": -2.7338,
+          "bias": -0.02186,
+          "pearson_r": 0.0,
+          "mean_true": 0.39928,
+          "mean_pred": 0.37742,
+          "std_true": 0.01322,
+          "std_pred": 0.0,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-28"
+        }
+      },
+      "Climatology": {
+        "depth": "sm_20cm",
+        "config": "DOY Climatology Baseline",
+        "n_samples": 527,
+        "n_total": 527,
+        "n_excluded": 0,
+        "mae": 0.02675,
+        "rmse": 0.03745,
+        "r2": 0.081,
+        "bias": 0.01317,
+        "pearson_r": 0.4414,
+        "mean_true": 0.36121,
+        "mean_pred": 0.37438,
+        "std_true": 0.03907,
+        "std_pred": 0.01663,
+        "start_date": "2022-01-14",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 216,
+          "n_total": 216,
+          "n_excluded": 0,
+          "mae": 0.02351,
+          "rmse": 0.0275,
+          "r2": -3.3268,
+          "bias": -0.02203,
+          "pearson_r": 0.384,
+          "mean_true": 0.39928,
+          "mean_pred": 0.37724,
+          "std_true": 0.01322,
+          "std_pred": 0.01611,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-28"
+        }
+      },
+      "Persistence": {
+        "depth": "sm_20cm",
+        "config": "Persistence Baseline (t-1)",
+        "n_samples": 527,
+        "n_total": 527,
+        "n_excluded": 0,
+        "mae": 0.00496,
+        "rmse": 0.00881,
+        "r2": 0.9491,
+        "bias": 0.0,
+        "pearson_r": 0.9746,
+        "mean_true": 0.36121,
+        "mean_pred": 0.36122,
+        "std_true": 0.03907,
+        "std_pred": 0.03913,
+        "start_date": "2022-01-14",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 216,
+          "n_total": 216,
+          "n_excluded": 0,
+          "mae": 0.00271,
+          "rmse": 0.00469,
+          "r2": 0.8743,
+          "bias": 0.00013,
+          "pearson_r": 0.938,
+          "mean_true": 0.39928,
+          "mean_pred": 0.3994,
+          "std_true": 0.01322,
+          "std_pred": 0.01339,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-28"
+        }
+      },
+      "XGBoost_Weather_Only": {
+        "depth": "sm_20cm",
+        "config": "XGBoost (Weather + Memory + Seasonality + Edaphics)",
+        "best_iteration": 109,
+        "n_samples": 527,
+        "n_total": 527,
+        "n_excluded": 0,
+        "mae": 0.02124,
+        "rmse": 0.02806,
+        "r2": 0.484,
+        "bias": 0.00504,
+        "pearson_r": 0.7928,
+        "mean_true": 0.36121,
+        "mean_pred": 0.36625,
+        "std_true": 0.03907,
+        "std_pred": 0.04494,
+        "start_date": "2022-01-14",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 216,
+          "n_total": 216,
+          "n_excluded": 0,
+          "mae": 0.01575,
+          "rmse": 0.01883,
+          "r2": -1.0277,
+          "bias": -0.01444,
+          "pearson_r": 0.5899,
+          "mean_true": 0.39928,
+          "mean_pred": 0.38483,
+          "std_true": 0.01322,
+          "std_pred": 0.01345,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-28"
+        }
+      },
+      "XGBoost_Lag_Augmented": {
+        "depth": "sm_20cm",
+        "config": "XGBoost (Weather + Memory + Seasonality + Edaphics + Lag-1)",
+        "best_iteration": 380,
+        "n_samples": 527,
+        "n_total": 527,
+        "n_excluded": 0,
+        "mae": 0.00608,
+        "rmse": 0.0101,
+        "r2": 0.9332,
+        "bias": -0.00109,
+        "pearson_r": 0.9735,
+        "mean_true": 0.36121,
+        "mean_pred": 0.36012,
+        "std_true": 0.03907,
+        "std_pred": 0.04262,
+        "start_date": "2022-01-14",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 216,
+          "n_total": 216,
+          "n_excluded": 0,
+          "mae": 0.00319,
+          "rmse": 0.00482,
+          "r2": 0.8672,
+          "bias": -0.00175,
+          "pearson_r": 0.9419,
+          "mean_true": 0.39928,
+          "mean_pred": 0.39752,
+          "std_true": 0.01322,
+          "std_pred": 0.01308,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-28"
+        }
+      },
+      "XGBoost_Full_Multimodal": {
+        "depth": "sm_20cm",
+        "config": "XGBoost Full Multimodal (58 Features: Weather + HWSD + SoilGrids + DEM + SMAP + S1 + S2)",
+        "best_iteration": 365,
+        "n_samples": 527,
+        "n_total": 527,
+        "n_excluded": 0,
+        "mae": 0.02135,
+        "rmse": 0.02774,
+        "r2": 0.4959,
+        "bias": 0.01301,
+        "pearson_r": 0.8309,
+        "mean_true": 0.36121,
+        "mean_pred": 0.37422,
+        "std_true": 0.03907,
+        "std_pred": 0.04376,
+        "start_date": "2022-01-14",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 216,
+          "n_total": 216,
+          "n_excluded": 0,
+          "mae": 0.01274,
+          "rmse": 0.01543,
+          "r2": -0.3617,
+          "bias": -0.01047,
+          "pearson_r": 0.5773,
+          "mean_true": 0.39928,
+          "mean_pred": 0.3888,
+          "std_true": 0.01322,
+          "std_pred": 0.01107,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-28"
+        }
+      }
+    },
+    "residual_diagnostics": {
+      "Historical_Mean": {
+        "validation": {
+          "n_samples": 216,
+          "residual_mean": -0.02186,
+          "residual_std": 0.01322,
+          "residual_median": -0.02548,
+          "residual_q25": -0.02922,
+          "residual_q75": -0.02104,
+          "residual_iqr": 0.00818,
+          "residual_max_abs": 0.04715,
+          "residual_skewness": 1.6935
+        },
+        "test": {
+          "n_samples": 527,
+          "residual_mean": 0.0162,
+          "residual_std": 0.03907,
+          "residual_median": 0.00396,
+          "residual_q25": -0.01223,
+          "residual_q75": 0.03377,
+          "residual_iqr": 0.046,
+          "residual_max_abs": 0.13763,
+          "residual_skewness": 1.3127
+        }
+      },
+      "Climatology": {
+        "validation": {
+          "n_samples": 216,
+          "residual_mean": -0.02203,
+          "residual_std": 0.01646,
+          "residual_median": -0.01949,
+          "residual_q25": -0.03256,
+          "residual_q75": -0.01232,
+          "residual_iqr": 0.02024,
+          "residual_max_abs": 0.06709,
+          "residual_skewness": -0.1968
+        },
+        "test": {
+          "n_samples": 527,
+          "residual_mean": 0.01317,
+          "residual_std": 0.03506,
+          "residual_median": 0.00657,
+          "residual_q25": -0.00909,
+          "residual_q75": 0.0303,
+          "residual_iqr": 0.03939,
+          "residual_max_abs": 0.12219,
+          "residual_skewness": 0.8926
+        }
+      },
+      "Persistence": {
+        "validation": {
+          "n_samples": 216,
+          "residual_mean": 0.00013,
+          "residual_std": 0.00469,
+          "residual_median": 0.001,
+          "residual_q25": 3e-05,
+          "residual_q75": 0.00192,
+          "residual_iqr": 0.00189,
+          "residual_max_abs": 0.03054,
+          "residual_skewness": -2.9589
+        },
+        "test": {
+          "n_samples": 527,
+          "residual_mean": 0.0,
+          "residual_std": 0.00881,
+          "residual_median": 0.00208,
+          "residual_q25": 0.00033,
+          "residual_q75": 0.0039,
+          "residual_iqr": 0.00356,
+          "residual_max_abs": 0.07963,
+          "residual_skewness": -4.006
+        }
+      },
+      "XGBoost_Weather_Only": {
+        "validation": {
+          "n_samples": 216,
+          "residual_mean": -0.01444,
+          "residual_std": 0.01208,
+          "residual_median": -0.01405,
+          "residual_q25": -0.02155,
+          "residual_q75": -0.00643,
+          "residual_iqr": 0.01512,
+          "residual_max_abs": 0.05566,
+          "residual_skewness": -0.2956
+        },
+        "test": {
+          "n_samples": 527,
+          "residual_mean": 0.00504,
+          "residual_std": 0.02761,
+          "residual_median": 0.00467,
+          "residual_q25": -0.00921,
+          "residual_q75": 0.01953,
+          "residual_iqr": 0.02874,
+          "residual_max_abs": 0.07821,
+          "residual_skewness": 0.026
+        }
+      },
+      "XGBoost_Lag_Augmented": {
+        "validation": {
+          "n_samples": 216,
+          "residual_mean": -0.00175,
+          "residual_std": 0.00449,
+          "residual_median": -0.00114,
+          "residual_q25": -0.00285,
+          "residual_q75": 0.00051,
+          "residual_iqr": 0.00336,
+          "residual_max_abs": 0.02251,
+          "residual_skewness": -1.7101
+        },
+        "test": {
+          "n_samples": 527,
+          "residual_mean": -0.00109,
+          "residual_std": 0.01004,
+          "residual_median": 0.00044,
+          "residual_q25": -0.0031,
+          "residual_q75": 0.00312,
+          "residual_iqr": 0.00621,
+          "residual_max_abs": 0.06194,
+          "residual_skewness": -1.2792
+        }
+      },
+      "XGBoost_Full_Multimodal": {
+        "validation": {
+          "n_samples": 216,
+          "residual_mean": -0.01047,
+          "residual_std": 0.01133,
+          "residual_median": -0.00927,
+          "residual_q25": -0.0192,
+          "residual_q75": -0.00302,
+          "residual_iqr": 0.01618,
+          "residual_max_abs": 0.03433,
+          "residual_skewness": 0.0805
+        },
+        "test": {
+          "n_samples": 527,
+          "residual_mean": 0.01301,
+          "residual_std": 0.0245,
+          "residual_median": 0.0129,
+          "residual_q25": 0.00075,
+          "residual_q75": 0.02618,
+          "residual_iqr": 0.02543,
+          "residual_max_abs": 0.08861,
+          "residual_skewness": -0.1898
+        }
+      }
+    },
+    "model_selection": {
+      "depth_key": "sm_20cm",
+      "selected_best_overall_model": "Persistence",
+      "selected_best_overall_val_rmse": 0.00469,
+      "selected_best_rs_model": "XGBoost_Full_Multimodal",
+      "selected_best_rs_val_rmse": 0.01543,
+      "selected_best_ar_model": "Persistence",
+      "selected_best_ar_val_rmse": 0.00469,
+      "validation_ranking": [
+        [
+          "Persistence",
+          0.00469
+        ],
+        [
+          "XGBoost_Lag_Augmented",
+          0.00482
+        ],
+        [
+          "XGBoost_Full_Multimodal",
+          0.01543
+        ],
+        [
+          "XGBoost_Weather_Only",
+          0.01883
+        ],
+        [
+          "Historical_Mean",
+          0.02555
+        ],
+        [
+          "Climatology",
+          0.0275
+        ]
+      ],
+      "untouched_test_performance_best_overall": {
+        "model": "Persistence",
+        "mae": 0.00496,
+        "rmse": 0.00881,
+        "r2": 0.9491,
+        "bias": 0.0,
+        "pearson_r": 0.9746
+      },
+      "untouched_test_performance_best_rs": {
+        "model": "XGBoost_Full_Multimodal",
+        "mae": 0.02135,
+        "rmse": 0.02774,
+        "r2": 0.4959,
+        "bias": 0.01301,
+        "pearson_r": 0.8309
+      }
+    },
+    "generated_plots": [
+      "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\reports\\modelling\\AAMU-JTG\\plots\\sm_20cm_scatter_pred_vs_obs.png",
+      "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\reports\\modelling\\AAMU-JTG\\plots\\sm_20cm_residuals_distribution.png",
+      "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\reports\\modelling\\AAMU-JTG\\plots\\sm_20cm_timeseries_hydrograph.png"
+    ]
+  },
+  "sm_50cm": {
+    "depth_key": "sm_50cm",
+    "nominal_depth_cm": 50.8,
+    "depth_m": 0.508,
+    "train_samples_weather": 1583,
+    "train_samples_lag": 1448,
+    "val_samples_weather": 160,
+    "val_samples_common": 132,
+    "test_samples_common": 419,
+    "models": {
+      "Historical_Mean": {
+        "depth": "sm_50cm",
+        "config": "Historical Mean Baseline",
+        "n_samples": 419,
+        "n_total": 419,
+        "n_excluded": 0,
+        "mae": 0.02368,
+        "rmse": 0.03759,
+        "r2": -0.0904,
+        "bias": 0.01082,
+        "pearson_r": 0.0,
+        "mean_true": 0.40598,
+        "mean_pred": 0.4168,
+        "std_true": 0.036,
+        "std_pred": 0.0,
+        "start_date": "2022-01-14",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 132,
+          "n_total": 132,
+          "n_excluded": 0,
+          "mae": 0.01157,
+          "rmse": 0.0129,
+          "r2": -3.3489,
+          "bias": -0.01132,
+          "pearson_r": 0.0,
+          "mean_true": 0.42813,
+          "mean_pred": 0.4168,
+          "std_true": 0.00619,
+          "std_pred": 0.0,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-28"
+        }
+      },
+      "Climatology": {
+        "depth": "sm_50cm",
+        "config": "DOY Climatology Baseline",
+        "n_samples": 419,
+        "n_total": 419,
+        "n_excluded": 0,
+        "mae": 0.02064,
+        "rmse": 0.03367,
+        "r2": 0.1251,
+        "bias": 0.00978,
+        "pearson_r": 0.4989,
+        "mean_true": 0.40598,
+        "mean_pred": 0.41576,
+        "std_true": 0.036,
+        "std_pred": 0.00992,
+        "start_date": "2022-01-14",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 132,
+          "n_total": 132,
+          "n_excluded": 0,
+          "mae": 0.0143,
+          "rmse": 0.01828,
+          "r2": -7.7258,
+          "bias": -0.01353,
+          "pearson_r": -0.1172,
+          "mean_true": 0.42813,
+          "mean_pred": 0.41459,
+          "std_true": 0.00619,
+          "std_pred": 0.00991,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-28"
+        }
+      },
+      "Persistence": {
+        "depth": "sm_50cm",
+        "config": "Persistence Baseline (t-1)",
+        "n_samples": 419,
+        "n_total": 419,
+        "n_excluded": 0,
+        "mae": 0.00245,
+        "rmse": 0.0057,
+        "r2": 0.9749,
+        "bias": -3e-05,
+        "pearson_r": 0.9875,
+        "mean_true": 0.40598,
+        "mean_pred": 0.40595,
+        "std_true": 0.036,
+        "std_pred": 0.03601,
+        "start_date": "2022-01-14",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 132,
+          "n_total": 132,
+          "n_excluded": 0,
+          "mae": 0.00142,
+          "rmse": 0.00194,
+          "r2": 0.9021,
+          "bias": 0.00018,
+          "pearson_r": 0.9575,
+          "mean_true": 0.42813,
+          "mean_pred": 0.42831,
+          "std_true": 0.00619,
+          "std_pred": 0.00665,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-28"
+        }
+      },
+      "XGBoost_Weather_Only": {
+        "depth": "sm_50cm",
+        "config": "XGBoost (Weather + Memory + Seasonality + Edaphics)",
+        "best_iteration": 16,
+        "n_samples": 419,
+        "n_total": 419,
+        "n_excluded": 0,
+        "mae": 0.01897,
+        "rmse": 0.02886,
+        "r2": 0.3573,
+        "bias": 0.00704,
+        "pearson_r": 0.7829,
+        "mean_true": 0.40598,
+        "mean_pred": 0.41302,
+        "std_true": 0.036,
+        "std_pred": 0.0114,
+        "start_date": "2022-01-14",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 132,
+          "n_total": 132,
+          "n_excluded": 0,
+          "mae": 0.01128,
+          "rmse": 0.0128,
+          "r2": -3.278,
+          "bias": -0.01126,
+          "pearson_r": 0.3645,
+          "mean_true": 0.42813,
+          "mean_pred": 0.41687,
+          "std_true": 0.00619,
+          "std_pred": 0.00419,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-28"
+        }
+      },
+      "XGBoost_Lag_Augmented": {
+        "depth": "sm_50cm",
+        "config": "XGBoost (Weather + Memory + Seasonality + Edaphics + Lag-1)",
+        "best_iteration": 398,
+        "n_samples": 419,
+        "n_total": 419,
+        "n_excluded": 0,
+        "mae": 0.00559,
+        "rmse": 0.00996,
+        "r2": 0.9235,
+        "bias": 0.00163,
+        "pearson_r": 0.9709,
+        "mean_true": 0.40598,
+        "mean_pred": 0.40761,
+        "std_true": 0.036,
+        "std_pred": 0.03024,
+        "start_date": "2022-01-14",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 132,
+          "n_total": 132,
+          "n_excluded": 0,
+          "mae": 0.00174,
+          "rmse": 0.00224,
+          "r2": 0.8692,
+          "bias": -0.00159,
+          "pearson_r": 0.9672,
+          "mean_true": 0.42813,
+          "mean_pred": 0.42654,
+          "std_true": 0.00619,
+          "std_pred": 0.00614,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-28"
+        }
+      },
+      "XGBoost_Full_Multimodal": {
+        "depth": "sm_50cm",
+        "config": "XGBoost Full Multimodal (58 Features: Weather + HWSD + SoilGrids + DEM + SMAP + S1 + S2)",
+        "best_iteration": 22,
+        "n_samples": 419,
+        "n_total": 419,
+        "n_excluded": 0,
+        "mae": 0.01972,
+        "rmse": 0.03062,
+        "r2": 0.2763,
+        "bias": 0.00888,
+        "pearson_r": 0.7239,
+        "mean_true": 0.40598,
+        "mean_pred": 0.41486,
+        "std_true": 0.036,
+        "std_pred": 0.0105,
+        "start_date": "2022-01-14",
+        "end_date": "2023-12-30",
+        "val_metrics": {
+          "n_samples": 132,
+          "n_total": 132,
+          "n_excluded": 0,
+          "mae": 0.01044,
+          "rmse": 0.01199,
+          "r2": -2.756,
+          "bias": -0.01011,
+          "pearson_r": 0.3088,
+          "mean_true": 0.42813,
+          "mean_pred": 0.41801,
+          "std_true": 0.00619,
+          "std_pred": 0.00454,
+          "start_date": "2021-01-01",
+          "end_date": "2021-12-28"
+        }
+      }
+    },
+    "residual_diagnostics": {
+      "Historical_Mean": {
+        "validation": {
+          "n_samples": 132,
+          "residual_mean": -0.01132,
+          "residual_std": 0.00619,
+          "residual_median": -0.01247,
+          "residual_q25": -0.01534,
+          "residual_q75": -0.00739,
+          "residual_iqr": 0.00795,
+          "residual_max_abs": 0.02175,
+          "residual_skewness": 0.4956
+        },
+        "test": {
+          "n_samples": 419,
+          "residual_mean": 0.01082,
+          "residual_std": 0.036,
+          "residual_median": -0.00295,
+          "residual_q25": -0.01374,
+          "residual_q75": 0.0163,
+          "residual_iqr": 0.03005,
+          "residual_max_abs": 0.13201,
+          "residual_skewness": 1.8362
+        }
+      },
+      "Climatology": {
+        "validation": {
+          "n_samples": 132,
+          "residual_mean": -0.01353,
+          "residual_std": 0.01228,
+          "residual_median": -0.01076,
+          "residual_q25": -0.02482,
+          "residual_q75": -0.00478,
+          "residual_iqr": 0.02004,
+          "residual_max_abs": 0.05433,
+          "residual_skewness": -0.6048
+        },
+        "test": {
+          "n_samples": 419,
+          "residual_mean": 0.00978,
+          "residual_std": 0.03222,
+          "residual_median": -0.00193,
+          "residual_q25": -0.00933,
+          "residual_q75": 0.01718,
+          "residual_iqr": 0.02651,
+          "residual_max_abs": 0.1161,
+          "residual_skewness": 1.8081
+        }
+      },
+      "Persistence": {
+        "validation": {
+          "n_samples": 132,
+          "residual_mean": 0.00018,
+          "residual_std": 0.00193,
+          "residual_median": 0.00043,
+          "residual_q25": -0.00042,
+          "residual_q75": 0.00135,
+          "residual_iqr": 0.00178,
+          "residual_max_abs": 0.00575,
+          "residual_skewness": -1.0512
+        },
+        "test": {
+          "n_samples": 419,
+          "residual_mean": -3e-05,
+          "residual_std": 0.0057,
+          "residual_median": 0.00067,
+          "residual_q25": -0.00056,
+          "residual_q75": 0.00179,
+          "residual_iqr": 0.00235,
+          "residual_max_abs": 0.07625,
+          "residual_skewness": -7.6378
+        }
+      },
+      "XGBoost_Weather_Only": {
+        "validation": {
+          "n_samples": 132,
+          "residual_mean": -0.01126,
+          "residual_std": 0.00608,
+          "residual_median": -0.01217,
+          "residual_q25": -0.01503,
+          "residual_q75": -0.00608,
+          "residual_iqr": 0.00895,
+          "residual_max_abs": 0.02635,
+          "residual_skewness": -0.0064
+        },
+        "test": {
+          "n_samples": 419,
+          "residual_mean": 0.00704,
+          "residual_std": 0.02799,
+          "residual_median": -0.0042,
+          "residual_q25": -0.01144,
+          "residual_q75": 0.01334,
+          "residual_iqr": 0.02478,
+          "residual_max_abs": 0.10067,
+          "residual_skewness": 1.6975
+        }
+      },
+      "XGBoost_Lag_Augmented": {
+        "validation": {
+          "n_samples": 132,
+          "residual_mean": -0.00159,
+          "residual_std": 0.00158,
+          "residual_median": -0.00135,
+          "residual_q25": -0.00246,
+          "residual_q75": -0.00052,
+          "residual_iqr": 0.00194,
+          "residual_max_abs": 0.00824,
+          "residual_skewness": -0.9147
+        },
+        "test": {
+          "n_samples": 419,
+          "residual_mean": 0.00163,
+          "residual_std": 0.00982,
+          "residual_median": -0.00043,
+          "residual_q25": -0.00244,
+          "residual_q75": 0.0024,
+          "residual_iqr": 0.00485,
+          "residual_max_abs": 0.04442,
+          "residual_skewness": 1.8245
+        }
+      },
+      "XGBoost_Full_Multimodal": {
+        "validation": {
+          "n_samples": 132,
+          "residual_mean": -0.01011,
+          "residual_std": 0.00644,
+          "residual_median": -0.0108,
+          "residual_q25": -0.01464,
+          "residual_q75": -0.005,
+          "residual_iqr": 0.00964,
+          "residual_max_abs": 0.02209,
+          "residual_skewness": 0.1872
+        },
+        "test": {
+          "n_samples": 419,
+          "residual_mean": 0.00888,
+          "residual_std": 0.02931,
+          "residual_median": -0.00365,
+          "residual_q25": -0.01015,
+          "residual_q75": 0.01611,
+          "residual_iqr": 0.02626,
+          "residual_max_abs": 0.10724,
+          "residual_skewness": 1.7021
+        }
+      }
+    },
+    "model_selection": {
+      "depth_key": "sm_50cm",
+      "selected_best_overall_model": "Persistence",
+      "selected_best_overall_val_rmse": 0.00194,
+      "selected_best_rs_model": "XGBoost_Full_Multimodal",
+      "selected_best_rs_val_rmse": 0.01199,
+      "selected_best_ar_model": "Persistence",
+      "selected_best_ar_val_rmse": 0.00194,
+      "validation_ranking": [
+        [
+          "Persistence",
+          0.00194
+        ],
+        [
+          "XGBoost_Lag_Augmented",
+          0.00224
+        ],
+        [
+          "XGBoost_Full_Multimodal",
+          0.01199
+        ],
+        [
+          "XGBoost_Weather_Only",
+          0.0128
+        ],
+        [
+          "Historical_Mean",
+          0.0129
+        ],
+        [
+          "Climatology",
+          0.01828
+        ]
+      ],
+      "untouched_test_performance_best_overall": {
+        "model": "Persistence",
+        "mae": 0.00245,
+        "rmse": 0.0057,
+        "r2": 0.9749,
+        "bias": -3e-05,
+        "pearson_r": 0.9875
+      },
+      "untouched_test_performance_best_rs": {
+        "model": "XGBoost_Full_Multimodal",
+        "mae": 0.01972,
+        "rmse": 0.03062,
+        "r2": 0.2763,
+        "bias": 0.00888,
+        "pearson_r": 0.7239
+      }
+    },
+    "generated_plots": [
+      "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\reports\\modelling\\AAMU-JTG\\plots\\sm_50cm_scatter_pred_vs_obs.png",
+      "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\reports\\modelling\\AAMU-JTG\\plots\\sm_50cm_residuals_distribution.png",
+      "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\reports\\modelling\\AAMU-JTG\\plots\\sm_50cm_timeseries_hydrograph.png"
+    ]
+  }
+}

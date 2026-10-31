@@ -1,0 +1,69 @@
+{
+  "dataset": "Sentinel-2",
+  "station_id": "AAMU-JTG",
+  "timestamp_utc": "2026-10-30T13:00:00Z",
+  "status": "PROCESSED",
+  "validation_status": "VALIDATED",
+  "extraction_status": "SUCCESS",
+  "collection_details": {
+    "provider": "European Space Agency (ESA) / Copernicus",
+    "distribution_platform": "Microsoft Planetary Computer (sentinel-2-l2a)",
+    "product_level": "Level-2A Bottom-Of-Atmosphere (BOA) Surface Reflectance",
+    "native_resolution_m": "10m (B02, B03, B04, B08) and 20m (B11, B12, SCL)",
+    "horizontal_crs": "EPSG:32616 (UTM Zone 16N)",
+    "scale_factor": 10000.0,
+    "spectral_bands": [
+      "B02",
+      "B03",
+      "B04",
+      "B08",
+      "B11",
+      "B12"
+    ],
+    "indices_derived": [
+      "NDVI",
+      "EVI"
+    ],
+    "cloud_masking": "Scene Classification Layer (SCL valid land: 2, 4, 5, 6, 7)"
+  },
+  "query_and_temporal_coverage": {
+    "requested_period": "2015-01-01 to 2023-12-31",
+    "calendar_days": 3287,
+    "first_acquisition": "2015-10-03T16:30:26.027000Z",
+    "last_acquisition": "2023-12-30T16:27:01.024000Z"
+  },
+  "statistics": {
+    "total_stac_items_evaluated": 1095,
+    "total_acquisitions_retrieved": 1027,
+    "valid_clear_observations_count": 322,
+    "cloud_masked_observations_count": 705,
+    "distinct_clear_observation_days": 322,
+    "clear_sky_percentage": 31.35,
+    "ndvi_min": 0.0338,
+    "ndvi_max": 0.7448,
+    "ndvi_mean": 0.4265,
+    "evi_mean": 0.3513
+  },
+  "artifacts_generated": {
+    "acquisitions_csv": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\dataset\\Sentinel-2\\processed\\AAMU-JTG\\sentinel2_acquisitions.csv",
+    "acquisitions_sha256": "99e34cacedfa78f1dcb5fe46693fcd4004bb27078098b0b870204b5499781c85",
+    "acquisitions_rows": 1027,
+    "daily_features_csv": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\dataset\\Sentinel-2\\processed\\AAMU-JTG\\sentinel2_daily_features.csv",
+    "daily_features_sha256": "5b40a24287249b508894a801c4c37d605b92a83a02c2ab9ac6c94936430f8db7",
+    "daily_features_rows": 3287
+  },
+  "license_and_attribution": {
+    "license": "Copernicus Open Access Licence",
+    "attribution": "European Space Agency (ESA) Sentinel-2 via Microsoft Planetary Computer"
+  },
+  "notes": "Successfully processed 1027 Sentinel-2 Level-2A observations (including 3 Baseline 05.10 recoveries): 322 valid clear acquisitions across 322 distinct days, and 705 cloud/shadow/saturation masked acquisitions. Mean clear NDVI: 0.4265.",
+  "recovery_provenance": {
+    "recovered_acquisitions": [
+      "S2B_MSIL2A_20230502T162839_R083_T16SED_20240902T142828",
+      "S2B_MSIL2A_20231009T163109_R083_T16SED_20241028T033225",
+      "S2B_MSIL2A_20231205T162639_R040_T16SED_20241120T214747"
+    ],
+    "decoder": "MSB-first 15-bit unpacking (decode_15bit_s2.py)",
+    "audit_reference": "dataset/Sentinel-2/audit/AAMU-JTG/sentinel2_recovered_missing_dates.json"
+  }
+}

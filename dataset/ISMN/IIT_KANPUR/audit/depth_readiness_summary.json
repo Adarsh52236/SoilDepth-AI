@@ -1,0 +1,94 @@
+{
+  "audit_timestamp": "2026-10-25T12:42:57.193260",
+  "station_evaluated": {
+    "network": "IIT_KANPUR",
+    "station": "IITK_Airstrip",
+    "country": "India",
+    "state": "Uttar Pradesh",
+    "coordinates": {
+      "latitude": 26.51881,
+      "longitude": 80.23303,
+      "elevation_m": 123.444
+    },
+    "in_maharashtra": false
+  },
+  "surface_0_10cm": {
+    "status": "INSUFFICIENT_AND_MISALIGNED",
+    "category": "Insufficient for the target",
+    "intended_depth_range": "0\u201310 cm",
+    "required_label_method": "point_sensor_proxy (nominal 5 cm sensor)",
+    "downloaded_sensor_depth_cm": 10.0,
+    "eligible_5cm_sensors_found": 0,
+    "actual_observations_count": 11280,
+    "temporal_range": {
+      "start": "2011-06-16 13:00:00",
+      "end": "2012-11-22 05:00:00"
+    },
+    "overlap_with_satellite_era_2015_2023": false,
+    "blockers": [
+      "No 5 cm surface probe exists at IITK_Airstrip (only 10, 25, 50, and 80 cm were installed).",
+      "The 10 cm sensor in ISMN_surface_0-10 measures at the lower boundary of the 0-10 cm layer and cannot serve as a surface 5 cm proxy.",
+      "The 10 cm file is an exact redundant duplicate of the 10 cm file in ISMN_middle_10-30.",
+      "Observation window (2011-2012) ended 25 months before Sentinel-1/SMAP and 31 months before Sentinel-2."
+    ],
+    "verdict": "REJECT as surface 0-10 cm proxy; reclassify 10 cm sensor exclusively to middle 10-30 cm target."
+  },
+  "middle_10_30cm": {
+    "status": "VALID_OBSERVATIONS_BUT_SATELLITE_BLOCKED",
+    "category": "Requires investigation / Satellite temporal mismatch",
+    "intended_depth_range": "10\u201330 cm",
+    "downloaded_sensor_depths_cm": [
+      10.0,
+      25.0
+    ],
+    "total_sensor_series": 2,
+    "raw_observations_count": 22562,
+    "unique_timestamps_per_sensor": {
+      "10cm": 11280,
+      "25cm": 11282
+    },
+    "temporal_range": {
+      "start": "2011-06-16 13:00:00",
+      "end": "2012-11-22 05:00:00"
+    },
+    "data_quality": "High within its operational window (100% flag G, physically consistent 0.052 to 0.420 m3/m3)",
+    "depth_mapping_method": "Dual discrete point sensors at 10 cm and 25 cm. Must not be averaged without explicit vertical weighting.",
+    "blockers": [
+      "Temporal window (2011-2012) has ZERO overlap with Sentinel-1, Sentinel-2, or SMAP.",
+      "Station is in Kanpur, Uttar Pradesh (750+ km north of Maharashtra) with temperate dry-winter climate (Cwa) and alluvial loam, distinct from Maharashtra black vertisols.",
+      "Extended post-monsoon data gap of 21 days (504 hours) in Oct-Nov 2011."
+    ],
+    "verdict": "Scientifically valid for reanalysis-only (ERA5-Land) experiments; blocked from multi-sensor satellite fusion."
+  },
+  "deep_30_60cm": {
+    "status": "VALID_OBSERVATIONS_BUT_SATELLITE_BLOCKED",
+    "category": "Requires investigation / Satellite temporal mismatch",
+    "intended_depth_range": "30\u201360 cm",
+    "downloaded_sensor_depths_cm": [
+      50.0
+    ],
+    "total_sensor_series": 1,
+    "raw_observations_count": 10175,
+    "temporal_range": {
+      "start": "2011-06-16 13:00:00",
+      "end": "2012-11-22 05:00:00"
+    },
+    "data_quality": "100% flag G, but contains 46 observations with VWC < 0.01 (min 0.003 m3/m3) requiring calibration check.",
+    "depth_mapping_method": "Single discrete point sensor at 50 cm depth.",
+    "blockers": [
+      "Temporal window (2011-2012) completely precedes satellite constellation launches (2014-2015).",
+      "Station is outside Maharashtra.",
+      "1,105 fewer hourly records than shallow sensors due to an extended outage in late 2012."
+    ],
+    "verdict": "Candidate for deep-layer water-balance benchmark with ERA5-Land; blocked from satellite feature alignment."
+  },
+  "cross_depth_synthesis": {
+    "total_raw_rows_across_3_folders": 44017,
+    "total_unique_observations": 32737,
+    "redundant_duplicate_rows": 11280,
+    "unique_stations": 1,
+    "unique_physical_sensors": 3,
+    "maharashtra_in_situ_observations": 0,
+    "ready_for_feature_alignment_verdict": "NOT READY for satellite feature alignment due to 100% temporal mismatch with Sentinel-1/2 and SMAP. Partially ready for ERA5-Land weather-only baseline once 10cm duplication is resolved."
+  }
+}

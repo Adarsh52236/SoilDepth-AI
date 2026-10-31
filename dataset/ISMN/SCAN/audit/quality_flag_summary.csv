@@ -1,0 +1,9 @@
+flag_type,folder,flag_code,meaning,observation_count,percentage
+ISMN_AUTOMATED_QC,ALL_FOLDERS,G,"Good (Passed ISMN automated range, step, persistence, and spike tests)",40010708,100.0
+PROVIDER_QUALITY_FLAG,surface_0-10cm,V,Valid (Value within limits of stored profile or verified by human review),10280741,99.242
+PROVIDER_QUALITY_FLAG,surface_0-10cm,E,Edited (Value revised to correct for signal noise),78488,0.758
+PROVIDER_QUALITY_FLAG,middle_10-30cm,V,Valid (Value within limits of stored profile or verified by human review),19972438,99.06
+PROVIDER_QUALITY_FLAG,middle_10-30cm,E,Edited (Value revised to correct for signal noise),189442,0.94
+PROVIDER_QUALITY_FLAG,middle_10-30cm,K,Internal Estimate (Value revised using estimate from other sensors/stations),1,0.0
+PROVIDER_QUALITY_FLAG,deep_30-60cm,V,Valid (Value within limits of stored profile or verified by human review),9388026,98.93
+PROVIDER_QUALITY_FLAG,deep_30-60cm,E,Edited (Value revised to correct for signal noise),101572,1.07

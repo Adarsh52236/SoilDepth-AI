@@ -1,0 +1,2 @@
+network,station,country,state_province,district_city,latitude,longitude,elevation_m,sensor_model,measurement_support,available_depths_cm,earliest_observation,latest_observation,total_sensor_files,total_raw_rows,in_maharashtra
+IIT_KANPUR,IITK_Airstrip,India,Uttar Pradesh,Kanpur,26.51881,80.23303,123.444,Spectrum-WaterScoutSM100,point_sensor,"[10.0, 25.0, 50.0]",2011-06-16 13:00:00,2012-11-22 05:00:00,4,44017,False

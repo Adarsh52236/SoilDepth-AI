@@ -1,0 +1,132 @@
+{
+  "manifest_metadata": {
+    "manifest_version": "1.0.0",
+    "last_updated_utc": "2026-10-29T19:50:00Z",
+    "author": "SoilDepth-AI Senior Geospatial Data Engineer",
+    "description": "Authoritative provenance and verification ledger for DEM rasters covering pilot station AAMU-JTG"
+  },
+  "station_target": {
+    "station_id": "AAMU-JTG",
+    "network": "SCAN",
+    "latitude": 34.78534,
+    "longitude": -86.55906,
+    "benchmark_elevation_m": 241.0,
+    "elevation_tolerance_m": 15.0,
+    "recommended_bbox": {
+      "min_latitude": 34.68,
+      "max_latitude": 34.88,
+      "min_longitude": -86.66,
+      "max_longitude": -86.46,
+      "standard_1deg_tile_id": "n35_w087"
+    }
+  },
+  "dataset_specifications": {
+    "dataset_name": "DEM",
+    "candidate_sources": [
+      {
+        "source_agency": "USGS",
+        "product_name": "USGS_3DEP_1_arcsec",
+        "product_version": "20261020",
+        "portal_url": "https://prd-tnm.s3.amazonaws.com/StagedProducts/Elevation/1/TIFF/current/n35w087/",
+        "retrieval_method": "USGS National Map AWS S3 Direct Download",
+        "native_resolution_m": 30.0,
+        "crs": "EPSG:4269 (NAD83) / EPSG:4326 (WGS84)",
+        "horizontal_units": "degrees",
+        "vertical_datum": "NAVD88",
+        "vertical_units": "meters",
+        "license": "Public Domain (U.S. Government Work)",
+        "attribution": "U.S. Geological Survey (USGS) 3D Elevation Program (3DEP)"
+      },
+      {
+        "source_agency": "ESA / Copernicus",
+        "product_name": "Copernicus_GLO-30_Public",
+        "product_version": "2021_1",
+        "portal_url": "https://dataspace.copernicus.eu/",
+        "retrieval_method": "Copernicus Data Space Ecosystem / AWS Registry of Open Data",
+        "native_resolution_m": 30.0,
+        "crs": "EPSG:4326 (WGS84)",
+        "horizontal_units": "degrees",
+        "vertical_datum": "EGM2008",
+        "vertical_units": "meters",
+        "license": "Copernicus Open Access Licence",
+        "attribution": "European Space Agency (ESA) / Airbus / Copernicus DEM"
+      },
+      {
+        "source_agency": "NASA JPL / USGS",
+        "product_name": "NASADEM_HGT",
+        "product_version": "001",
+        "portal_url": "https://search.earthdata.nasa.gov/",
+        "retrieval_method": "NASA Earthdata Search",
+        "native_resolution_m": 30.0,
+        "crs": "EPSG:4326 (WGS84)",
+        "horizontal_units": "degrees",
+        "vertical_datum": "EGM96",
+        "vertical_units": "meters",
+        "license": "NASA Open Data Policy",
+        "attribution": "NASA JPL / USGS EROS"
+      }
+    ]
+  },
+  "current_inventory": {
+    "selected_source": "USGS",
+    "product_name": "USGS 3DEP 1 Arc-Second DEM",
+    "product_version": "20261020",
+    "source_url": "https://prd-tnm.s3.amazonaws.com/StagedProducts/Elevation/1/TIFF/current/n35w087/USGS_1_n35w087.tif",
+    "retrieval_method": "USGS National Map AWS S3 Direct Download",
+    "acquisition_date": "2026-10-20",
+    "retrieval_date": "2026-10-29",
+    "expected_filename": "USGS_1_n35w087.tif",
+    "actual_filename": "USGS_1_n35w087.tif",
+    "raw_file_path": "dataset/DEM/raw/AAMU-JTG/USGS_1_n35w087.tif",
+    "file_size_bytes": 56024342,
+    "sha256": "85f708645dd49c09b0921d2af60ec8e5b2b88f8b1f573abd7af6f07275db186a",
+    "metadata_xml_file": "dataset/DEM/raw/AAMU-JTG/USGS_1_n35w087.xml",
+    "metadata_xml_sha256": "c935c500352635073a938d41b3f3268d88a2a0e6b2a39559f1c4a03ece3f5748",
+    "raster_dimensions": {
+      "width_columns": 3612,
+      "height_rows": 3612
+    },
+    "spatial_bounds": {
+      "x_min": -87.0016667,
+      "x_max": -85.9983333,
+      "y_min": 33.9983333,
+      "y_max": 35.0016667
+    },
+    "pixel_resolution": {
+      "dx": 0.000277777777787,
+      "dy": 0.000277777778036,
+      "nominal_meters": 30.0
+    },
+    "crs": "EPSG:4269 (NAD83) / EPSG:4326 (WGS84)",
+    "horizontal_units": "degrees",
+    "vertical_datum": "NAVD88",
+    "vertical_units": "meters",
+    "nodata_value": -999999.0,
+    "station_pixel": {
+      "column": 1593,
+      "row": 779,
+      "sampled_elevation_m": 245.47,
+      "benchmark_elevation_m": 241.0,
+      "elevation_difference_m": 4.47
+    },
+    "derived_terrain_features": {
+      "slope_degrees": 4.9156,
+      "slope_rise_run": 0.086004,
+      "slope_method": "Horn 3x3 estimator",
+      "slope_coverage_valid": true,
+      "aspect_degrees": 189.33,
+      "aspect_sin": -0.1622,
+      "aspect_cos": -0.9868
+    },
+    "status": "PROCESSED",
+    "validation_status": "VALIDATED",
+    "extraction_status": "SUCCESS",
+    "processed_output_csv": "dataset/DEM/processed/AAMU-JTG/dem_AAMU-JTG_features.csv",
+    "audit_report_json": "dataset/DEM/audit/AAMU-JTG/dem_quality_report.json",
+    "known_limitations": [
+      "AAMU-JTG is a single US SCAN station in Alabama; does not establish India/Maharashtra ground validation.",
+      "Slope calculation requires a valid 3x3 surrounding pixel window without NoData cells."
+    ],
+    "notes": "USGS 3DEP 1-arc-second GeoTIFF tile acquired, validated, and processed. Station elevation: 245.47m (diff: 4.47m from 241.0m benchmark). Slope: 4.9156 deg, Aspect: 189.33 deg."
+  }
+}

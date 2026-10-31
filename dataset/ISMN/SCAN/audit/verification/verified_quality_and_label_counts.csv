@@ -1,0 +1,4 @@
+depth_folder,total_observations,ismn_good_flags,provider_valid_v,provider_edited_e,provider_imputed_k,excluded_from_training_labels,usable_training_labels,usable_label_pct
+"surface_0-10cm",10359229,10359229,10280741,78488,0,0,10359229,100.0000
+"middle_10-30cm",20161881,20161881,19972438,189442,1,1,20161880,100.0000
+"deep_30-60cm",9489598,9489598,9388026,101572,0,0,9489598,100.0000

@@ -1,0 +1,5 @@
+folder,file_name,sensor_depth_cm,raw_rows,within_file_duplicate_timestamps,within_file_conflicting_values,cross_folder_redundancy,missing_values_count,missing_values_pct,sentinel_values_found,physically_invalid_values_count,suspicious_low_values_sub_1pct,suspicious_high_values_above_sat,timestamp_discontinuities_gt_24h
+ISMN_surface_0-10,IIT-KANPUR_IIT-KANPUR_IITK-Airstrip_sm_0.100000_0.100000_Spectrum-WaterScoutSM100_1_1_20000101_20231231.stm,10.0,11280,0,0,100% DUPLICATE: Exactly identical to 10 cm file in ISMN_middle_10-30,0,0.0,0,0,0,0,6
+ISMN_middle_10-30,IIT-KANPUR_IIT-KANPUR_IITK-Airstrip_sm_0.100000_0.100000_Spectrum-WaterScoutSM100_1_1_20000101_20231231.stm,10.0,11280,0,0,100% DUPLICATE of ISMN_surface_0-10 file,0,0.0,0,0,0,0,6
+ISMN_middle_10-30,IIT-KANPUR_IIT-KANPUR_IITK-Airstrip_sm_0.250000_0.250000_Spectrum-WaterScoutSM100_1_1_20000101_20231231.stm,25.0,11282,0,0,Unique sensor,0,0.0,0,0,0,0,6
+ISMN_deep_30-60,IIT-KANPUR_IIT-KANPUR_IITK-Airstrip_sm_0.500000_0.500000_Spectrum-WaterScoutSM100_1_1_20000101_20231231.stm,50.0,10175,0,0,Unique sensor,0,0.0,0,0,46,0,7

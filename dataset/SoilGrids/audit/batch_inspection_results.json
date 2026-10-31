@@ -1,0 +1,1698 @@
+[
+  {
+    "folder": "bulk_density",
+    "filename": "bdod_mean_0-5cm.tif",
+    "file_size": 398685,
+    "sha256": "1ced2f6b561e618596c9adf0d809a0c5d8ad4d6e49a500b885c3caab7aa24d09",
+    "property": "bulk_density",
+    "depth_cm": "0-5",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 148,
+    "raw_mean": 125.98,
+    "raw_std": 25.61,
+    "station_raw": 130,
+    "scale_factor": 100.0,
+    "unit": "g/cm\u00b3",
+    "station_physical": 1.3,
+    "sub_3x3": [
+      [
+        134,
+        134,
+        134
+      ],
+      [
+        131,
+        130,
+        131
+      ],
+      [
+        129,
+        126,
+        121
+      ]
+    ]
+  },
+  {
+    "folder": "bulk_density",
+    "filename": "bdod_mean_15-30cm.tif",
+    "file_size": 376400,
+    "sha256": "61df05c9ffd2a94f0d2853f64c8a01bc3c4709bf1ed490eb83b51e3554057a5c",
+    "property": "bulk_density",
+    "depth_cm": "15-30",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 179,
+    "raw_mean": 150.89,
+    "raw_std": 30.52,
+    "station_raw": 155,
+    "scale_factor": 100.0,
+    "unit": "g/cm\u00b3",
+    "station_physical": 1.55,
+    "sub_3x3": [
+      [
+        158,
+        159,
+        160
+      ],
+      [
+        155,
+        155,
+        156
+      ],
+      [
+        151,
+        150,
+        144
+      ]
+    ]
+  },
+  {
+    "folder": "bulk_density",
+    "filename": "bdod_mean_30-60cm.tif",
+    "file_size": 328536,
+    "sha256": "e10835dcdf1953e67ef3f57155923d5efc291a60e323a79645827c8c2ea5ad3e",
+    "property": "bulk_density",
+    "depth_cm": "30-60",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 179,
+    "raw_mean": 154.44,
+    "raw_std": 31.14,
+    "station_raw": 158,
+    "scale_factor": 100.0,
+    "unit": "g/cm\u00b3",
+    "station_physical": 1.58,
+    "sub_3x3": [
+      [
+        160,
+        160,
+        159
+      ],
+      [
+        158,
+        158,
+        158
+      ],
+      [
+        155,
+        155,
+        150
+      ]
+    ]
+  },
+  {
+    "folder": "bulk_density",
+    "filename": "bdod_mean_5-15cm.tif",
+    "file_size": 436596,
+    "sha256": "c5904ea2c8d9d659bbb96dfd1faddac6f128211dad6b10a504b911f350394566",
+    "property": "bulk_density",
+    "depth_cm": "5-15",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 174,
+    "raw_mean": 144.59,
+    "raw_std": 29.49,
+    "station_raw": 149,
+    "scale_factor": 100.0,
+    "unit": "g/cm\u00b3",
+    "station_physical": 1.49,
+    "sub_3x3": [
+      [
+        154,
+        154,
+        155
+      ],
+      [
+        149,
+        149,
+        149
+      ],
+      [
+        144,
+        145,
+        139
+      ]
+    ]
+  },
+  {
+    "folder": "clay",
+    "filename": "clay_mean_0-5cm.tif",
+    "file_size": 655456,
+    "sha256": "910e0dcac69195e79310c59e61f7db73b0cd943d1bfcd16b1d1ae02e7aa8963c",
+    "property": "clay",
+    "depth_cm": "0-5",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 502,
+    "raw_mean": 216.84,
+    "raw_std": 56.22,
+    "station_raw": 247,
+    "scale_factor": 10.0,
+    "unit": "%",
+    "station_physical": 24.7,
+    "sub_3x3": [
+      [
+        230,
+        229,
+        229
+      ],
+      [
+        241,
+        247,
+        243
+      ],
+      [
+        187,
+        223,
+        231
+      ]
+    ]
+  },
+  {
+    "folder": "clay",
+    "filename": "clay_mean_15-30cm.tif",
+    "file_size": 677960,
+    "sha256": "cb83bd12a79b5448706de22e762632fb06235ad924060b08244d3de2bcb17396",
+    "property": "clay",
+    "depth_cm": "15-30",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 540,
+    "raw_mean": 290.57,
+    "raw_std": 67.57,
+    "station_raw": 328,
+    "scale_factor": 10.0,
+    "unit": "%",
+    "station_physical": 32.8,
+    "sub_3x3": [
+      [
+        308,
+        307,
+        306
+      ],
+      [
+        312,
+        328,
+        317
+      ],
+      [
+        259,
+        306,
+        319
+      ]
+    ]
+  },
+  {
+    "folder": "clay",
+    "filename": "clay_mean_30-60cm.tif",
+    "file_size": 702354,
+    "sha256": "cf4398bd2da10df5f01094c5bc80ca09706693601d9e06dabbacecac88a3d66f",
+    "property": "clay",
+    "depth_cm": "30-60",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 589,
+    "raw_mean": 326.32,
+    "raw_std": 76.0,
+    "station_raw": 339,
+    "scale_factor": 10.0,
+    "unit": "%",
+    "station_physical": 33.9,
+    "sub_3x3": [
+      [
+        332,
+        330,
+        336
+      ],
+      [
+        339,
+        339,
+        355
+      ],
+      [
+        297,
+        338,
+        342
+      ]
+    ]
+  },
+  {
+    "folder": "clay",
+    "filename": "clay_mean_5-15cm.tif",
+    "file_size": 659193,
+    "sha256": "9be70d2a69291fcf563ab3e17a2c99eb07751b1ca0e32abb3e8739fa70dc3359",
+    "property": "clay",
+    "depth_cm": "5-15",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 530,
+    "raw_mean": 229.38,
+    "raw_std": 59.44,
+    "station_raw": 273,
+    "scale_factor": 10.0,
+    "unit": "%",
+    "station_physical": 27.3,
+    "sub_3x3": [
+      [
+        256,
+        256,
+        254
+      ],
+      [
+        261,
+        273,
+        268
+      ],
+      [
+        207,
+        248,
+        256
+      ]
+    ]
+  },
+  {
+    "folder": "organic_carbon_density",
+    "filename": "ocd_mean_0-5cm.tif",
+    "file_size": 665310,
+    "sha256": "9e302f9a6cba7e8f7912578cf052366b41645faf55520555701ff95995f37a7f",
+    "property": "organic_carbon_density",
+    "depth_cm": "0-5",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 556,
+    "raw_mean": 402.56,
+    "raw_std": 84.37,
+    "station_raw": 382,
+    "scale_factor": 10.0,
+    "unit": "kg/m\u00b3",
+    "station_physical": 38.2,
+    "sub_3x3": [
+      [
+        407,
+        413,
+        394
+      ],
+      [
+        395,
+        382,
+        400
+      ],
+      [
+        425,
+        418,
+        462
+      ]
+    ]
+  },
+  {
+    "folder": "organic_carbon_density",
+    "filename": "ocd_mean_15-30cm.tif",
+    "file_size": 600030,
+    "sha256": "6daeb1bd7b833a95e351324e621a291aedd03818e2a452c5e12018a22ad02169",
+    "property": "organic_carbon_density",
+    "depth_cm": "15-30",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 254,
+    "raw_mean": 133.74,
+    "raw_std": 32.61,
+    "station_raw": 132,
+    "scale_factor": 10.0,
+    "unit": "kg/m\u00b3",
+    "station_physical": 13.2,
+    "sub_3x3": [
+      [
+        137,
+        133,
+        134
+      ],
+      [
+        135,
+        132,
+        138
+      ],
+      [
+        155,
+        140,
+        150
+      ]
+    ]
+  },
+  {
+    "folder": "organic_carbon_density",
+    "filename": "ocd_mean_30-60cm.tif",
+    "file_size": 523214,
+    "sha256": "f2c439224ef3049817e21099537865ac515a2b062977a826f632a7ddaa55fc1b",
+    "property": "organic_carbon_density",
+    "depth_cm": "30-60",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 143,
+    "raw_mean": 71.7,
+    "raw_std": 16.5,
+    "station_raw": 73,
+    "scale_factor": 10.0,
+    "unit": "kg/m\u00b3",
+    "station_physical": 7.3,
+    "sub_3x3": [
+      [
+        72,
+        68,
+        72
+      ],
+      [
+        75,
+        73,
+        72
+      ],
+      [
+        89,
+        76,
+        73
+      ]
+    ]
+  },
+  {
+    "folder": "organic_carbon_density",
+    "filename": "ocd_mean_5-15cm.tif",
+    "file_size": 643684,
+    "sha256": "b0f83be014ca373136210ff4b63cfab6017c973d78669b98d56656a72e980c82",
+    "property": "organic_carbon_density",
+    "depth_cm": "5-15",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 394,
+    "raw_mean": 218.28,
+    "raw_std": 58.1,
+    "station_raw": 211,
+    "scale_factor": 10.0,
+    "unit": "kg/m\u00b3",
+    "station_physical": 21.1,
+    "sub_3x3": [
+      [
+        207,
+        203,
+        205
+      ],
+      [
+        210,
+        211,
+        212
+      ],
+      [
+        265,
+        260,
+        257
+      ]
+    ]
+  },
+  {
+    "folder": "sand",
+    "filename": "sand_mean_0-5cm.tif",
+    "file_size": 658251,
+    "sha256": "7b40c08fbf464e6361f7c8919da731753603a27337362f8a8ec83fec04ed2dee",
+    "property": "sand",
+    "depth_cm": "0-5",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 617,
+    "raw_mean": 245.37,
+    "raw_std": 92.69,
+    "station_raw": 174,
+    "scale_factor": 10.0,
+    "unit": "%",
+    "station_physical": 17.4,
+    "sub_3x3": [
+      [
+        161,
+        168,
+        171
+      ],
+      [
+        190,
+        174,
+        178
+      ],
+      [
+        208,
+        170,
+        171
+      ]
+    ]
+  },
+  {
+    "folder": "sand",
+    "filename": "sand_mean_15-30cm.tif",
+    "file_size": 643350,
+    "sha256": "410b117c4c9a85ecf0ee02bf8a5f78520240d4ffcde5f1a063364e7c2d08fe1f",
+    "property": "sand",
+    "depth_cm": "15-30",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 593,
+    "raw_mean": 212.37,
+    "raw_std": 80.23,
+    "station_raw": 149,
+    "scale_factor": 10.0,
+    "unit": "%",
+    "station_physical": 14.9,
+    "sub_3x3": [
+      [
+        137,
+        143,
+        147
+      ],
+      [
+        165,
+        149,
+        155
+      ],
+      [
+        182,
+        146,
+        146
+      ]
+    ]
+  },
+  {
+    "folder": "sand",
+    "filename": "sand_mean_30-60cm.tif",
+    "file_size": 643812,
+    "sha256": "05d1e74191606fd766428607e5125ce6f27defa9e4f31b2828a42613df4b1ca1",
+    "property": "sand",
+    "depth_cm": "30-60",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 571,
+    "raw_mean": 199.78,
+    "raw_std": 76.88,
+    "station_raw": 151,
+    "scale_factor": 10.0,
+    "unit": "%",
+    "station_physical": 15.1,
+    "sub_3x3": [
+      [
+        136,
+        145,
+        145
+      ],
+      [
+        163,
+        151,
+        149
+      ],
+      [
+        172,
+        143,
+        146
+      ]
+    ]
+  },
+  {
+    "folder": "sand",
+    "filename": "sand_mean_5-15cm.tif",
+    "file_size": 655823,
+    "sha256": "96b1a0143acc4557d6b541244bc831ef81d0d44759d9a38fdf45b915db2c14a8",
+    "property": "sand",
+    "depth_cm": "5-15",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 613,
+    "raw_mean": 238.48,
+    "raw_std": 90.43,
+    "station_raw": 164,
+    "scale_factor": 10.0,
+    "unit": "%",
+    "station_physical": 16.4,
+    "sub_3x3": [
+      [
+        152,
+        157,
+        163
+      ],
+      [
+        184,
+        164,
+        169
+      ],
+      [
+        202,
+        160,
+        162
+      ]
+    ]
+  },
+  {
+    "folder": "silt",
+    "filename": "silt_mean_0-5cm.tif",
+    "file_size": 707105,
+    "sha256": "baf3ca7857a918a50adba25690bbf10f1b381d8d801f5d497b25317ff750adad",
+    "property": "silt",
+    "depth_cm": "0-5",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 807,
+    "raw_mean": 498.95,
+    "raw_std": 126.25,
+    "station_raw": 579,
+    "scale_factor": 10.0,
+    "unit": "%",
+    "station_physical": 57.9,
+    "sub_3x3": [
+      [
+        608,
+        604,
+        600
+      ],
+      [
+        569,
+        579,
+        579
+      ],
+      [
+        605,
+        607,
+        597
+      ]
+    ]
+  },
+  {
+    "folder": "silt",
+    "filename": "silt_mean_15-30cm.tif",
+    "file_size": 707165,
+    "sha256": "a492a5f3b66b94c57393cfe16aa8e4dccd0912286f3d81343f8609abdec17bcb",
+    "property": "silt",
+    "depth_cm": "15-30",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 768,
+    "raw_mean": 458.22,
+    "raw_std": 118.75,
+    "station_raw": 523,
+    "scale_factor": 10.0,
+    "unit": "%",
+    "station_physical": 52.3,
+    "sub_3x3": [
+      [
+        555,
+        550,
+        547
+      ],
+      [
+        523,
+        523,
+        528
+      ],
+      [
+        560,
+        548,
+        535
+      ]
+    ]
+  },
+  {
+    "folder": "silt",
+    "filename": "silt_mean_30-60cm.tif",
+    "file_size": 710381,
+    "sha256": "de856aaae63badbdff391e0c2973cfd8fe809f17fd5824886a8b7cdaf165ec3d",
+    "property": "silt",
+    "depth_cm": "30-60",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 728,
+    "raw_mean": 435.07,
+    "raw_std": 112.82,
+    "station_raw": 510,
+    "scale_factor": 10.0,
+    "unit": "%",
+    "station_physical": 51.0,
+    "sub_3x3": [
+      [
+        532,
+        525,
+        519
+      ],
+      [
+        498,
+        510,
+        496
+      ],
+      [
+        531,
+        519,
+        512
+      ]
+    ]
+  },
+  {
+    "folder": "silt",
+    "filename": "silt_mean_5-15cm.tif",
+    "file_size": 706043,
+    "sha256": "683a1ade983a9abeaca2f8cec2f12a128afae429afeafac4240cdd19911a403c",
+    "property": "silt",
+    "depth_cm": "5-15",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 804,
+    "raw_mean": 493.31,
+    "raw_std": 125.56,
+    "station_raw": 563,
+    "scale_factor": 10.0,
+    "unit": "%",
+    "station_physical": 56.3,
+    "sub_3x3": [
+      [
+        592,
+        587,
+        583
+      ],
+      [
+        556,
+        563,
+        563
+      ],
+      [
+        591,
+        592,
+        582
+      ]
+    ]
+  },
+  {
+    "folder": "water_content_10kPa",
+    "filename": "wv0010_mean_0-5cm.tif",
+    "file_size": 489522,
+    "sha256": "38d35533b714a9cfaad7c85d0a56a21d46e97804d1134ac50bc56d2208be3d97",
+    "property": "water_content_10kPa",
+    "depth_cm": "0-5",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 449,
+    "raw_mean": 368.21,
+    "raw_std": 74.64,
+    "station_raw": 390,
+    "scale_factor": 10.0,
+    "unit": "vol% (or m\u00b3/m\u00b3 / 1000)",
+    "station_physical": 39.0,
+    "sub_3x3": [
+      [
+        388,
+        389,
+        388
+      ],
+      [
+        385,
+        390,
+        388
+      ],
+      [
+        385,
+        390,
+        391
+      ]
+    ]
+  },
+  {
+    "folder": "water_content_10kPa",
+    "filename": "wv0010_mean_15-30cm.tif",
+    "file_size": 491553,
+    "sha256": "2b7395c2a33ccb069e3266ba193b3aa1a3a34d973e3bd8d8d3be7433ee4d9adb",
+    "property": "water_content_10kPa",
+    "depth_cm": "15-30",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 457,
+    "raw_mean": 355.42,
+    "raw_std": 72.16,
+    "station_raw": 380,
+    "scale_factor": 10.0,
+    "unit": "vol% (or m\u00b3/m\u00b3 / 1000)",
+    "station_physical": 38.0,
+    "sub_3x3": [
+      [
+        378,
+        379,
+        378
+      ],
+      [
+        376,
+        380,
+        379
+      ],
+      [
+        376,
+        382,
+        381
+      ]
+    ]
+  },
+  {
+    "folder": "water_content_10kPa",
+    "filename": "wv0010_mean_30-60cm.tif",
+    "file_size": 504885,
+    "sha256": "c9799b5202d41471d7bcc107d0960f0ce8c26e146282cd9aa4f5e7d38ffd6f6c",
+    "property": "water_content_10kPa",
+    "depth_cm": "30-60",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 461,
+    "raw_mean": 354.67,
+    "raw_std": 72.09,
+    "station_raw": 383,
+    "scale_factor": 10.0,
+    "unit": "vol% (or m\u00b3/m\u00b3 / 1000)",
+    "station_physical": 38.3,
+    "sub_3x3": [
+      [
+        382,
+        381,
+        382
+      ],
+      [
+        379,
+        383,
+        383
+      ],
+      [
+        378,
+        382,
+        382
+      ]
+    ]
+  },
+  {
+    "folder": "water_content_10kPa",
+    "filename": "wv0010_mean_5-15cm.tif",
+    "file_size": 488888,
+    "sha256": "3f81bd5cbd4d7e633db2f4c9b903b3226e23db37875f7f65c05fa0c45d2b35ac",
+    "property": "water_content_10kPa",
+    "depth_cm": "5-15",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": -32768,
+    "raw_max": 450,
+    "raw_mean": -912.72,
+    "raw_std": 6403.07,
+    "station_raw": 384,
+    "scale_factor": 10.0,
+    "unit": "vol% (or m\u00b3/m\u00b3 / 1000)",
+    "station_physical": 38.4,
+    "sub_3x3": [
+      [
+        379,
+        381,
+        381
+      ],
+      [
+        379,
+        384,
+        381
+      ],
+      [
+        381,
+        384,
+        385
+      ]
+    ]
+  },
+  {
+    "folder": "water_content_1500kPa",
+    "filename": "wv1500_mean_0-5cm.tif",
+    "file_size": 527057,
+    "sha256": "07c74760f8b14ac0eb4256d049d60bc1a280909921ae45db5bf45200629813f0",
+    "property": "water_content_1500kPa",
+    "depth_cm": "0-5",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 270,
+    "raw_mean": 136.13,
+    "raw_std": 30.25,
+    "station_raw": 126,
+    "scale_factor": 10.0,
+    "unit": "vol% (or m\u00b3/m\u00b3 / 1000)",
+    "station_physical": 12.6,
+    "sub_3x3": [
+      [
+        129,
+        123,
+        126
+      ],
+      [
+        131,
+        126,
+        126
+      ],
+      [
+        135,
+        140,
+        142
+      ]
+    ]
+  },
+  {
+    "folder": "water_content_1500kPa",
+    "filename": "wv1500_mean_15-30cm.tif",
+    "file_size": 531511,
+    "sha256": "2c4d19a734b24a4324665c37af7f9cc78e56ffc31ea673732119ab570f0c401f",
+    "property": "water_content_1500kPa",
+    "depth_cm": "15-30",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 260,
+    "raw_mean": 152.68,
+    "raw_std": 33.02,
+    "station_raw": 154,
+    "scale_factor": 10.0,
+    "unit": "vol% (or m\u00b3/m\u00b3 / 1000)",
+    "station_physical": 15.4,
+    "sub_3x3": [
+      [
+        149,
+        149,
+        154
+      ],
+      [
+        147,
+        154,
+        154
+      ],
+      [
+        149,
+        151,
+        152
+      ]
+    ]
+  },
+  {
+    "folder": "water_content_1500kPa",
+    "filename": "wv1500_mean_30-60cm.tif",
+    "file_size": 552620,
+    "sha256": "89e308d46d7b26d3a52fe1ae81c28de3496432621d2da19a2e9c9a61cfadc9da",
+    "property": "water_content_1500kPa",
+    "depth_cm": "30-60",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 307,
+    "raw_mean": 193.76,
+    "raw_std": 41.61,
+    "station_raw": 200,
+    "scale_factor": 10.0,
+    "unit": "vol% (or m\u00b3/m\u00b3 / 1000)",
+    "station_physical": 20.0,
+    "sub_3x3": [
+      [
+        190,
+        201,
+        200
+      ],
+      [
+        196,
+        200,
+        197
+      ],
+      [
+        192,
+        196,
+        199
+      ]
+    ]
+  },
+  {
+    "folder": "water_content_1500kPa",
+    "filename": "wv1500_mean_5-15cm.tif",
+    "file_size": 528270,
+    "sha256": "5bf8b9804c0b6bb62390709d79710d3e2ff73016ed4069066818b3d30e930507",
+    "property": "water_content_1500kPa",
+    "depth_cm": "5-15",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 270,
+    "raw_mean": 134.81,
+    "raw_std": 30.18,
+    "station_raw": 126,
+    "scale_factor": 10.0,
+    "unit": "vol% (or m\u00b3/m\u00b3 / 1000)",
+    "station_physical": 12.6,
+    "sub_3x3": [
+      [
+        127,
+        123,
+        128
+      ],
+      [
+        129,
+        126,
+        127
+      ],
+      [
+        134,
+        137,
+        137
+      ]
+    ]
+  },
+  {
+    "folder": "water_content_33kPa",
+    "filename": "wv0033_mean_0-5cm.tif",
+    "file_size": 535243,
+    "sha256": "3579a15bae3f445b49736f939d4671825ee18cc2cd550407566416da44fbe208",
+    "property": "water_content_33kPa",
+    "depth_cm": "0-5",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 410,
+    "raw_mean": 313.83,
+    "raw_std": 64.79,
+    "station_raw": 337,
+    "scale_factor": 10.0,
+    "unit": "vol% (or m\u00b3/m\u00b3 / 1000)",
+    "station_physical": 33.7,
+    "sub_3x3": [
+      [
+        341,
+        340,
+        342
+      ],
+      [
+        339,
+        337,
+        340
+      ],
+      [
+        333,
+        331,
+        333
+      ]
+    ]
+  },
+  {
+    "folder": "water_content_33kPa",
+    "filename": "wv0033_mean_15-30cm.tif",
+    "file_size": 531293,
+    "sha256": "2bfab2dd4733ea62f84c71b45b541223c5a898c78e52c5e1d79ba80ee7ac048b",
+    "property": "water_content_33kPa",
+    "depth_cm": "15-30",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 420,
+    "raw_mean": 313.36,
+    "raw_std": 64.68,
+    "station_raw": 338,
+    "scale_factor": 10.0,
+    "unit": "vol% (or m\u00b3/m\u00b3 / 1000)",
+    "station_physical": 33.8,
+    "sub_3x3": [
+      [
+        341,
+        341,
+        342
+      ],
+      [
+        337,
+        338,
+        340
+      ],
+      [
+        330,
+        333,
+        334
+      ]
+    ]
+  },
+  {
+    "folder": "water_content_33kPa",
+    "filename": "wv0033_mean_30-60cm.tif",
+    "file_size": 521518,
+    "sha256": "4144ac5621cd12780c95c47e651e5fcaa42b6c24a5e5cba97dcec2ee5ca3d20c",
+    "property": "water_content_33kPa",
+    "depth_cm": "30-60",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 419,
+    "raw_mean": 322.66,
+    "raw_std": 66.08,
+    "station_raw": 344,
+    "scale_factor": 10.0,
+    "unit": "vol% (or m\u00b3/m\u00b3 / 1000)",
+    "station_physical": 34.4,
+    "sub_3x3": [
+      [
+        347,
+        346,
+        346
+      ],
+      [
+        345,
+        344,
+        346
+      ],
+      [
+        337,
+        340,
+        340
+      ]
+    ]
+  },
+  {
+    "folder": "water_content_33kPa",
+    "filename": "wv0033_mean_5-15cm.tif",
+    "file_size": 530282,
+    "sha256": "89b55d1b3987e992ff482a80d84f6b8a5ab441ced3765a504a31dceea7deaf1d",
+    "property": "water_content_33kPa",
+    "depth_cm": "5-15",
+    "value_type": "mean",
+    "width": 885,
+    "height": 837,
+    "mode": "I",
+    "dtype": "int32",
+    "bits_per_sample": [
+      16
+    ],
+    "sample_format": [
+      2
+    ],
+    "x_min": -87.5821,
+    "x_max": -85.58209999999998,
+    "y_min": 33.7713,
+    "y_max": 35.7713,
+    "dx": 0.0022598870056497336,
+    "dy": 0.0023894862604540014,
+    "covers_station": true,
+    "col": 453,
+    "row": 413,
+    "raw_min": 0,
+    "raw_max": 415,
+    "raw_mean": 311.21,
+    "raw_std": 64.25,
+    "station_raw": 338,
+    "scale_factor": 10.0,
+    "unit": "vol% (or m\u00b3/m\u00b3 / 1000)",
+    "station_physical": 33.8,
+    "sub_3x3": [
+      [
+        339,
+        339,
+        340
+      ],
+      [
+        336,
+        338,
+        340
+      ],
+      [
+        329,
+        332,
+        333
+      ]
+    ]
+  }
+]

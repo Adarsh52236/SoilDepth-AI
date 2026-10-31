@@ -1,0 +1,146 @@
+{
+  "Historical_Mean": {
+    "validation": {
+      "n_samples": 328,
+      "residual_mean": -0.00453,
+      "residual_std": 0.03444,
+      "residual_median": -0.01329,
+      "residual_q25": -0.02657,
+      "residual_q75": 0.0104,
+      "residual_iqr": 0.03697,
+      "residual_max_abs": 0.09507,
+      "residual_skewness": 1.108
+    },
+    "test": {
+      "n_samples": 634,
+      "residual_mean": 0.02416,
+      "residual_std": 0.05781,
+      "residual_median": 0.00867,
+      "residual_q25": -0.02125,
+      "residual_q75": 0.0651,
+      "residual_iqr": 0.08634,
+      "residual_max_abs": 0.15565,
+      "residual_skewness": 0.6366
+    }
+  },
+  "Climatology": {
+    "validation": {
+      "n_samples": 328,
+      "residual_mean": -0.00464,
+      "residual_std": 0.03697,
+      "residual_median": -0.00935,
+      "residual_q25": -0.0307,
+      "residual_q75": 0.01776,
+      "residual_iqr": 0.04847,
+      "residual_max_abs": 0.09974,
+      "residual_skewness": 0.417
+    },
+    "test": {
+      "n_samples": 634,
+      "residual_mean": 0.02332,
+      "residual_std": 0.04677,
+      "residual_median": 0.01255,
+      "residual_q25": -0.00961,
+      "residual_q75": 0.05382,
+      "residual_iqr": 0.06343,
+      "residual_max_abs": 0.15155,
+      "residual_skewness": 0.6765
+    }
+  },
+  "Persistence": {
+    "validation": {
+      "n_samples": 328,
+      "residual_mean": -0.00045,
+      "residual_std": 0.01524,
+      "residual_median": 0.00406,
+      "residual_q25": -0.00092,
+      "residual_q75": 0.00685,
+      "residual_iqr": 0.00777,
+      "residual_max_abs": 0.09267,
+      "residual_skewness": -2.6117
+    },
+    "test": {
+      "n_samples": 634,
+      "residual_mean": -0.00057,
+      "residual_std": 0.01789,
+      "residual_median": 0.00396,
+      "residual_q25": -0.00086,
+      "residual_q75": 0.00842,
+      "residual_iqr": 0.00928,
+      "residual_max_abs": 0.11508,
+      "residual_skewness": -2.7963
+    }
+  },
+  "XGBoost_Weather_Only": {
+    "validation": {
+      "n_samples": 328,
+      "residual_mean": 0.00396,
+      "residual_std": 0.02389,
+      "residual_median": 0.00256,
+      "residual_q25": -0.01135,
+      "residual_q75": 0.01928,
+      "residual_iqr": 0.03063,
+      "residual_max_abs": 0.06431,
+      "residual_skewness": 0.2639
+    },
+    "test": {
+      "n_samples": 634,
+      "residual_mean": 0.01593,
+      "residual_std": 0.0335,
+      "residual_median": 0.01148,
+      "residual_q25": -0.00604,
+      "residual_q75": 0.03329,
+      "residual_iqr": 0.03933,
+      "residual_max_abs": 0.12388,
+      "residual_skewness": 0.5993
+    }
+  },
+  "XGBoost_Lag_Augmented": {
+    "validation": {
+      "n_samples": 328,
+      "residual_mean": 0.00046,
+      "residual_std": 0.01095,
+      "residual_median": 0.00072,
+      "residual_q25": -0.00332,
+      "residual_q75": 0.00556,
+      "residual_iqr": 0.00888,
+      "residual_max_abs": 0.06073,
+      "residual_skewness": -1.2107
+    },
+    "test": {
+      "n_samples": 634,
+      "residual_mean": 0.00248,
+      "residual_std": 0.01477,
+      "residual_median": 0.00299,
+      "residual_q25": -0.00324,
+      "residual_q75": 0.01007,
+      "residual_iqr": 0.01331,
+      "residual_max_abs": 0.07366,
+      "residual_skewness": -0.9963
+    }
+  },
+  "XGBoost_Full_Multimodal": {
+    "validation": {
+      "n_samples": 328,
+      "residual_mean": 0.01145,
+      "residual_std": 0.02133,
+      "residual_median": 0.00681,
+      "residual_q25": -0.00218,
+      "residual_q75": 0.02184,
+      "residual_iqr": 0.02401,
+      "residual_max_abs": 0.07589,
+      "residual_skewness": 0.775
+    },
+    "test": {
+      "n_samples": 634,
+      "residual_mean": 0.02298,
+      "residual_std": 0.03185,
+      "residual_median": 0.01639,
+      "residual_q25": 0.00258,
+      "residual_q75": 0.03595,
+      "residual_iqr": 0.03336,
+      "residual_max_abs": 0.12187,
+      "residual_skewness": 1.0072
+    }
+  }
+}

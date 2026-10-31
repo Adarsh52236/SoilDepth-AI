@@ -1,0 +1,189 @@
+{
+  "audit_metadata": {
+    "audit_title": "SoilDepth-AI — Sentinel-2 Independent Dataset Audit & Verification",
+    "auditor": "Senior Remote-Sensing Engineer & ML Data Auditor",
+    "station_id": "AAMU-JTG",
+    "audit_date_utc": "2026-10-30T05:30:00Z",
+    "audit_verdict": "PASS WITH WARNINGS"
+  },
+  "station_specifications": {
+    "station_id": "AAMU-JTG",
+    "network": "SCAN",
+    "latitude": 34.78534,
+    "longitude": -86.55906,
+    "crs": "EPSG:32616 (UTM Zone 16N)",
+    "utm_easting_m": 540341.44,
+    "utm_northing_m": 3849327.07,
+    "benchmark_elevation_m": 241.0
+  },
+  "file_inventory_and_integrity": {
+    "total_files_audited": 9,
+    "files": [
+      {
+        "path": "dataset/Sentinel-2/README.md",
+        "size_bytes": 2584,
+        "sha256": "6372ddaa6d31855528711325a4f90476aa45d9b9c12ebc5f711e5d2aad33758b",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-2/audit/AAMU-JTG/sentinel2_quality_report.json",
+        "size_bytes": 2514,
+        "sha256": "655efe4e5753a41d044b3bce553af4e364a9c5ce385bf6c9761f92dab3ce35c8",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-2/manifests/download_manifest.csv",
+        "size_bytes": 1184,
+        "sha256": "6d2d1746d38a214e6f01ca82559682f32061b2294260f839e9d9d911872a043c",
+        "status": "VALID",
+        "notes": "Records exact size (194111 bytes) and exact SHA256 of sentinel2_acquisitions.csv."
+      },
+      {
+        "path": "dataset/Sentinel-2/manifests/sentinel2_manifest.json",
+        "size_bytes": 3019,
+        "sha256": "f59723fdcc957887ee4f84c7974b914b75e1c05d7f302e2190e8982b69010f54",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-2/processed/AAMU-JTG/sentinel2_acquisitions.csv",
+        "size_bytes": 194111,
+        "sha256": "287835a309b87ca1c7d97bd3cb1f0ec773f96861dadb3229d2053b22e4c42ca3",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-2/processed/AAMU-JTG/sentinel2_daily_features.csv",
+        "size_bytes": 140697,
+        "sha256": "f85dda973c2ae3ff8c10ea041cb16350ea93ffcb1a29c241691d1e3ba44af3f7",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-2/raw/AAMU-JTG/s2_sample_raw_tile_b04.tif",
+        "size_bytes": 524506,
+        "sha256": "2428342753af16898a43c98ef31d49d25c687ee89ca6a40afd52f5f95c3a953f",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-2/raw/AAMU-JTG/sentinel2_stac_items.json",
+        "size_bytes": 17982646,
+        "sha256": "943b87aaca77e915fef76fdeee6044bd944d85868526a1cc3962f9632d5d069f",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-2/scripts/process_sentinel2.py",
+        "size_bytes": 18074,
+        "sha256": "bca230675c39d56761ab91a5aaf4d3bfc109df0a48e856382fc01f3059cf0a9b",
+        "status": "VALID"
+      }
+    ]
+  },
+  "independent_recalculations": {
+    "stac_item_count": 1095,
+    "acquisitions_csv_row_count": 1024,
+    "difference_stac_vs_csv": 71,
+    "difference_cause_verified": "71 granules in the STAC catalog belong to ESA Baseline 05.10 encoded with 15-bit integer TIFF tags (BitsPerSample=15). Standard Pillow TIFF decoder raises SyntaxError: unknown pixel mode on 15-bit TIFFs, causing extraction failure. 68 of these 71 dates had duplicate baseline 05.09 granules that were successfully extracted, leaving only 3 unique calendar dates missed (2023-05-02, 2023-10-09, 2023-12-05).",
+    "observation_breakdown": {
+      "valid_clear_acquisitions": 319,
+      "cloud_shadow_saturation_masked": 705,
+      "distinct_clear_days": 319,
+      "clear_sky_frequency_pct": 31.15
+    },
+    "scl_code_distribution_in_clear_dataset": {
+      "SCL 4 (Vegetation)": 187,
+      "SCL 5 (Bare Soil)": 111,
+      "SCL 2 (Dark Area)": 4,
+      "SCL 7 (Unclassified)": 17,
+      "SCL 6 (Water)": 0
+    },
+    "scl_code_distribution_in_masked_dataset": {
+      "SCL 0 (No Data)": 216,
+      "SCL 1 (Saturated/Defective)": 6,
+      "SCL 3 (Cloud Shadows)": 10,
+      "SCL 8 (Cloud Medium Probability)": 140,
+      "SCL 9 (Cloud High Probability)": 265,
+      "SCL 10 (Thin Cirrus)": 46,
+      "SCL 11 (Snow/Ice)": 9,
+      "SCL 253 / 255 (Defective/No Data)": 13
+    },
+    "date_range": {
+      "first_acquisition": "2015-10-03T16:30:26.027000Z",
+      "last_acquisition": "2023-12-30T16:27:01.024000Z",
+      "calendar_span_days": 3010
+    },
+    "daily_calendar_rows": 3287,
+    "daily_calendar_valid_days": 319,
+    "daily_calendar_coverage_pct": 9.7,
+    "optical_reflectance_statistics": {
+      "b02_blue_mean": 0.0971,
+      "b03_green_mean": 0.1236,
+      "b04_red_mean": 0.134,
+      "b08_nir_mean": 0.3276,
+      "b11_swir1_mean": 0.336,
+      "b12_swir2_mean": 0.2298,
+      "all_reflectances_within_0_to_1": true
+    },
+    "vegetation_indices_verification": {
+      "ndvi_mean": 0.4271,
+      "ndvi_min": 0.0338,
+      "ndvi_max": 0.7448,
+      "ndvi_formula_recalculated_exact": true,
+      "max_ndvi_diff": 0.000049,
+      "evi_mean": 0.3508,
+      "evi_min": 0.0779,
+      "evi_max": 0.7537,
+      "evi_formula_recalculated_exact": true,
+      "max_evi_diff": 0.00005,
+      "masked_values_are_nan_never_zero": true
+    }
+  },
+  "raster_and_spatial_audit": {
+    "coordinate_transform_verification": {
+      "geographic_wgs84": [34.78534, -86.55906],
+      "projected_utm16n": [540341.44, 3849327.07],
+      "verified": true
+    },
+    "sample_geotiff_verification": {
+      "file": "s2_sample_raw_tile_b04.tif",
+      "readable": true,
+      "dimensions": [512, 512],
+      "pixel_scale": [10.0, 10.0, 0.0],
+      "tiepoint": [0.0, 0.0, 0.0, 535820.0, 3853920.0, 0.0],
+      "station_pixel_inside_tile": true,
+      "station_pixel_coords": [452.144, 459.293],
+      "data_type": "uint16",
+      "raw_dn_range": [0, 9856],
+      "mean_raw_dn": 1817.25,
+      "physical_reflectance_mean": 0.1817
+    },
+    "multiresolution_extraction_audit": {
+      "b02_b03_b04_b08": "10m native resolution grid extracted with dx=10, dy=10",
+      "b11_b12_scl": "20m native resolution grid extracted with dx=20, dy=20",
+      "independent_pixel_indexing_confirmed": true
+    }
+  },
+  "temporal_and_leakage_audit": {
+    "calendar_assignment": "16:20-16:35 UTC passes correspond to ~10:20-10:35 CST on the exact same calendar date",
+    "unobserved_days_handling": "Preserved strictly as NaN, no forward/backfill interpolation",
+    "multimodal_integration_readiness": "Ready for feature integration, but must enforce shift(1) lag when predicting day t morning soil moisture to avoid midday temporal leakage"
+  },
+  "audit_findings_and_warnings": [
+    {
+      "severity": "MEDIUM",
+      "code": "BASELINE_0510_DECODER_OMISSION",
+      "description": "71 STAC catalog items could not be extracted because ESA Baseline 05.10 uses a 15-bit TIFF integer encoding unsupported by Pillow. While 68 of these dates were covered by Baseline 05.09 granules, 3 unique calendar dates (2023-05-02, 2023-10-09, 2023-12-05) were lost.",
+      "remedy": "Implement a 15-bit unpacking routine or use GDAL/rasterio for complete Baseline 05.10 ingestion."
+    },
+    {
+      "severity": "LOW",
+      "code": "SCL_CODE_7_INCLUSION",
+      "description": "17 observations categorized as SCL=7 (Unclassified) were included in the clear-sky dataset. Although their individual pixel reflectances are physically plausible, some occurred during high scene-level cloud cover (>50%).",
+      "remedy": "Consider restricting VALID_LAND_SCL_CODES strictly to {4, 5} (Vegetation and Bare Soil) for conservative agricultural applications, reducing clear observations from 319 to 298."
+    },
+    {
+      "severity": "LOW",
+      "code": "WATER_CODE_6_INCLUSION_IN_FILTER",
+      "description": "VALID_LAND_SCL_CODES in process_sentinel2.py included code 6 (water), which is conceptually inconsistent with an agricultural upland SCAN station. Zero water pixels were sampled at AAMU-JTG (0 observations affected).",
+      "remedy": "Remove code 6 from VALID_LAND_SCL_CODES."
+    }
+  ]
+}
+

@@ -1,0 +1,79 @@
+{
+  "dataset": "DEM",
+  "station_id": "AAMU-JTG",
+  "timestamp_utc": "2026-10-29T19:49:53.862355+00:00",
+  "status": "PROCESSED",
+  "validation_status": "VALIDATED",
+  "extraction_status": "SUCCESS",
+  "raw_source": {
+    "filename": "USGS_1_n35w087.tif",
+    "filepath": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\dataset\\DEM\\raw\\AAMU-JTG\\USGS_1_n35w087.tif",
+    "file_size_bytes": 56024342,
+    "sha256": "85f708645dd49c09b0921d2af60ec8e5b2b88f8b1f573abd7af6f07275db186a",
+    "width": 3612,
+    "height": 3612,
+    "data_type": "float64",
+    "raster_elevation_min_m": 110.49,
+    "raster_elevation_max_m": 567.39,
+    "raster_elevation_mean_m": 258.46,
+    "geotiff_spatial_metadata": {
+      "has_geotiff_tags": true,
+      "pixel_scale": [
+        0.000277777777786999,
+        0.00027777777803598015,
+        0.0
+      ],
+      "tiepoint": [
+        0.0,
+        0.0,
+        0.0,
+        -87.0016666663829,
+        35.001666667083896,
+        0.0
+      ],
+      "dx": 0.000277777777786999,
+      "dy": 0.00027777777803598015,
+      "x_origin": -87.0016666663829,
+      "y_origin": 35.001666667083896,
+      "x_min": -87.0016667,
+      "x_max": -85.9983333,
+      "y_min": 33.9983333,
+      "y_max": 35.0016667,
+      "crs_estimated": "EPSG:4326 (WGS84) or EPSG:4269 (NAD83)",
+      "horizontal_units": "degrees",
+      "nodata_tag_value": -999999.0
+    }
+  },
+  "station_extraction": {
+    "station_id": "AAMU-JTG",
+    "latitude": 34.78534,
+    "longitude": -86.55906,
+    "pixel_col_idx": 1593,
+    "pixel_row_idx": 779,
+    "extracted_elevation_m": 245.47,
+    "benchmark_elevation_m": 241.0,
+    "elevation_diff_m": 4.47,
+    "tolerance_m": 15.0,
+    "is_benchmark_consistent": true,
+    "slope_derivation": {
+      "slope_deg": 4.9156,
+      "slope_rise_run": 0.086004,
+      "aspect_deg": 189.33,
+      "aspect_sin": -0.1622,
+      "aspect_cos": -0.9868,
+      "slope_method": "Horn 3x3 estimator",
+      "slope_coverage_valid": true,
+      "status": "VALID",
+      "notes": "Horn 3x3 derivative computed: delta_x=25.40m, delta_y=30.92m."
+    }
+  },
+  "artifacts_generated": {
+    "features_csv": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\dataset\\DEM\\processed\\AAMU-JTG\\dem_AAMU-JTG_features.csv",
+    "audit_json": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\dataset\\DEM\\audit\\AAMU-JTG\\dem_quality_report.json"
+  },
+  "known_limitations": [
+    "Pilot station AAMU-JTG is a single US SCAN station and does not establish India/Maharashtra ground validation.",
+    "Slope derivation requires an intact 3x3 surrounding pixel window without NoData cells."
+  ],
+  "notes": "Successfully processed DEM for AAMU-JTG. Station elevation 245.47m (benchmark: 241.0m, diff: 4.47m). Slope: 4.9156 deg (valid=True)."
+}

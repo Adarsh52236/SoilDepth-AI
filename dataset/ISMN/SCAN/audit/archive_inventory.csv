@@ -1,0 +1,4 @@
+expected_archive,status,exists,size_bytes,sha256,member_count,notes
+ISMN_SCAN_2015-2023_SM_0-10cm_Good.zip,NOT_FOUND_IN_RAW_DIR,False,0,N/A,0,Archive not retained in raw/; extracted contents present in extracted/ directory.
+ISMN_SCAN_2015-2023_SM_10-30cm_Good.zip,NOT_FOUND_IN_RAW_DIR,False,0,N/A,0,Archive not retained in raw/; extracted contents present in extracted/ directory.
+ISMN_SCAN_2015-2023_SM_30-60cm_Good.zip,NOT_FOUND_IN_RAW_DIR,False,0,N/A,0,Archive not retained in raw/; extracted contents present in extracted/ directory.

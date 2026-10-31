@@ -1,0 +1,9 @@
+overlap_category,station_count,description
+Total Unique Stations Across SCAN,220,Distinct physical SCAN ground stations across all 3 downloads
+Surface Layer Stations (surface_0-10cm),218,Stations with 5.08 cm (2-in) probe
+Middle Layer Stations (middle_10-30cm),219,Stations with 10.16 cm (4-in) or 20.32 cm (8-in) probes
+Deep Layer Stations (deep_30-60cm),215,Stations with 50.80 cm (20-in) probe
+Full Profile Stations (All 3 Layers),213,"Stations with simultaneous Surface, Middle, and Deep observations"
+Surface + Middle Overlap,217,Stations with both Surface (5cm) and Middle (10/20cm) sensors
+Surface + Deep Overlap,213,Stations with both Surface (5cm) and Deep (50cm) sensors
+Cross-Folder Depth Duplication,0,"Zero depth collision: 5cm only in surface, 10/20cm only in middle, 50cm only in deep"

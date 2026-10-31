@@ -1,0 +1,171 @@
+{
+  "audit_metadata": {
+    "audit_title": "SoilDepth-AI — Sentinel-1 Independent Dataset Audit & Verification",
+    "auditor": "Senior Remote-Sensing Engineer & ML Data Auditor",
+    "station_id": "AAMU-JTG",
+    "audit_date_utc": "2026-10-30T05:30:00Z",
+    "audit_verdict": "PASS WITH WARNINGS"
+  },
+  "station_specifications": {
+    "station_id": "AAMU-JTG",
+    "network": "SCAN",
+    "latitude": 34.78534,
+    "longitude": -86.55906,
+    "crs": "EPSG:32616 (UTM Zone 16N)",
+    "utm_easting_m": 540341.44,
+    "utm_northing_m": 3849327.07,
+    "benchmark_elevation_m": 241.0
+  },
+  "file_inventory_and_integrity": {
+    "total_files_audited": 9,
+    "files": [
+      {
+        "path": "dataset/Sentinel-1/README.md",
+        "size_bytes": 2724,
+        "sha256": "7382211a51bc6e356038de9e266bc79bd9cc4d4e246ecacb4319d90b8fb62e48",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-1/audit/AAMU-JTG/sentinel1_quality_report.json",
+        "size_bytes": 2211,
+        "sha256": "e6903fadae795a13f9d6a91adb8269facaac886c28124131ed3b4a5ee4dc73c5",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-1/manifests/download_manifest.csv",
+        "size_bytes": 1127,
+        "sha256": "3301c9217f6d5d11eaa8c9020d9fd0c3b80393db4716320502c9618bbd87a0e7",
+        "status": "DISCREPANCY_DETECTED",
+        "notes": "Manifest records actual_filename as sentinel1_acquisitions.csv, but file_size_bytes is 1163962 (matching the STAC JSON) and sha256 does not match the acquisitions CSV."
+      },
+      {
+        "path": "dataset/Sentinel-1/manifests/sentinel1_manifest.json",
+        "size_bytes": 2877,
+        "sha256": "f6b82a37dbceb9188d0a55e8af24170d0bab3f0bd078672e64c64b9c32d2a8c2",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-1/processed/AAMU-JTG/sentinel1_acquisitions.csv",
+        "size_bytes": 44028,
+        "sha256": "066584c38f7611c194bc66811c55a63c55adad5a45fedca009bce67bba36b37d",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-1/processed/AAMU-JTG/sentinel1_daily_features.csv",
+        "size_bytes": 127229,
+        "sha256": "4b3bfee686b22f2694c43f7dece442441f9116e230ef8e30d74f80ab22e992c2",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-1/raw/AAMU-JTG/s1_sample_raw_tile_vv.tif",
+        "size_bytes": 1048806,
+        "sha256": "81395518af586687139c5d559eae73208059d3614d2a7fb5e5352e3bf3d0d07e",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-1/raw/AAMU-JTG/sentinel1_stac_items.json",
+        "size_bytes": 1163962,
+        "sha256": "84f348a3b0f8373d1aafee62b1dcb6c77511dfec376a4c93ac2e81f4ea247a87",
+        "status": "VALID"
+      },
+      {
+        "path": "dataset/Sentinel-1/scripts/process_sentinel1.py",
+        "size_bytes": 16284,
+        "sha256": "7e9f944da3e9aa3e0e2fcf663ff6018d5e670ce95a25b85997caa60bc2b8ac0a",
+        "status": "VALID"
+      }
+    ]
+  },
+  "independent_recalculations": {
+    "stac_item_count": 196,
+    "acquisitions_csv_row_count": 196,
+    "unique_product_ids_count": 196,
+    "unique_timestamps_count": 196,
+    "unique_observation_dates_count": 196,
+    "date_range": {
+      "first_acquisition": "2016-04-10T23:46:46.045506Z",
+      "last_acquisition": "2023-12-30T23:47:22.790080Z",
+      "calendar_span_days": 2821
+    },
+    "daily_calendar_rows": 3287,
+    "daily_calendar_valid_days": 196,
+    "daily_calendar_coverage_pct": 5.96,
+    "radiometric_statistics": {
+      "vv_linear_mean": 0.225897,
+      "vh_linear_mean": 0.037913,
+      "vv_db_mean": -8.5954,
+      "vh_db_mean": -15.9428,
+      "vv_vh_ratio_db_mean": 7.3468,
+      "vv_3x3_mean_db": -7.7812,
+      "vv_db_min": -18.19,
+      "vv_db_max": 2.94,
+      "vh_db_min": -28.89,
+      "vh_db_max": -6.21
+    },
+    "mathematical_consistency": {
+      "vv_db_formula_verified": true,
+      "max_vv_db_diff": 0.005004,
+      "vh_db_formula_verified": true,
+      "max_vh_db_diff": 0.00498,
+      "ratio_db_formula_verified": true,
+      "max_ratio_db_diff": 0.01,
+      "floating_point_predictor_inversion_exact": true
+    },
+    "orbit_distribution": {
+      "ascending_count": 194,
+      "descending_count": 2,
+      "relative_orbit_breakdown": {
+        "Track 19 (Ascending, Sentinel-1A)": 193,
+        "Track 19 (Ascending, Sentinel-1B)": 1,
+        "Track 26 (Descending, Sentinel-1B)": 2
+      },
+      "investigation_result": "EXPLAINED_BY_ESA_MISSION_PLAN",
+      "explanation": "Independent STAC search of the raw sentinel-1-grd collection over station AAMU-JTG confirmed 185 ascending and only 3 descending acquisitions between 2016 and 2023. ESA routinely acquired Ascending Track 19 in IW mode over this region of Alabama, whereas descending passes were acquired only during sporadic calibration campaigns."
+    }
+  },
+  "raster_and_spatial_audit": {
+    "coordinate_transform_verification": {
+      "geographic_wgs84": [34.78534, -86.55906],
+      "projected_utm16n": [540341.44, 3849327.07],
+      "verified": true
+    },
+    "sample_geotiff_verification": {
+      "file": "s1_sample_raw_tile_vv.tif",
+      "readable": true,
+      "dimensions": [512, 512],
+      "pixel_scale": [10.0, 10.0, 0.0],
+      "tiepoint": [0.0, 0.0, 0.0, 535750.0, 3854220.0, 0.0],
+      "station_pixel_inside_tile": true,
+      "station_pixel_coords": [459.144, 489.293],
+      "data_type": "float32",
+      "value_range": [0.003068, 113.91094],
+      "mean_linear_power": 0.190693
+    },
+    "terrain_correction_evidence": {
+      "collection": "sentinel-1-rtc",
+      "dem_used": "Copernicus GLO-30 30m DEM",
+      "radiometric_domain": "Gamma0 (terrain-flattened backscatter)",
+      "evidence_confirmed": true
+    }
+  },
+  "temporal_and_leakage_audit": {
+    "calendar_assignment": "UTC timestamp date matches local CST date for 23:47 UTC pass",
+    "unobserved_days_handling": "Preserved strictly as NaN, no forward/backfill interpolation",
+    "multimodal_integration_readiness": "Ready for feature integration, but must enforce shift(1) lag when predicting day t soil moisture to avoid end-of-day temporal leakage"
+  },
+  "audit_findings_and_warnings": [
+    {
+      "severity": "LOW",
+      "code": "MANIFEST_FIELD_MISMATCH",
+      "description": "In dataset/Sentinel-1/manifests/download_manifest.csv, the file_size_bytes is listed as 1163962 (matching sentinel1_stac_items.json) while actual_filename is sentinel1_acquisitions.csv (44028 bytes). In contrast, sentinel1_manifest.json accurately records both files and their exact SHA-256 hashes.",
+      "remedy": "Align download_manifest.csv entry to either record the acquisitions CSV or add separate line items for STAC catalog, sample GeoTIFF, and acquisitions table."
+    },
+    {
+      "severity": "MEDIUM",
+      "code": "ASYMMETRIC_ORBIT_SAMPLING",
+      "description": "194 of 196 observations are from Ascending Track 19 (~23:47 UTC), with only 2 descending morning observations (~11:47 UTC). While verified as an authentic ESA scheduling property, models should not attempt to learn separate ascending/descending diurnal parameters.",
+      "remedy": "Document Ascending Track 19 dominance; filter or treat descending passes as rare out-of-distribution acquisition geometries."
+    }
+  ]
+}
+

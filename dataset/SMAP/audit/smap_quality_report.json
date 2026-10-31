@@ -1,0 +1,64 @@
+{
+  "dataset_name": "SMAP_L3_SPL3SMP_E_006",
+  "product_description": "SMAP Enhanced L3 Radiometer Global Daily 9 km EASE-Grid Soil Moisture",
+  "source_raw_file": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\dataset\\SMAP\\raw\\SoilDepth-AAMU-JTG-SMAP-SPL3SMP-E-006-results.csv",
+  "source_sha256": "90170af47eba10a840712b6af5bbb4740bd944cc7491d1e97f05368120f08e13",
+  "source_size_bytes": 1451447,
+  "processed_file": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\dataset\\SMAP\\processed\\AAMU-JTG\\smap_daily_features.csv",
+  "station_id": "AAMU-JTG",
+  "station_latitude": 34.78534,
+  "station_longitude": -86.55906,
+  "study_period": {
+    "start_date": "2015-01-01",
+    "end_date": "2023-12-31",
+    "total_calendar_days": 3287
+  },
+  "raw_data_coverage": {
+    "start_date": "2015-03-31",
+    "end_date": "2023-12-31",
+    "raw_rows_count": 3115,
+    "pre_mission_days": 89,
+    "no_granule_gap_days": 83,
+    "duplicate_dates_count": 0
+  },
+  "quality_flag_interpretation": {
+    "valid_flag": 9.0,
+    "valid_flag_definition": "Bit 1=0 (attempted) and Bit 2=0 (successful retrieval)",
+    "invalid_flags_observed": {
+      "7.0": "Retrieval skipped, retrieval not successful (fill value -9999.0)",
+      "13.0": "Retrieval attempted, retrieval not successful (constant fill 0.4276806 excluded)",
+      "15.0": "Retrieval skipped, retrieval not successful (fill value -9999.0)"
+    },
+    "recommended_quality_note": "Bit 0 (recommended quality) is set to 1 (not recommended) across all days at this site due to standard land-cover/vegetation density thresholds. Retrieval was attempted and successful (Bit 2=0, Flag 9.0), providing valid physical measurements in the 0.09-0.43 range."
+  },
+  "retrieval_counts": {
+    "valid_am_retrievals": 1461,
+    "valid_pm_retrievals": 1175,
+    "days_with_both_am_pm_valid": 770,
+    "days_with_at_least_one_valid": 1866,
+    "status_breakdown": {
+      "FAILED_RETRIEVAL": 1249,
+      "VALID_AM_PM": 770,
+      "VALID_AM_ONLY": 691,
+      "VALID_PM_ONLY": 405,
+      "PRE_MISSION": 89,
+      "NO_GRANULE": 83
+    }
+  },
+  "daily_mean_statistics_m3_m3": {
+    "count": 1866,
+    "mean": 0.2605129475348339,
+    "std": 0.07484742455560445,
+    "min": 0.0951347,
+    "max": 0.4272833,
+    "p25": 0.19727158749999998,
+    "p50": 0.26530335000000005,
+    "p75": 0.3191561375
+  },
+  "missingness_policy": "Missing satellite observations are preserved as NaN. No synthetic values or future observations were interpolated into target or predictor columns.",
+  "limitations": [
+    "AppEEARS JSON request metadata, XML metadata, and granule lists were not retained in dataset/SMAP/raw/.",
+    "Covers single point extraction at AAMU-JTG; does not provide spatial raster grid.",
+    "SMAP L3 measures top 0-5 cm soil moisture only; it is an input feature, not root-zone ground truth."
+  ]
+}

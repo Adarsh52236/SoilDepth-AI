@@ -1,0 +1,26 @@
+{
+  "manifest_type": "DATASET1_VERIFICATION_MANIFEST",
+  "version": "1.0.0",
+  "generated_at_utc": "2026-10-25T08:36:16.884628+00:00",
+  "execution_environment": {
+    "python_version": "3.11.0rc2 (main, Sep 11 2022, 20:22:52) [MSC v.1933 64 bit (AMD64)]",
+    "platform": "win32",
+    "repo_root": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI"
+  },
+  "input_paths": {
+    "extracted_dir": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\ISMN\\SCAN\\extracted",
+    "raw_dir": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\ISMN\\SCAN\\raw",
+    "prior_audit_dir": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\ISMN\\SCAN\\audit"
+  },
+  "deliverables_generated": [
+    "final_dataset1_readiness_report.md",
+    "claim_verification.csv",
+    "verified_station_depth_counts.csv",
+    "verified_temporal_coverage.csv",
+    "verified_quality_and_label_counts.csv",
+    "verified_cross_depth_overlap.csv",
+    "dataset1_readiness_summary.json",
+    "verification_manifest.json",
+    "run_verification.py"
+  ]
+}

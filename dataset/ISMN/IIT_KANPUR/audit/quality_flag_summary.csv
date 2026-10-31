@@ -1,0 +1,5 @@
+folder,sensor_depth_cm,quality_flag,flag_definition,observation_count,percentage_of_file,download_filter_applied
+ISMN_surface_0-10,10.0,G,Good (Passed automated ISMN geophysical & range checks),11280,100.0,g_flag_only=True
+ISMN_middle_10-30,10.0,G,Good (Passed automated ISMN geophysical & range checks),11280,100.0,g_flag_only=True
+ISMN_middle_10-30,25.0,G,Good (Passed automated ISMN geophysical & range checks),11282,100.0,g_flag_only=True
+ISMN_deep_30-60,50.0,G,Good (Passed automated ISMN geophysical & range checks),10175,100.0,g_flag_only=True

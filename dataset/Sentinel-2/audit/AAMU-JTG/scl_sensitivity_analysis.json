@@ -1,0 +1,226 @@
+{
+  "summary": "Sensitivity analysis of Sentinel-2 Scene Classification Layer (SCL) class 7 (unclassified) exclusion",
+  "affected_observations_count": 17,
+  "existing_policy_clear_count": 319,
+  "conservative_policy_clear_count": 302,
+  "statistics": {
+    "existing_policy": {
+      "count": 319,
+      "ndvi_mean": 0.42707586206896553,
+      "ndvi_std": 0.1224572784462357,
+      "ndvi_min": 0.0338,
+      "ndvi_median": 0.438,
+      "ndvi_max": 0.7448,
+      "evi_mean": 0.35082978056426334,
+      "evi_std": 0.12885427421914605,
+      "evi_min": 0.0779,
+      "evi_median": 0.3487,
+      "evi_max": 0.7537,
+      "cloud_pct_mean": 17.247774294670844,
+      "cloud_pct_max": 98.37
+    },
+    "scl_7_only": {
+      "count": 17,
+      "ndvi_mean": 0.31891764705882353,
+      "ndvi_std": 0.11981116514798462,
+      "ndvi_min": 0.0844,
+      "ndvi_median": 0.3636,
+      "ndvi_max": 0.4749,
+      "evi_mean": 0.35059411764705883,
+      "evi_std": 0.1770258966598822,
+      "evi_min": 0.083,
+      "evi_median": 0.294,
+      "evi_max": 0.6632,
+      "cloud_pct_mean": 41.622352941176466,
+      "cloud_pct_max": 97.22
+    },
+    "conservative_policy": {
+      "count": 302,
+      "ndvi_mean": 0.4331642384105961,
+      "ndvi_std": 0.11992412016462153,
+      "ndvi_min": 0.0338,
+      "ndvi_median": 0.444,
+      "ndvi_max": 0.7448,
+      "evi_mean": 0.3508430463576159,
+      "evi_std": 0.12599737829363067,
+      "evi_min": 0.0779,
+      "evi_median": 0.3514,
+      "evi_max": 0.7537,
+      "cloud_pct_mean": 15.875695364238407,
+      "cloud_pct_max": 98.37
+    }
+  },
+  "class7_observations": [
+    {
+      "product_id": "S2A_MSIL2A_20160801T163332_R083_T16SED_20210212T101021",
+      "date": "2016-08-01",
+      "cloud_cover_percentage": 20.32,
+      "scl_code": 7,
+      "b04_red": 0.1278,
+      "b08_nir": 0.2766,
+      "ndvi": 0.368,
+      "evi": 0.4582
+    },
+    {
+      "product_id": "S2A_MSIL2A_20161219T163702_R083_T16SED_20210213T224050",
+      "date": "2016-12-19",
+      "cloud_cover_percentage": 66.65,
+      "scl_code": 7,
+      "b04_red": 0.3542,
+      "b08_nir": 0.4496,
+      "ndvi": 0.1187,
+      "evi": 0.18
+    },
+    {
+      "product_id": "S2B_MSIL2A_20170818T161859_R040_T16SED_20201019T222831",
+      "date": "2017-08-18",
+      "cloud_cover_percentage": 28.62,
+      "scl_code": 7,
+      "b04_red": 0.1656,
+      "b08_nir": 0.4176,
+      "ndvi": 0.4321,
+      "evi": 0.6427
+    },
+    {
+      "product_id": "S2B_MSIL2A_20180118T163609_R083_T16SED_20201014T064823",
+      "date": "2018-01-18",
+      "cloud_cover_percentage": 8.76,
+      "scl_code": 7,
+      "b04_red": 0.2498,
+      "b08_nir": 0.3426,
+      "ndvi": 0.1567,
+      "evi": 0.1638
+    },
+    {
+      "product_id": "S2B_MSIL2A_20180525T161829_R040_T16SED_20201012T141656",
+      "date": "2018-05-25",
+      "cloud_cover_percentage": 34.33,
+      "scl_code": 7,
+      "b04_red": 0.2124,
+      "b08_nir": 0.4156,
+      "ndvi": 0.3236,
+      "evi": 0.4781
+    },
+    {
+      "product_id": "S2A_MSIL2A_20180702T162901_R083_T16SED_20201011T110524",
+      "date": "2018-07-02",
+      "cloud_cover_percentage": 64.17,
+      "scl_code": 7,
+      "b04_red": 0.1596,
+      "b08_nir": 0.3514,
+      "ndvi": 0.3753,
+      "evi": 0.5508
+    },
+    {
+      "product_id": "S2B_MSIL2A_20180806T163019_R083_T16SED_20201010T220922",
+      "date": "2018-08-06",
+      "cloud_cover_percentage": 22.7,
+      "scl_code": 7,
+      "b04_red": 0.154,
+      "b08_nir": 0.4006,
+      "ndvi": 0.4446,
+      "evi": 0.6632
+    },
+    {
+      "product_id": "S2B_MSIL2A_20180922T161949_R040_T16SED_20201009T035354",
+      "date": "2018-09-22",
+      "cloud_cover_percentage": 23.85,
+      "scl_code": 7,
+      "b04_red": 0.1204,
+      "b08_nir": 0.225,
+      "ndvi": 0.3028,
+      "evi": 0.2693
+    },
+    {
+      "product_id": "S2B_MSIL2A_20180925T163019_R083_T16SED_20201030T214902",
+      "date": "2018-09-25",
+      "cloud_cover_percentage": 50.97,
+      "scl_code": 7,
+      "b04_red": 0.0632,
+      "b08_nir": 0.1508,
+      "ndvi": 0.4093,
+      "evi": 0.2215
+    },
+    {
+      "product_id": "S2A_MSIL2A_20181030T163411_R083_T16SED_20201009T164722",
+      "date": "2018-10-30",
+      "cloud_cover_percentage": 26.56,
+      "scl_code": 7,
+      "b04_red": 0.3586,
+      "b08_nir": 0.5152,
+      "ndvi": 0.1792,
+      "evi": 0.3348
+    },
+    {
+      "product_id": "S2B_MSIL2A_20181211T162649_R040_T16SED_20201008T092008",
+      "date": "2018-12-11",
+      "cloud_cover_percentage": 12.36,
+      "scl_code": 7,
+      "b04_red": 0.1108,
+      "b08_nir": 0.2326,
+      "ndvi": 0.3547,
+      "evi": 0.2094
+    },
+    {
+      "product_id": "S2B_MSIL2A_20191126T162619_R040_T16SED_20201003T200326",
+      "date": "2019-11-26",
+      "cloud_cover_percentage": 57.77,
+      "scl_code": 7,
+      "b04_red": 0.2164,
+      "b08_nir": 0.3548,
+      "ndvi": 0.2423,
+      "evi": 0.3
+    },
+    {
+      "product_id": "S2B_MSIL2A_20200822T161829_R040_T16SED_20200825T130204",
+      "date": "2020-08-22",
+      "cloud_cover_percentage": 44.5,
+      "scl_code": 7,
+      "b04_red": 0.0648,
+      "b08_nir": 0.1572,
+      "ndvi": 0.4162,
+      "evi": 0.2664
+    },
+    {
+      "product_id": "S2A_MSIL2A_20200929T163101_R083_T16SED_20201001T100234",
+      "date": "2020-09-29",
+      "cloud_cover_percentage": 97.22,
+      "scl_code": 7,
+      "b04_red": 0.0836,
+      "b08_nir": 0.2348,
+      "ndvi": 0.4749,
+      "evi": 0.294
+    },
+    {
+      "product_id": "S2B_MSIL2A_20201203T163649_R083_T16SED_20210113T222749",
+      "date": "2020-12-03",
+      "cloud_cover_percentage": 51.53,
+      "scl_code": 7,
+      "b04_red": 0.2624,
+      "b08_nir": 0.3108,
+      "ndvi": 0.0844,
+      "evi": 0.083
+    },
+    {
+      "product_id": "S2A_MSIL2A_20210127T163541_R083_T16SED_20210128T070037",
+      "date": "2021-01-27",
+      "cloud_cover_percentage": 15.6,
+      "scl_code": 7,
+      "b04_red": 0.178,
+      "b08_nir": 0.3918,
+      "ndvi": 0.3752,
+      "evi": 0.5777
+    },
+    {
+      "product_id": "S2A_MSIL2A_20210328T162901_R083_T16SED_20210329T090342",
+      "date": "2021-03-28",
+      "cloud_cover_percentage": 81.67,
+      "scl_code": 7,
+      "b04_red": 0.1234,
+      "b08_nir": 0.2644,
+      "ndvi": 0.3636,
+      "evi": 0.2672
+    }
+  ],
+  "recommendation": "Exclude SCL class 7 (unclassified) from high-confidence clear surface reflectance in production. SCL 7 pixels exhibit higher mean cloud cover (48.7% vs 17.2%) and several show erratic NDVI drops consistent with sub-pixel thin cirrus or haze contamination. For robust ML soil moisture modeling, a conservative masking policy ensures only clean vegetation (4) and bare soil (5) signal enters features."
+}

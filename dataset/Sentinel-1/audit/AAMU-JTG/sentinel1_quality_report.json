@@ -1,0 +1,51 @@
+{
+  "dataset": "Sentinel-1",
+  "station_id": "AAMU-JTG",
+  "timestamp_utc": "2026-10-29T20:14:51.686619+00:00",
+  "status": "PROCESSED",
+  "validation_status": "VALIDATED",
+  "extraction_status": "SUCCESS",
+  "collection_details": {
+    "provider": "European Space Agency (ESA) / Copernicus",
+    "distribution_platform": "Microsoft Planetary Computer (sentinel-1-rtc)",
+    "product_level": "Level-1 GRD Radiometrically Terrain Corrected (RTC) Gamma0",
+    "native_resolution_m": 10.0,
+    "horizontal_crs": "EPSG:32616 (UTM Zone 16N)",
+    "polarizations": [
+      "VV",
+      "VH"
+    ],
+    "radiometric_domain": "Linear Gamma0 and Decibel (10*log10)"
+  },
+  "query_and_temporal_coverage": {
+    "requested_period": "2015-01-01 to 2023-12-31",
+    "calendar_days": 3287,
+    "first_acquisition": "2016-04-10T23:46:46.045506Z",
+    "last_acquisition": "2023-12-30T23:47:22.790080Z"
+  },
+  "statistics": {
+    "total_stac_items_evaluated": 196,
+    "total_acquisitions_retrieved": 196,
+    "valid_observations_count": 196,
+    "invalid_observations_count": 0,
+    "distinct_observation_days": 196,
+    "coverage_percentage": 5.96,
+    "vv_db_min": -18.19,
+    "vv_db_max": 2.94,
+    "vv_db_mean": -8.6,
+    "vh_db_mean": -15.94
+  },
+  "artifacts_generated": {
+    "acquisitions_csv": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\dataset\\Sentinel-1\\processed\\AAMU-JTG\\sentinel1_acquisitions.csv",
+    "acquisitions_sha256": "066584c38f7611c194bc66811c55a63c55adad5a45fedca009bce67bba36b37d",
+    "acquisitions_rows": 196,
+    "daily_features_csv": "C:\\Users\\adars\\OneDrive\\Documents\\PROJECTS\\SoilDepth-AI\\dataset\\Sentinel-1\\processed\\AAMU-JTG\\sentinel1_daily_features.csv",
+    "daily_features_sha256": "4b3bfee686b22f2694c43f7dece442441f9116e230ef8e30d74f80ab22e992c2",
+    "daily_features_rows": 3287
+  },
+  "license_and_attribution": {
+    "license": "Copernicus Open Access Licence",
+    "attribution": "European Space Agency (ESA) Sentinel-1 via Microsoft Planetary Computer"
+  },
+  "notes": "Successfully processed 196 valid Sentinel-1 RTC backscatter observations across 196 distinct calendar days. Mean VV: -8.6 dB."
+}

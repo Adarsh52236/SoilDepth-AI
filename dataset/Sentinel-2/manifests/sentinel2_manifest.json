@@ -1,0 +1,90 @@
+{
+  "manifest_metadata": {
+    "manifest_version": "1.0.0",
+    "last_updated_utc": "2026-10-30T13:00:00Z",
+    "author": "SoilDepth-AI Senior Remote-Sensing Data Engineer",
+    "description": "Authoritative provenance and verification ledger for Sentinel-2 Level-2A surface reflectance covering pilot station AAMU-JTG"
+  },
+  "station_target": {
+    "station_id": "AAMU-JTG",
+    "network": "SCAN",
+    "latitude": 34.78534,
+    "longitude": -86.55906,
+    "utm_zone": "16N",
+    "easting_m": 540341.44,
+    "northing_m": 3849327.07
+  },
+  "dataset_specifications": {
+    "dataset_name": "Sentinel-2",
+    "source_agency": "European Space Agency (ESA) / Copernicus",
+    "product_name": "Sentinel-2 Level-2A Bottom-Of-Atmosphere (BOA) Surface Reflectance",
+    "collection_id": "sentinel-2-l2a",
+    "portal_url": "https://planetarycomputer.microsoft.com/dataset/sentinel-2-l2a",
+    "native_resolution_m": "10m (B02, B03, B04, B08) and 20m (B11, B12, SCL)",
+    "crs": "EPSG:32616 (UTM Zone 16N)",
+    "horizontal_units": "meters",
+    "reflectance_scale_factor": 10000.0,
+    "spectral_bands": [
+      "B02",
+      "B03",
+      "B04",
+      "B08",
+      "B11",
+      "B12"
+    ],
+    "indices_derived": [
+      "NDVI",
+      "EVI"
+    ],
+    "cloud_masking": "Scene Classification Layer (SCL) valid land codes: 2, 4, 5, 6, 7",
+    "license": "Copernicus Open Access Licence",
+    "attribution": "European Space Agency (ESA) Sentinel-2 via Microsoft Planetary Computer"
+  },
+  "inventory": {
+    "total_stac_items_retrieved": 1095,
+    "total_acquisitions_evaluated": 1027,
+    "raw_stac_catalog": "dataset/Sentinel-2/raw/AAMU-JTG/sentinel2_stac_items.json",
+    "raw_stac_catalog_sha256": "943b87aaca77e915fef76fdeee6044bd944d85868526a1cc3962f9632d5d069f",
+    "raw_stac_catalog_bytes": 17982646,
+    "raw_sample_tile": "dataset/Sentinel-2/raw/AAMU-JTG/s2_sample_raw_tile_b04.tif",
+    "raw_sample_tile_bytes": 524506,
+    "processed_acquisitions_csv": "dataset/Sentinel-2/processed/AAMU-JTG/sentinel2_acquisitions.csv",
+    "processed_acquisitions_sha256": "99e34cacedfa78f1dcb5fe46693fcd4004bb27078098b0b870204b5499781c85",
+    "processed_acquisitions_rows": 1027,
+    "processed_daily_csv": "dataset/Sentinel-2/processed/AAMU-JTG/sentinel2_daily_features.csv",
+    "processed_daily_sha256": "5b40a24287249b508894a801c4c37d605b92a83a02c2ab9ac6c94936430f8db7",
+    "processed_daily_rows": 3287,
+    "audit_report_json": "dataset/Sentinel-2/audit/AAMU-JTG/sentinel2_quality_report.json",
+    "status": "PROCESSED",
+    "validation_status": "VALIDATED",
+    "extraction_status": "SUCCESS",
+    "statistics": {
+      "valid_clear_observations_count": 322,
+      "cloud_masked_observations_count": 705,
+      "distinct_clear_days": 322,
+      "clear_sky_percentage": 31.35,
+      "ndvi_mean": 0.4265,
+      "evi_mean": 0.3513
+    },
+    "known_limitations": [
+      "AAMU-JTG is a single US SCAN station in Alabama; does not establish India/Maharashtra ground validation.",
+      "Optical surface reflectance is attenuated by clouds, cloud shadows, and dense smoke."
+    ],
+    "processed_acquisitions_bytes": 194750,
+    "processed_daily_bytes": 140841,
+    "recovered_baseline_05_10_scenes": {
+      "count": 3,
+      "decoder": "MSB-first 15-bit integer unpacking (decode_15bit_s2.py)",
+      "recovered_product_ids": [
+        "S2B_MSIL2A_20230502T162839_R083_T16SED_20240902T142828",
+        "S2B_MSIL2A_20231009T163109_R083_T16SED_20241028T033225",
+        "S2B_MSIL2A_20231205T162639_R040_T16SED_20241120T214747"
+      ],
+      "recovered_dates": [
+        "2023-05-02",
+        "2023-10-09",
+        "2023-12-05"
+      ]
+    }
+  }
+}

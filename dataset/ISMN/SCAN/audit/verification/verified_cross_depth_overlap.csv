@@ -1,0 +1,9 @@
+profile_combination,station_count,pct_of_stations,description
+"All Three Depths (Surface + Mid + Deep)",213,96.82,"Complete vertical soil moisture profile for joint depth modeling"
+"Surface + Middle Only",4,1.82,"Stations missing deep 50cm installation"
+"Surface + Deep Only",0,0.00,"Stations missing mid-layer installation"
+"Middle + Deep Only",2,0.91,"Stations missing 5cm surface installation"
+"Surface Only",1,0.45,"Single-depth surface installation"
+"Middle Only",0,0.00,"Single-depth middle installation"
+"Deep Only",0,0.00,"Single-depth deep installation"
+"Total Network Unique Stations",220,100.00,"Total distinct physical ground stations"

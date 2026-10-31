@@ -1,0 +1,406 @@
+{
+  "project": "SoilDepth-AI",
+  "phase": "Maharashtra Phase 2B Environmental Acquisition",
+  "station_id": "IITM-PUNE-COSMOS",
+  "station_name": "IITM Pune COSMOS-India Station",
+  "coordinates": {
+    "latitude": 18.5372,
+    "longitude": 73.8051
+  },
+  "benchmark_elevation_m": 560.0,
+  "temporal_timeline": {
+    "start_date": "2017-01-01",
+    "end_date": "2023-12-31",
+    "total_daily_epochs": 2556,
+    "expected_daily_epochs": 2556,
+    "date_ordering_monotonic": true,
+    "duplicate_dates": 0,
+    "timezone_convention": "UTC (00:00:00 to 23:59:59 UTC daily epochs)"
+  },
+  "datasets_summary": {
+    "era5_land": {
+      "status": "ACQUIRED_AND_PROCESSED",
+      "spatial_resolution": "0.1 deg (~9 km)",
+      "temporal_resolution": "Hourly aggregated to Daily",
+      "observation_count": 2556,
+      "coverage_pct": 100.0,
+      "features_count": 25
+    },
+    "soilgrids_250m": {
+      "status": "ACQUIRED_AND_PROCESSED",
+      "spatial_resolution": "250 m",
+      "temporal_resolution": "Static edaphic baseline",
+      "properties_count": 8,
+      "depth_intervals": [
+        "0-5cm",
+        "5-15cm",
+        "15-30cm",
+        "30-60cm"
+      ],
+      "features_count": 64
+    },
+    "copernicus_dem_30m": {
+      "status": "ACQUIRED_AND_PROCESSED",
+      "spatial_resolution": "30 m (1 arc-second)",
+      "temporal_resolution": "Static topographic baseline",
+      "extracted_elevation_m": 560.0,
+      "benchmark_elevation_m": 560.0,
+      "slope_deg": 1.8013,
+      "aspect_deg": 242.39,
+      "features_count": 12
+    },
+    "sentinel1_sar": {
+      "status": "ACQUIRED_AND_PROCESSED",
+      "spatial_resolution": "10 m",
+      "temporal_resolution": "6-12 day revisit",
+      "valid_observation_count": 175,
+      "missing_pct": 93.15,
+      "locf_staleness_threshold_days": 30.0,
+      "features_count": 10
+    },
+    "sentinel2_optical": {
+      "status": "ACQUIRED_AND_PROCESSED",
+      "spatial_resolution": "10-20 m",
+      "temporal_resolution": "5-day revisit",
+      "valid_observation_count": 299,
+      "missing_pct": 88.3,
+      "locf_staleness_threshold_days": 45.0,
+      "features_count": 15
+    },
+    "smap_l3": {
+      "status": "AWAITING_NASA_EARTHDATA_CREDENTIALS",
+      "spatial_resolution": "9 km",
+      "temporal_resolution": "Daily",
+      "valid_retrievals_count": 0,
+      "missing_pct": 100.0,
+      "notes": "NASA Earthdata authentication required for raw SPL3SMP_E download. Columns preserved without fabrication.",
+      "features_count": 7
+    }
+  },
+  "leakage_prevention_audit": {
+    "target_columns_present": false,
+    "future_looking_window_used": false,
+    "all_memory_features_use_shift1": true,
+    "clamping_or_fabrication_applied": false
+  },
+  "adapter_quality": {
+    "era5_land": {
+      "adapter": "ERA5-Land",
+      "row_count": 2556,
+      "expected_rows": 2556,
+      "incomplete_days": 0,
+      "temperature_range_c": [
+        15.075,
+        32.538
+      ],
+      "max_daily_precip_mm": 133.3,
+      "is_valid": true,
+      "issues": []
+    },
+    "sentinel1": {
+      "adapter": "Sentinel-1",
+      "total_rows": 2556,
+      "valid_observation_count": 175,
+      "missing_observation_pct": 93.15,
+      "is_valid": true,
+      "issues": []
+    },
+    "sentinel2": {
+      "adapter": "Sentinel-2",
+      "total_rows": 2556,
+      "valid_observation_count": 299,
+      "missing_or_cloud_masked_pct": 88.3,
+      "is_valid": true,
+      "issues": []
+    },
+    "smap_l3": {
+      "adapter": "SMAP-L3",
+      "total_rows": 2556,
+      "valid_retrievals_count": 0,
+      "missing_pct": 100.0,
+      "status": "AWAITING_NASA_EARTHDATA_CREDENTIALS",
+      "is_valid": true,
+      "issues": []
+    },
+    "soilgrids": {
+      "adapter": "SoilGrids",
+      "is_valid": true,
+      "texture_checks": {
+        "texture_sum_0-5cm": 100.0,
+        "bdod_0-5cm": 1.49,
+        "suction_hierarchy_0-5cm": true,
+        "texture_sum_5-15cm": 100.0,
+        "bdod_5-15cm": 1.51,
+        "suction_hierarchy_5-15cm": true,
+        "texture_sum_15-30cm": 100.0,
+        "bdod_15-30cm": 1.51,
+        "suction_hierarchy_15-30cm": true,
+        "texture_sum_30-60cm": 100.0,
+        "bdod_30-60cm": 1.55,
+        "suction_hierarchy_30-60cm": true
+      },
+      "issues": []
+    },
+    "dem": {
+      "adapter": "Copernicus-DEM-30m",
+      "elevation_m": 560.0,
+      "benchmark_elevation_m": 560.0,
+      "elevation_diff_m": 31.58,
+      "slope_deg": 1.8013,
+      "aspect_deg": 242.39,
+      "is_valid": true,
+      "issues": []
+    }
+  },
+  "feature_missingness": {
+    "date": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "station_id": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "latitude": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "longitude": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "elevation_m": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "era5_hourly_count": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "is_complete": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "temperature_2m_mean_c": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "temperature_2m_min_c": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "temperature_2m_max_c": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "dewpoint_2m_mean_c": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "vpd_kpa": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "precipitation_total_mm": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "solar_radiation_total_mj_m2": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "wind_speed_10m_ms": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "wind_u10_mean_ms": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "wind_v10_mean_ms": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "precip_lag_1d": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "precip_roll_sum_3d": {
+      "missing_count": 1,
+      "missing_pct": 0.04
+    },
+    "precip_roll_sum_7d": {
+      "missing_count": 1,
+      "missing_pct": 0.04
+    },
+    "precip_roll_sum_14d": {
+      "missing_count": 1,
+      "missing_pct": 0.04
+    },
+    "precip_roll_sum_30d": {
+      "missing_count": 1,
+      "missing_pct": 0.04
+    },
+    "days_since_rain_gt_1mm": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "temp_roll_mean_7d": {
+      "missing_count": 1,
+      "missing_pct": 0.04
+    },
+    "temp_roll_mean_30d": {
+      "missing_count": 1,
+      "missing_pct": 0.04
+    },
+    "vpd_roll_mean_7d": {
+      "missing_count": 1,
+      "missing_pct": 0.04
+    },
+    "solar_roll_mean_7d": {
+      "missing_count": 1,
+      "missing_pct": 0.04
+    },
+    "doy_sin": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "doy_cos": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "s1_has_valid_observation": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "s1_vv_db_mean": {
+      "missing_count": 2381,
+      "missing_pct": 93.15
+    },
+    "s1_vh_db_mean": {
+      "missing_count": 2381,
+      "missing_pct": 93.15
+    },
+    "s1_vv_vh_ratio_db_mean": {
+      "missing_count": 2381,
+      "missing_pct": 93.15
+    },
+    "s1_vv_db_locf": {
+      "missing_count": 8,
+      "missing_pct": 0.31
+    },
+    "s1_vh_db_locf": {
+      "missing_count": 8,
+      "missing_pct": 0.31
+    },
+    "s1_vv_vh_ratio_db_locf": {
+      "missing_count": 8,
+      "missing_pct": 0.31
+    },
+    "s1_days_since_valid_obs": {
+      "missing_count": 8,
+      "missing_pct": 0.31
+    },
+    "s1_is_stale": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "s1_has_past_obs": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "s2_has_valid_observation": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "s2_ndvi_mean": {
+      "missing_count": 2257,
+      "missing_pct": 88.3
+    },
+    "s2_evi_mean": {
+      "missing_count": 2257,
+      "missing_pct": 88.3
+    },
+    "s2_b04_red_mean": {
+      "missing_count": 2257,
+      "missing_pct": 88.3
+    },
+    "s2_b08_nir_mean": {
+      "missing_count": 2257,
+      "missing_pct": 88.3
+    },
+    "s2_b11_swir1_mean": {
+      "missing_count": 2257,
+      "missing_pct": 88.3
+    },
+    "s2_b12_swir2_mean": {
+      "missing_count": 2257,
+      "missing_pct": 88.3
+    },
+    "s2_ndvi_locf": {
+      "missing_count": 40,
+      "missing_pct": 1.56
+    },
+    "s2_evi_locf": {
+      "missing_count": 40,
+      "missing_pct": 1.56
+    },
+    "s2_b04_red_locf": {
+      "missing_count": 40,
+      "missing_pct": 1.56
+    },
+    "s2_b08_nir_locf": {
+      "missing_count": 40,
+      "missing_pct": 1.56
+    },
+    "s2_b11_swir1_locf": {
+      "missing_count": 40,
+      "missing_pct": 1.56
+    },
+    "s2_b12_swir2_locf": {
+      "missing_count": 40,
+      "missing_pct": 1.56
+    },
+    "s2_days_since_valid_obs": {
+      "missing_count": 40,
+      "missing_pct": 1.56
+    },
+    "s2_is_stale": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "s2_has_past_obs": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "smap_has_valid_retrieval": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "smap_sm_daily_mean_m3_m3": {
+      "missing_count": 2556,
+      "missing_pct": 100.0
+    },
+    "smap_sm_lag_1d": {
+      "missing_count": 2556,
+      "missing_pct": 100.0
+    },
+    "smap_sm_roll_mean_3d": {
+      "missing_count": 2556,
+      "missing_pct": 100.0
+    },
+    "smap_sm_roll_mean_7d": {
+      "missing_count": 2556,
+      "missing_pct": 100.0
+    },
+    "smap_days_since_valid_retrieval": {
+      "missing_count": 2556,
+      "missing_pct": 100.0
+    },
+    "smap_is_stale": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    }
+  },
+  "generated_at_utc": "2026-10-31T04:48:03.976233+00:00"
+}

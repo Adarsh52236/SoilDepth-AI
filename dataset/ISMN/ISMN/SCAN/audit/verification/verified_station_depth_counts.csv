@@ -1,0 +1,9 @@
+depth_folder,target_layer,metric_depth_m,nominal_depth_cm,nominal_depth_in,station_count,sensor_series_count,file_count,total_observations,valid_v_observations,point_proxy_verdict
+"surface_0-10cm","Surface (0-10cm)",0.0508,5.08,2.0,218,456,456,10359229,10280741,"GENUINE_5CM_POINT_PROXY (Zero depth ambiguity)"
+"middle_10-30cm","Middle (10-30cm)",0.1016,10.16,4.0,217,442,442,10348440,10260421,"UPPER_MID_DISCRETE_PROBE (Point measurement)"
+"middle_10-30cm","Middle (10-30cm)",0.1524,15.24,6.0,1,2,2,38899,38870,"INTERMEDIATE_DISCRETE_PROBE (Select stations)"
+"middle_10-30cm","Middle (10-30cm)",0.2032,20.32,8.0,208,419,419,9757005,9655610,"CORE_CENTROID_MID_PROBE (Point measurement)"
+"middle_10-30cm","Middle (10-30cm)",0.254,25.4,10.0,1,3,3,17537,17537,"LOWER_MID_DISCRETE_PROBE (Select stations)"
+"deep_30-60cm","Deep (30-60cm)",0.3048,30.48,12.0,8,13,13,451704,448102,"UPPER_DEEP_DISCRETE_PROBE (Select stations)"
+"deep_30-60cm","Deep (30-60cm)",0.381,38.1,15.0,1,3,3,36731,36720,"INTERMEDIATE_DEEP_PROBE (Select stations)"
+"deep_30-60cm","Deep (30-60cm)",0.508,50.8,20.0,215,449,449,9001163,8903204,"CORE_ROOT_ZONE_PROBE (96.6% of deep files)"

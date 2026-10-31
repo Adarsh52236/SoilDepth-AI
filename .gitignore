@@ -1,79 +1,54 @@
-# Byte-compiled / optimized / DLL files
+# SoilDepth-AI Git Ignore Specification
+# Prevents accidental commits of large satellite, weather, and ground-truth raw archives
+
+# Raw and binary data directories
+**/raw/**
+*.nc
+*.nc4
+*.h5
+*.hdf
+*.tar
+*.tar.gz
+*.zip
+*.7z
+*.tif
+*.tiff
+*.geotiff
+*.dem
+*.hgt
+*.vrt
+*.asc
+*.bin
+
+# Python environment & cache
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual environments
 .env
-.venv
-env/
 venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Testing and coverage
+.venv/
+env/
 .pytest_cache/
-.coverage
-.coverage.*
-htmlcov/
-.tox/
-.nox/
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-
-# Linting and formatting
 .ruff_cache/
 .mypy_cache/
+.coverage
+htmlcov/
 
-# IDE and editors
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# System & OS files
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Project data artifacts (keep directory structure with .gitkeep)
-data/raw/*
-!data/raw/.gitkeep
-!data/raw/sample_soil_moisture.csv
-data/processed/*
-!data/processed/.gitkeep
-data/reports/*
-!data/reports/.gitkeep
-
-# Models and checkpoints (never commit model binaries)
-models/*
-!models/.gitkeep
-
-# Logs and scratch files
-*.log
+# Temporary / scratch directory
 scratch/
 tmp/
+
+# Generated intermediate datasets
+data/modelling/**
+
+# ISMN bulk station extractions (keep only AAMU-JTG station files)
+dataset/ISMN/IIT_KANPUR/extracted/**
+dataset/ISMN/SCAN/extracted/*/*/*
+!dataset/ISMN/SCAN/extracted/*/*/AAMU-JTG
+!dataset/ISMN/SCAN/extracted/*/*/AAMU-JTG/**

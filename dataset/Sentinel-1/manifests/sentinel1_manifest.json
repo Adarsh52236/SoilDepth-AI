@@ -1,0 +1,66 @@
+{
+  "manifest_metadata": {
+    "manifest_version": "1.0.0",
+    "last_updated_utc": "2026-10-29T20:28:00Z",
+    "author": "SoilDepth-AI Senior Remote-Sensing Data Engineer",
+    "description": "Authoritative provenance and verification ledger for Sentinel-1 RTC backscatter covering pilot station AAMU-JTG"
+  },
+  "station_target": {
+    "station_id": "AAMU-JTG",
+    "network": "SCAN",
+    "latitude": 34.78534,
+    "longitude": -86.55906,
+    "utm_zone": "16N",
+    "easting_m": 540341.44,
+    "northing_m": 3849327.07
+  },
+  "dataset_specifications": {
+    "dataset_name": "Sentinel-1",
+    "source_agency": "European Space Agency (ESA) / Copernicus",
+    "product_name": "Sentinel-1 Level-1 GRD Radiometrically Terrain Corrected (RTC)",
+    "collection_id": "sentinel-1-rtc",
+    "portal_url": "https://planetarycomputer.microsoft.com/dataset/sentinel-1-rtc",
+    "native_resolution_m": 10.0,
+    "crs": "EPSG:32616 (UTM Zone 16N)",
+    "horizontal_units": "meters",
+    "radiometric_correction": "Radiometric terrain correction (RTC) using digital elevation model, gamma0 backscatter",
+    "polarizations": ["VV", "VH"],
+    "license": "Copernicus Open Access Licence",
+    "attribution": "European Space Agency (ESA) Sentinel-1 via Microsoft Planetary Computer"
+  },
+  "inventory": {
+    "total_stac_items_retrieved": 196,
+    "raw_stac_catalog": "dataset/Sentinel-1/raw/AAMU-JTG/sentinel1_stac_items.json",
+    "raw_stac_catalog_sha256": "84f348a3b0f8373d1aafee62b1dcb6c77511dfec376a4c93ac2e81f4ea247a87",
+    "raw_stac_catalog_bytes": 1163962,
+    "raw_sample_tile": "dataset/Sentinel-1/raw/AAMU-JTG/s1_sample_raw_tile_vv.tif",
+    "raw_sample_tile_sha256": "81395518af586687139c5d559eae73208059d3614d2a7fb5e5352e3bf3d0d07e",
+    "raw_sample_tile_bytes": 1048806,
+    "processed_acquisitions_csv": "dataset/Sentinel-1/processed/AAMU-JTG/sentinel1_acquisitions.csv",
+    "processed_acquisitions_sha256": "066584c38f7611c194bc66811c55a63c55adad5a45fedca009bce67bba36b37d",
+    "processed_acquisitions_rows": 196,
+    "processed_daily_csv": "dataset/Sentinel-1/processed/AAMU-JTG/sentinel1_daily_features.csv",
+    "processed_daily_sha256": "4b3bfee686b22f2694c43f7dece442441f9116e230ef8e30d74f80ab22e992c2",
+    "processed_daily_rows": 3287,
+    "audit_report_json": "dataset/Sentinel-1/audit/AAMU-JTG/sentinel1_quality_report.json",
+    "status": "PROCESSED",
+    "validation_status": "VALIDATED",
+    "extraction_status": "SUCCESS",
+    "statistics": {
+      "valid_observations_count": 196,
+      "distinct_calendar_days": 196,
+      "vv_db_mean": -8.6,
+      "vh_db_mean": -15.94,
+      "vv_vh_ratio_db_mean": 7.34,
+      "orbit_distribution": {
+        "ascending": 194,
+        "descending": 2
+      }
+    },
+    "known_limitations": [
+      "AAMU-JTG is a single US SCAN station in Alabama; does not establish India/Maharashtra ground validation.",
+      "C-band SAR backscatter penetrates surface soil to ~1-5 cm depending on dielectric constant."
+    ]
+  }
+}
+

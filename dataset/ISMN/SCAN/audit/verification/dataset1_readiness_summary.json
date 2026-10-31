@@ -1,0 +1,62 @@
+{
+  "verification_timestamp_utc": "2026-10-25T08:36:16.884628+00:00",
+  "evaluator": "SoilDepth-AI Senior Data Engineer & ML Validation Specialist",
+  "overall_decision": "CONDITIONAL PASS",
+  "decision_rationales": [
+    "GROUND_TRUTH_VOLUME_EXCELLENT: 40,010,708 observations across 220 stations provide an unprecedented benchmark dataset for satellite-era soil moisture modeling.",
+    "TEMPORAL_COINCIDENCE_VERIFIED: 100% of observations fall squarely in 2015-2023, offering 9 full years of overlap with Sentinel-1, Sentinel-2, SMAP, and ERA5-Land.",
+    "SURFACE_PROXY_UNAMBIGUOUS: 100% of surface sensors are installed at 0.0508 m (5.08 cm / 2 in), providing a true 5 cm point-sensor proxy for satellite radar/radiometry.",
+    "CONDITION_1_GEOGRAPHIC_TRANSFER: SCAN is a US network. It cannot validate operational performance in Maharashtra, India. It must be treated as an ML benchmark / transfer learning pre-training dataset.",
+    "CONDITION_2_POINT_PROBES_NOT_LAYER_AVERAGES: Sensors measure point volumetric water content. They are proxies for layers (0-10cm, 10-30cm, 30-60cm) rather than measured layer integrals.",
+    "CONDITION_3_RAW_ARCHIVES_UNRETAINED: raw/ directory is empty; original ZIP archives were extracted directly into extracted/.",
+    "CONDITION_4_SYNTHETIC_TARGET_EXCLUSION: Exactly 1 observation carries provider flag 'K' (Internal Estimate) and must be purged from supervised training labels.",
+    "CONDITION_5_SENSOR_FLATLINING_MASKING: 14 stations exhibit episodes of constant flatlining (>7 days) during non-drought periods requiring quality masking."
+  ],
+  "dataset_metrics": {
+    "total_stations": 220,
+    "total_stm_files": 1787,
+    "total_extracted_files": 2457,
+    "total_observations": 40010708,
+    "full_three_layer_profile_stations": 213,
+    "usable_observations_after_k_purge": 40010707,
+    "temporal_span_years": 9.0
+  },
+  "layer_readiness": {
+    "surface_0_10cm": {
+      "status": "READY_AS_POINT_PROXY",
+      "stations": 218,
+      "observations": 10359229,
+      "nominal_depth_cm": 5.08,
+      "target_mapping": "Point-sensor proxy for 0-10cm soil layer"
+    },
+    "middle_10_30cm": {
+      "status": "READY_AS_DISCRETE_PROBES",
+      "stations": 219,
+      "observations": 20161881,
+      "nominal_depths_cm": [
+        10.16,
+        15.24,
+        20.32,
+        25.4
+      ],
+      "target_mapping": "Discrete point probes (4 in and 8 in); requires explicit multi-target or depth-weighted integration"
+    },
+    "deep_30_60cm": {
+      "status": "READY_AS_POINT_PROXY",
+      "stations": 215,
+      "observations": 9489598,
+      "nominal_depths_cm": [
+        30.48,
+        38.1,
+        50.8
+      ],
+      "target_mapping": "Core 50.80 cm probe (96.6% of files) serves as subsoil root-zone proxy"
+    }
+  },
+  "claim_verification_summary": {
+    "total_claims_evaluated": 11,
+    "verified": 8,
+    "contradicted": 2,
+    "partially_verified": 1
+  }
+}
