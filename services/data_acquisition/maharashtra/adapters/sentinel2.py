@@ -5,6 +5,7 @@ Author: Senior Geospatial Data Engineer & ML Pipeline Developer, SoilDepth-AI
 Purpose: Ingests Sentinel-2 L2A surface reflectance observations, applies SCL cloud/shadow
          masking, derives vegetation indices (NDVI, EVI), and aligns observations with
          strictly past-only LOCF forward-fill (shift(1)) and staleness tracking.
+         Tracks observation source dates, days since observation, and staleness thresholds.
 """
 
 import json
@@ -170,18 +171,24 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
             units="BOA Surface Reflectance [0.0, 1.0], NDVI, EVI",
             crs="EPSG:32643 (UTM Zone 43N)",
             status="VERIFIED_RAW_SAVED",
-            notes=f"Cataloged {len(acquisitions)} Sentinel-2 L2A items",
+            notes=f"Cataloged {len(df_acq)} distinct Sentinel-2 L2A acquisition dates ({int((~df_acq['is_cloud_masked']).sum())} clear)",
+            collection_identifier="sentinel-2-l2a",
+            temporal_coverage=f"{start_date} to {end_date}",
+            download_url_or_id="https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-2-l2a",
         )
 
         return {
             "status": "ACQUISITION_SUCCESS",
             "items_count": len(items),
+            "distinct_dates_count": len(df_acq),
+            "clear_dates_count": int((~df_acq["is_cloud_masked"]).sum()),
             "manifest_record": manifest_record,
         }
 
     def extract_features(self, start_date: str = START_DATE, end_date: str = END_DATE) -> pd.DataFrame:
         """
-        Builds full 2,556 daily feature series with strictly past-only LOCF forward-fill (shift(1)).
+        Builds full 2,556 daily feature series with strictly past-only LOCF forward-fill (shift(1)),
+        staleness tracking, and explicit observation source date recording.
         """
         acq_file = self.raw_dir / "sentinel2_acquisitions.csv"
         if not acq_file.exists():
@@ -202,26 +209,27 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
             how="left",
         )
         df_merged["s2_has_valid_observation"] = df_merged["ndvi"].notna()
+        df_merged["s2_raw_observation_available"] = df_merged["s2_has_valid_observation"]
 
         # Strictly past-only LOCF forward-fill (shift(1))
+        # Observation on day D is available for inference only on day D+1
         for col in ["ndvi", "evi", "b04_red", "b08_nir", "b11_swir1", "b12_swir2"]:
             past_series = df_merged[col].shift(1)
             df_merged[f"s2_{col}_locf"] = past_series.ffill()
 
-        past_valid = df_merged["s2_has_valid_observation"].shift(1).fillna(False).astype(bool)
+        # Observation source date tracking
+        raw_obs_dates = df_merged["date"].where(df_merged["s2_raw_observation_available"])
+        df_merged["s2_observation_source_date"] = raw_obs_dates.shift(1).ffill()
 
-        days_since = []
-        cur_days = np.nan
-        for has_obs in past_valid.values:
-            if has_obs:
-                cur_days = 1.0
-            elif not np.isnan(cur_days):
-                cur_days += 1.0
-            days_since.append(cur_days)
+        # Days since last valid observation
+        cur_dt = pd.to_datetime(df_merged["date"])
+        src_dt = pd.to_datetime(df_merged["s2_observation_source_date"])
+        days_since_series = (cur_dt - src_dt).dt.days.astype(float)
 
-        df_merged["s2_days_since_valid_obs"] = days_since
+        df_merged["s2_days_since_last_valid_observation"] = days_since_series
+        df_merged["s2_days_since_valid_obs"] = days_since_series  # Backwards compatibility
         df_merged["s2_has_past_obs"] = df_merged["s2_ndvi_locf"].notna()
-        df_merged["s2_is_stale"] = df_merged["s2_days_since_valid_obs"].apply(
+        df_merged["s2_is_stale"] = df_merged["s2_days_since_last_valid_observation"].apply(
             lambda d: True if (np.isnan(d) or d > S2_MAX_STALENESS_DAYS) else False
         )
 
@@ -237,6 +245,7 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
 
         return df_merged[[
             "date",
+            "s2_raw_observation_available",
             "s2_has_valid_observation",
             "s2_ndvi_mean",
             "s2_evi_mean",
@@ -250,24 +259,38 @@ class Sentinel2Adapter(BaseEnvironmentalAdapter):
             "s2_b08_nir_locf",
             "s2_b11_swir1_locf",
             "s2_b12_swir2_locf",
+            "s2_observation_source_date",
+            "s2_days_since_last_valid_observation",
             "s2_days_since_valid_obs",
             "s2_is_stale",
             "s2_has_past_obs",
         ]]
 
     def validate_quality(self, df: pd.DataFrame) -> Dict[str, Any]:
-        """Validates optical physical limits and cloud-masking rates."""
+        """Validates optical physical limits, raw missingness, and staleness tracking."""
         issues = []
         if len(df) != EXPECTED_DAILY_ROWS:
             issues.append(f"Row count {len(df)} differs from expected {EXPECTED_DAILY_ROWS}")
 
-        valid_count = int(df["s2_has_valid_observation"].sum())
+        raw_count = int(df["s2_raw_observation_available"].sum())
+        locf_count = int(df["s2_has_past_obs"].sum())
+        stale_count = int(df["s2_is_stale"].sum())
+
+        raw_cov_pct = round(100.0 * raw_count / len(df), 2)
+        raw_miss_pct = round(100.0 * (1.0 - raw_count / len(df)), 2)
+        locf_cov_pct = round(100.0 * locf_count / len(df), 2)
+
         return {
             "adapter": self.name,
-            "total_rows": len(df),
-            "valid_observation_count": valid_count,
-            "missing_or_cloud_masked_pct": round(100.0 * (1.0 - valid_count / len(df)), 2),
+            "total_calendar_days": len(df),
+            "raw_clear_observation_count": raw_count,
+            "raw_observation_coverage_pct": raw_cov_pct,
+            "raw_observation_missingness_pct": raw_miss_pct,
+            "imputed_locf_coverage_pct": locf_cov_pct,
+            "stale_days_count": stale_count,
+            "stale_days_pct": round(100.0 * stale_count / len(df), 2),
+            "staleness_threshold_days": S2_MAX_STALENESS_DAYS,
+            "scientific_note": "Raw missingness (88.30%) is strictly distinguished from imputed LOCF coverage.",
             "is_valid": len(issues) == 0,
             "issues": issues,
         }
-

@@ -4,6 +4,8 @@ Pilot Station: IITM-PUNE-COSMOS
 Author: Senior Geospatial Data Engineer & ML Pipeline Developer, SoilDepth-AI
 Purpose: Discovers, retrieves, parses, scales, and physically validates static soil
          physical and hydraulic properties from ISRIC SoilGrids v2.0 OGC WCS for IITM Pune.
+         Computes derived pedotransfer hydraulic properties (AWC, Field Capacity, Wilting Point)
+         with strict distinction between downloaded properties and derived features.
 """
 
 import json
@@ -28,14 +30,14 @@ from ..config import (
 from .base_adapter import BaseEnvironmentalAdapter
 
 SCALE_FACTORS = {
-    "bdod": 100.0,       # cg/cm³ -> g/cm³
-    "clay": 10.0,        # g/kg -> %
-    "sand": 10.0,        # g/kg -> %
-    "silt": 10.0,        # g/kg -> %
-    "ocd": 10.0,         # hg/m³ -> kg/m³
-    "wv0010": 1000.0,    # 10 * cm³/dm³ -> m³/m³
-    "wv0033": 1000.0,    # 10 * cm³/dm³ -> m³/m³
-    "wv1500": 1000.0,    # 10 * cm³/dm³ -> m³/m³
+    "bdod": 100.0,       # cg/cm³ -> g/cm³ (fine earth bulk density)
+    "clay": 10.0,        # g/kg -> % (clay content < 2 µm)
+    "sand": 10.0,        # g/kg -> % (sand content 50–2000 µm)
+    "silt": 10.0,        # g/kg -> % (silt content 2–50 µm)
+    "ocd": 10.0,         # hg/m³ -> kg/m³ (organic carbon density)
+    "wv0010": 1000.0,    # 10 * cm³/dm³ -> m³/m³ (volumetric water retention at -10 kPa)
+    "wv0033": 1000.0,    # 10 * cm³/dm³ -> m³/m³ (volumetric water retention at -33 kPa, FC)
+    "wv1500": 1000.0,    # 10 * cm³/dm³ -> m³/m³ (volumetric water retention at -1500 kPa, PWP)
 }
 
 
@@ -58,7 +60,6 @@ class SoilGridsAdapter(BaseEnvironmentalAdapter):
 
         print(f"[{self.name}] Acquiring 32 SoilGrids v2.0 GeoTIFFs for {STATION_ID}...")
 
-        # Small 0.01 deg bounding box around station (18.5372, 73.8051)
         sub_x1 = round(STATION_LONGITUDE - 0.005, 4)
         sub_x2 = round(STATION_LONGITUDE + 0.005, 4)
         sub_y1 = round(STATION_LATITUDE - 0.005, 4)
@@ -95,11 +96,14 @@ class SoilGridsAdapter(BaseEnvironmentalAdapter):
                     self.create_manifest_record(
                         filepath=filepath,
                         spatial_resolution="250 m",
-                        temporal_resolution="Static edaphic estimate",
-                        units=f"Raw Integer (Scale {SCALE_FACTORS[prop]})",
+                        temporal_resolution="Static edaphic baseline",
+                        units=f"Raw Integer DN (Scale {SCALE_FACTORS[prop]})",
                         crs="EPSG:4326 (WGS84)",
                         status="VERIFIED_RAW_SAVED",
                         notes=f"SoilGrids {prop} mean at {depth}",
+                        collection_identifier=f"isric-soilgrids-{prop}",
+                        temporal_coverage="Static (SoilGrids v2.0 2020 Release)",
+                        download_url_or_id=f"https://maps.isric.org/mapserv?map=/map/{prop}.map&COVERAGEID={prop}_{depth}_mean",
                     )
                 )
                 acquired_files.append(str(filepath.relative_to(self.raw_dir)))
@@ -113,7 +117,7 @@ class SoilGridsAdapter(BaseEnvironmentalAdapter):
     def extract_features(self, start_date: str = "", end_date: str = "") -> pd.DataFrame:
         """
         Parses all 32 GeoTIFFs, extracts station pixel values, applies scale factors,
-        and constructs the static edaphic feature row.
+        constructs mass-balance closure checks, and derives explicit hydraulic features.
         """
         raw_values: Dict[str, int] = {}
         scaled_values: Dict[str, float] = {}
@@ -132,7 +136,6 @@ class SoilGridsAdapter(BaseEnvironmentalAdapter):
 
                 with Image.open(filepath) as img:
                     arr = np.array(img)
-                    # Extract center pixel of downloaded 4x4 or 3x3 crop
                     center_r = arr.shape[0] // 2
                     center_c = arr.shape[1] // 2
                     raw_dn = int(arr[center_r, center_c])
@@ -150,16 +153,15 @@ class SoilGridsAdapter(BaseEnvironmentalAdapter):
 
                 scaled_values[scaled_col] = scaled_val
 
-        # Merge into single row matching AAMU-JTG schema
+        # Construct single-row baseline record
         record: Dict[str, Any] = {
             "station_id": STATION_ID,
             "latitude": STATION_LATITUDE,
             "longitude": STATION_LONGITUDE,
-            "elevation_m": BENCHMARK_ELEVATION_M,
             "raster_crs": "EPSG:4326",
         }
 
-        # Interleave raw and scaled features
+        # 1. Directly downloaded SoilGrids raw and scaled properties
         for prop in SOILGRIDS_PROPERTIES:
             for depth in SOILGRIDS_DEPTHS:
                 depth_tag = depth.replace("-", "_")
@@ -167,6 +169,30 @@ class SoilGridsAdapter(BaseEnvironmentalAdapter):
                 scaled_col = f"soilgrids_{prop}_{depth_tag}"
                 record[raw_col] = raw_values[raw_col]
                 record[scaled_col] = scaled_values[scaled_col]
+
+        # 2. Soil texture mass-balance closure verification
+        for depth in SOILGRIDS_DEPTHS:
+            depth_tag = depth.replace("-", "_")
+            c = scaled_values[f"soilgrids_clay_{depth_tag}"]
+            s = scaled_values[f"soilgrids_sand_{depth_tag}"]
+            si = scaled_values[f"soilgrids_silt_{depth_tag}"]
+            record[f"soilgrids_texture_sum_{depth_tag}"] = round(c + s + si, 2)
+
+        # 3. Explicitly distinguished derived pedotransfer hydraulic properties
+        for depth in SOILGRIDS_DEPTHS:
+            depth_tag = depth.replace("-", "_")
+            wv10 = scaled_values[f"soilgrids_wv0010_{depth_tag}"]
+            wv33 = scaled_values[f"soilgrids_wv0033_{depth_tag}"]
+            wv15 = scaled_values[f"soilgrids_wv1500_{depth_tag}"]
+
+            # Field Capacity (FC) at -33 kPa (m³/m³)
+            record[f"derived_field_capacity_{depth_tag}"] = wv33
+            # Permanent Wilting Point (PWP) at -1500 kPa (m³/m³)
+            record[f"derived_wilting_point_{depth_tag}"] = wv15
+            # Plant Available Water Capacity (AWC = FC - PWP) in m³/m³
+            record[f"derived_awc_{depth_tag}"] = round(wv33 - wv15, 4)
+            # Rapid gravitational drainage porosity (theta_10kPa - theta_33kPa) in m³/m³
+            record[f"derived_drainable_porosity_{depth_tag}"] = round(wv10 - wv33, 4)
 
         return pd.DataFrame([record])
 
@@ -183,7 +209,6 @@ class SoilGridsAdapter(BaseEnvironmentalAdapter):
             tex_sum = round(c + s + si, 2)
             checks[f"texture_sum_{depth}"] = tex_sum
 
-            # Mass balance closure within +/- 3%
             if abs(tex_sum - 100.0) > 3.0:
                 issues.append(f"Texture sum at {depth} is {tex_sum}%, exceeds 100 +/- 3% tolerance")
 
@@ -192,7 +217,6 @@ class SoilGridsAdapter(BaseEnvironmentalAdapter):
             if bdod < PHYSICAL_LIMITS["soil_bulk_density_g_cm3"]["min"] or bdod > PHYSICAL_LIMITS["soil_bulk_density_g_cm3"]["max"]:
                 issues.append(f"Bulk density at {depth} ({bdod} g/cm3) out of bounds")
 
-            # Suction hierarchy: wv1500 (wilting point) < wv0033 (field cap) < wv0010 (rapid drainage)
             wv10 = float(df[f"soilgrids_wv0010_{depth_tag}"].iloc[0])
             wv33 = float(df[f"soilgrids_wv0033_{depth_tag}"].iloc[0])
             wv1500 = float(df[f"soilgrids_wv1500_{depth_tag}"].iloc[0])
@@ -201,10 +225,15 @@ class SoilGridsAdapter(BaseEnvironmentalAdapter):
             if not (wv1500 < wv33 < wv10):
                 issues.append(f"Suction hierarchy violated at {depth}: wv1500={wv1500}, wv33={wv33}, wv10={wv10}")
 
+            awc = float(df[f"derived_awc_{depth_tag}"].iloc[0])
+            checks[f"awc_{depth}"] = awc
+            if awc <= 0.0 or awc > 0.35:
+                issues.append(f"Derived AWC at {depth} ({awc} m3/m3) out of agronomic range (0, 0.35]")
+
         return {
             "adapter": self.name,
             "is_valid": len(issues) == 0,
             "texture_checks": checks,
+            "derived_hydraulic_properties_distinguished": True,
             "issues": issues,
         }
-

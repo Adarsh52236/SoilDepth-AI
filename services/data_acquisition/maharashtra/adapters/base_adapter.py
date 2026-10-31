@@ -9,7 +9,7 @@ import json
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Any, Optional, Union
+from typing import Dict, Any, Optional, Union, List
 import pandas as pd
 
 
@@ -56,21 +56,28 @@ class BaseEnvironmentalAdapter(ABC):
         crs: str,
         status: str,
         notes: str = "",
+        collection_identifier: str = "",
+        temporal_coverage: Union[str, List[str]] = "",
+        download_url_or_id: str = "",
+        processing_version: str = "Phase 2C (Data Integrity Audited)",
     ) -> Dict[str, Any]:
         """Creates a standardized manifest entry for immutable audit tracking."""
         return {
             "adapter": self.name,
             "source": self.source,
+            "collection_identifier": collection_identifier or self.name,
             "filename": filepath.name,
             "relative_path": str(filepath.relative_to(filepath.parents[4])),
             "size_bytes": filepath.stat().st_size if filepath.exists() else 0,
             "sha256": self.compute_sha256(filepath) if filepath.exists() else "UNAVAILABLE",
             "spatial_resolution": spatial_resolution,
             "temporal_resolution": temporal_resolution,
+            "temporal_coverage": temporal_coverage,
+            "download_url_or_id": download_url_or_id,
             "units": units,
             "coordinate_reference_system": crs,
+            "processing_version": processing_version,
             "retrieval_timestamp_utc": datetime.now(timezone.utc).isoformat(),
             "status": status,
             "notes": notes,
         }
-

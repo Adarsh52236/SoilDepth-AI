@@ -1,6 +1,7 @@
 {
   "project": "SoilDepth-AI",
-  "phase": "Maharashtra Phase 2B Environmental Acquisition",
+  "phase": "Maharashtra Phase 2C Environmental Acquisition & Data Integrity Audit",
+  "audit_standard": "ISO-19157 / SoilDepth-AI High-Assurance QA",
   "station_id": "IITM-PUNE-COSMOS",
   "station_name": "IITM Pune COSMOS-India Station",
   "coordinates": {
@@ -23,7 +24,9 @@
       "spatial_resolution": "0.1 deg (~9 km)",
       "temporal_resolution": "Hourly aggregated to Daily",
       "observation_count": 2556,
+      "hourly_observation_count": 61344,
       "coverage_pct": 100.0,
+      "zero_era5_deep_sm_verified": true,
       "features_count": 25
     },
     "soilgrids_250m": {
@@ -37,79 +40,106 @@
         "15-30cm",
         "30-60cm"
       ],
-      "features_count": 64
+      "texture_mass_balance_closure_pct": 100.0,
+      "derived_hydraulic_properties_distinguished": true,
+      "features_count": 84
     },
     "copernicus_dem_30m": {
       "status": "ACQUIRED_AND_PROCESSED",
       "spatial_resolution": "30 m (1 arc-second)",
       "temporal_resolution": "Static topographic baseline",
-      "extracted_elevation_m": 560.0,
+      "extracted_elevation_m": 591.58,
+      "subpixel_bilinear_elevation_m": 590.64,
+      "independent_srtm_elevation_m": 590.0,
       "benchmark_elevation_m": 560.0,
+      "elevation_discrepancy_m": 31.58,
+      "elevation_discrepancy_explanation": "Pashan foothill plateau terrain (~591m) vs Pune central plain / Shivajinagar nominal benchmark (560m)",
       "slope_deg": 1.8013,
       "aspect_deg": 242.39,
-      "features_count": 12
+      "features_count": 21
     },
     "sentinel1_sar": {
       "status": "ACQUIRED_AND_PROCESSED",
       "spatial_resolution": "10 m",
       "temporal_resolution": "6-12 day revisit",
-      "valid_observation_count": 175,
-      "missing_pct": 93.15,
+      "raw_observation_count": 175,
+      "raw_missingness_pct": 93.15,
+      "imputed_locf_coverage_pct": 99.69,
+      "stale_days_count": 164,
       "locf_staleness_threshold_days": 30.0,
-      "features_count": 10
+      "features_count": 13
     },
     "sentinel2_optical": {
       "status": "ACQUIRED_AND_PROCESSED",
       "spatial_resolution": "10-20 m",
       "temporal_resolution": "5-day revisit",
-      "valid_observation_count": 299,
-      "missing_pct": 88.3,
+      "raw_clear_observation_count": 299,
+      "raw_missingness_pct": 88.3,
+      "imputed_locf_coverage_pct": 98.44,
+      "stale_days_count": 315,
       "locf_staleness_threshold_days": 45.0,
-      "features_count": 15
+      "features_count": 19
     },
     "smap_l3": {
-      "status": "AWAITING_NASA_EARTHDATA_CREDENTIALS",
+      "status": "AWAITING_AUTH",
       "spatial_resolution": "9 km",
       "temporal_resolution": "Daily",
-      "valid_retrievals_count": 0,
-      "missing_pct": 100.0,
-      "notes": "NASA Earthdata authentication required for raw SPL3SMP_E download. Columns preserved without fabrication.",
-      "features_count": 7
+      "raw_retrievals_count": 0,
+      "raw_missingness_pct": 100.0,
+      "imputed_coverage_pct": 0.0,
+      "zero_synthetic_data_verified": true,
+      "notes": "NASA Earthdata authentication required for raw SPL3SMP_E download. Columns preserved as unpopulated NaN.",
+      "features_count": 10
     }
   },
   "leakage_prevention_audit": {
     "target_columns_present": false,
     "future_looking_window_used": false,
     "all_memory_features_use_shift1": true,
-    "clamping_or_fabrication_applied": false
+    "clamping_or_fabrication_applied": false,
+    "era5_deep_sm_used": false
   },
   "adapter_quality": {
     "era5_land": {
       "adapter": "ERA5-Land",
       "row_count": 2556,
       "expected_rows": 2556,
+      "hourly_timesteps_verified": 61344,
       "incomplete_days": 0,
       "temperature_range_c": [
         15.075,
         32.538
       ],
       "max_daily_precip_mm": 133.3,
+      "zero_era5_deep_sm_verified": true,
       "is_valid": true,
       "issues": []
     },
     "sentinel1": {
       "adapter": "Sentinel-1",
-      "total_rows": 2556,
-      "valid_observation_count": 175,
-      "missing_observation_pct": 93.15,
+      "total_calendar_days": 2556,
+      "raw_observation_count": 175,
+      "raw_observation_coverage_pct": 6.85,
+      "raw_observation_missingness_pct": 93.15,
+      "imputed_locf_coverage_pct": 99.69,
+      "stale_days_count": 164,
+      "stale_days_pct": 6.42,
+      "staleness_threshold_days": 30.0,
+      "scientific_note": "Raw missingness (93.15%) is strictly distinguished from imputed LOCF coverage.",
       "is_valid": true,
       "issues": []
     },
     "sentinel2": {
       "adapter": "Sentinel-2",
-      "total_rows": 2556,
-      "valid_observation_count": 299,
-      "missing_or_cloud_masked_pct": 88.3,
+      "total_calendar_days": 2556,
+      "raw_clear_observation_count": 299,
+      "raw_observation_coverage_pct": 11.7,
+      "raw_observation_missingness_pct": 88.3,
+      "imputed_locf_coverage_pct": 98.44,
+      "stale_days_count": 315,
+      "stale_days_pct": 12.32,
+      "staleness_threshold_days": 45.0,
+      "scientific_note": "Raw missingness (88.30%) is strictly distinguished from imputed LOCF coverage.",
       "is_valid": true,
       "issues": []
     },
@@ -118,7 +148,9 @@
       "total_rows": 2556,
       "valid_retrievals_count": 0,
       "missing_pct": 100.0,
-      "status": "AWAITING_NASA_EARTHDATA_CREDENTIALS",
+      "status": "AWAITING_AUTH",
+      "zero_synthetic_data_verified": true,
+      "smap_l4_not_used_verified": true,
       "is_valid": true,
       "issues": []
     },
@@ -129,23 +161,31 @@
         "texture_sum_0-5cm": 100.0,
         "bdod_0-5cm": 1.49,
         "suction_hierarchy_0-5cm": true,
+        "awc_0-5cm": 0.125,
         "texture_sum_5-15cm": 100.0,
         "bdod_5-15cm": 1.51,
         "suction_hierarchy_5-15cm": true,
+        "awc_5-15cm": 0.121,
         "texture_sum_15-30cm": 100.0,
         "bdod_15-30cm": 1.51,
         "suction_hierarchy_15-30cm": true,
+        "awc_15-30cm": 0.13,
         "texture_sum_30-60cm": 100.0,
         "bdod_30-60cm": 1.55,
-        "suction_hierarchy_30-60cm": true
+        "suction_hierarchy_30-60cm": true,
+        "awc_30-60cm": 0.106
       },
+      "derived_hydraulic_properties_distinguished": true,
       "issues": []
     },
     "dem": {
       "adapter": "Copernicus-DEM-30m",
-      "elevation_m": 560.0,
+      "elevation_m": 591.58,
+      "subpixel_bilinear_elevation_m": 590.64,
       "benchmark_elevation_m": 560.0,
-      "elevation_diff_m": 31.58,
+      "elevation_diff_benchmark_m": 31.58,
+      "independent_srtm_elevation_m": 590.0,
+      "difference_vs_srtm_m": 1.58,
       "slope_deg": 1.8013,
       "aspect_deg": 242.39,
       "is_valid": true,
@@ -269,6 +309,10 @@
       "missing_count": 0,
       "missing_pct": 0.0
     },
+    "s1_raw_observation_available": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
     "s1_has_valid_observation": {
       "missing_count": 0,
       "missing_pct": 0.0
@@ -297,6 +341,14 @@
       "missing_count": 8,
       "missing_pct": 0.31
     },
+    "s1_observation_source_date": {
+      "missing_count": 8,
+      "missing_pct": 0.31
+    },
+    "s1_days_since_last_valid_observation": {
+      "missing_count": 8,
+      "missing_pct": 0.31
+    },
     "s1_days_since_valid_obs": {
       "missing_count": 8,
       "missing_pct": 0.31
@@ -306,6 +358,10 @@
       "missing_pct": 0.0
     },
     "s1_has_past_obs": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "s2_raw_observation_available": {
       "missing_count": 0,
       "missing_pct": 0.0
     },
@@ -361,6 +417,14 @@
       "missing_count": 40,
       "missing_pct": 1.56
     },
+    "s2_observation_source_date": {
+      "missing_count": 40,
+      "missing_pct": 1.56
+    },
+    "s2_days_since_last_valid_observation": {
+      "missing_count": 40,
+      "missing_pct": 1.56
+    },
     "s2_days_since_valid_obs": {
       "missing_count": 40,
       "missing_pct": 1.56
@@ -370,6 +434,10 @@
       "missing_pct": 0.0
     },
     "s2_has_past_obs": {
+      "missing_count": 0,
+      "missing_pct": 0.0
+    },
+    "smap_raw_observation_available": {
       "missing_count": 0,
       "missing_pct": 0.0
     },
@@ -393,6 +461,14 @@
       "missing_count": 2556,
       "missing_pct": 100.0
     },
+    "smap_observation_source_date": {
+      "missing_count": 2556,
+      "missing_pct": 100.0
+    },
+    "smap_days_since_last_valid_observation": {
+      "missing_count": 2556,
+      "missing_pct": 100.0
+    },
     "smap_days_since_valid_retrieval": {
       "missing_count": 2556,
       "missing_pct": 100.0
@@ -402,5 +478,5 @@
       "missing_pct": 0.0
     }
   },
-  "generated_at_utc": "2026-10-31T04:48:03.976233+00:00"
+  "generated_at_utc": "2026-10-31T06:45:28.874027+00:00"
 }
