@@ -123,6 +123,15 @@ class ModelDetail(BaseModel):
     test_rmse: float
     test_r2: float
     test_pearson_r: float
+    training_station_id: str = Field(default="AAMU-JTG", description="Benchmark training station")
+    training_period: str = Field(default="2015-01-01 to 2020-12-31", description="Chronological training split")
+    validation_period: str = Field(default="2021-01-01 to 2021-12-31", description="Validation tuning split")
+    test_period: str = Field(default="2022-01-01 to 2023-12-31", description="Independent holdout test split")
+    edaphic_source_layer: str = Field(default="", description="Associated HWSD / SoilGrids depth layer")
+    limitations: str = Field(
+        default="Trained on single SCAN pilot station AAMU-JTG (Alabama, USA). Point-sensor depth proxy.",
+        description="Scientific limitations and regional constraints"
+    )
 
 
 class ModelCatalogResponse(BaseModel):
@@ -134,5 +143,11 @@ class ModelCatalogResponse(BaseModel):
     model_version: str
     status: str
     ground_sensor_dependence: str
+    training_station_id: str = Field(default="AAMU-JTG", description="Baseline training station")
+    training_period: str = Field(default="2015-01-01 to 2020-12-31", description="Training observation window")
+    target_geography: str = Field(default="AAMU-JTG, Alabama, USA (Pilot Benchmark)", description="Validated geographic domain")
+    limitations: str = Field(
+        default="Model 1 weights are trained exclusively on Alabama AAMU-JTG data and must not be used as Maharashtra-trained weights without regional retuning on verified local ground truth.",
+        description="Governing model limitations"
+    )
     models: Dict[str, ModelDetail]
-

@@ -169,23 +169,27 @@ Endpoints:
 
 ---
 
-## 5. Operational Limitations & Edge Cases
+## 5. Operational Limitations, Static Features & Edge Cases
 
-1. **Proxy Semantics:** Predictions are proxies for discrete point sensor tines (at 5.08, 10.16, 20.32, 50.80 cm depth in Decatur silt loam). They must not be misconstrued as integrated soil layer volumetric totals without depth-weighted numerical trapezoidal integration.
-2. **Missing Satellite Observations:** SMAP, Sentinel-1, and Sentinel-2 features naturally exhibit revisit gaps. XGBoost handles NaNs natively along learned optimal default branches.
-3. **Physical Clamping:** All predictions are constrained to $[0.0, 0.60\text{ m}^3/\text{m}^3]$ (physical limits for mineral soils). Any raw model output outside this range is clamped and flagged in `validation_info.clamped_predictions`.
-4. **Spatial Specificity:** Model 1 weights are calibrated on pilot station `AAMU-JTG`. Static soil properties are constant during single-station calibration; spatial transfer to different soil textures requires Model 2 multi-station training.
+1. **Static Soil Feature Layer Isolation:**
+   - **Topsoil Properties (`0.00-0.30 m`):** Clay = 25.0%, Sand = 53.0%, Silt = 22.0%, Organic Carbon = 0.98%, Saturation = $0.43\text{ m}^3/\text{m}^3$. Applied to `sm_5cm`, `sm_10cm`, and `sm_20cm`.
+   - **Subsoil Properties (`0.30-1.00 m`):** Clay = 39.0%, Sand = 41.0%, Silt = 20.0%, Organic Carbon = 0.39%, Saturation = $0.44\text{ m}^3/\text{m}^3$. Strictly applied to `sm_50cm`.
+   - **Layer Integrity Safeguard:** Subsoil fields never receive topsoil defaults when missing. Partial and depth-specific inputs (`topsoil_*`, `subsoil_*`, `hwsd_topsoil`, `hwsd_subsoil`) are strictly validated.
+2. **Proxy Semantics:** Predictions are proxies for discrete point sensor tines (at 5.08, 10.16, 20.32, 50.80 cm depth in Decatur silt loam). They must not be misconstrued as integrated soil layer volumetric totals without depth-weighted numerical trapezoidal integration.
+3. **Missing Satellite Observations:** SMAP, Sentinel-1, and Sentinel-2 features naturally exhibit revisit gaps. XGBoost handles NaNs natively along learned optimal default branches.
+4. **Physical Clamping:** All predictions are constrained to $[0.0, 0.65\text{ m}^3/\text{m}^3]$ (physical limits for mineral soils). Any raw model output outside this range is clamped and flagged in `validation_info.clamped_predictions`.
+5. **Spatial Specificity & Regional Gating:** Model 1 weights are calibrated on pilot station `AAMU-JTG` (Alabama, USA). They are NOT calibrated for Maharashtra Vertisols (black cotton soils). Maharashtra regional models will be trained using `services/modelling/train_maharashtra.py` once authorized institutional in-situ observations arrive.
 
 ---
 
 ## 6. Reproducing Inference Tests
 
-Run the full pytest suite (88 passing tests):
+Run the full pytest suite (193 passing tests):
 ```powershell
-python -c "import pytest, sys; sys.exit(pytest.main(['-s', 'tests']))"
+pytest tests/
 ```
-Or execute the inference test module specifically:
+Or execute the inference test module specifically (14 passing tests):
 ```powershell
-python -c "import pytest, sys; sys.exit(pytest.main(['-s', 'tests/test_model1_inference.py']))"
+pytest tests/test_model1_inference.py
 ```
 

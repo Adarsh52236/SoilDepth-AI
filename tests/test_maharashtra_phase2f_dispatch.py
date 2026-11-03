@@ -208,3 +208,4 @@ def test_phase2f_readiness_report():
     assert "Bharatkosh" in content
     assert "Action Required" in content
     assert "BLOCKED" in content
+

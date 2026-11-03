@@ -182,3 +182,4 @@ We formally certify that during Phase 2F:
 3. No personal contact names or unverified email addresses were invented or included without documentation.
 4. Alabama Model 1 source code, datasets, and inference pipelines remain completely untouched and isolated.
 5. Maharashtra regional model training remains **BLOCKED** pending receipt and 10-gate verification of actual in-situ ground-truth telemetry.
+

@@ -345,3 +345,131 @@ def test_fastapi_endpoints(sample_test_df: pd.DataFrame):
     b_data = batch_res.json()
     assert b_data["batch_size"] == 3
     assert len(b_data["results"]) == 3
+
+
+# ==============================================================================
+# 11. DEPTH-SPECIFIC STATIC SOIL & SUBSOIL INTEGRITY TESTS
+# ==============================================================================
+def test_missing_subsoil_uses_subsoil_default_not_topsoil(predictor: Model1Predictor):
+    """
+    Verifies that when static inputs are omitted, sm_50cm receives subsoil defaults
+    (clay=39%, sand=41%, silt=20%, organic_carbon=0.39%, saturation=0.44),
+    and does NOT receive topsoil defaults (clay=25%, sand=53%, silt=22%, etc.).
+    """
+    minimal_record = {
+        "date_utc": "2023-08-01",
+        "temperature_2m_mean_c": 28.0,
+        "temperature_2m_min_c": 22.0,
+        "temperature_2m_max_c": 34.0,
+        "dewpoint_2m_mean_c": 21.0,
+        "vpd_kpa": 1.40,
+        "precipitation_total_mm": 0.0,
+        "solar_radiation_total_mj_m2": 24.0,
+        "wind_speed_10m_ms": 1.8,
+    }
+
+    resp = predictor.predict_single(minimal_record)
+    filled = resp.validation_info.missing_features_filled_with_default
+
+    # Topsoil features explicitly filled with topsoil defaults
+    assert "clay_fraction_pct" in filled
+    assert "sand_fraction_pct" in filled
+
+    # Subsoil features explicitly filled with subsoil defaults (distinct tracking)
+    assert "subsoil_clay_fraction_pct" in filled
+    assert "subsoil_sand_fraction_pct" in filled
+    assert "subsoil_organic_carbon_pct" in filled
+
+    # Prediction must be valid and within bounds
+    assert np.isfinite(resp.predictions["sm_50cm"].volumetric_soil_moisture)
+    assert 0.0 <= resp.predictions["sm_50cm"].volumetric_soil_moisture <= 0.60
+
+
+def test_partial_static_inputs_handling(predictor: Model1Predictor):
+    """
+    Verifies that partial static inputs are safely handled per-layer without
+    cross-layer contamination (e.g. providing topsoil clay does not contaminate subsoil).
+    """
+    # Provide topsoil clay only
+    partial_topsoil_record = {
+        "date_utc": "2023-08-01",
+        "temperature_2m_mean_c": 28.0,
+        "precipitation_total_mm": 0.0,
+        "clay_fraction_pct": 32.0,  # User provided topsoil clay
+    }
+
+    _, val_info, static_ctx = predictor._sanitize_and_validate_record(partial_topsoil_record)
+
+    # Topsoil clay is recognized from user input
+    assert static_ctx["topsoil"]["clay_fraction_pct"] == 32.0
+    # Topsoil sand was missing and tracked
+    assert "sand_fraction_pct" in val_info.missing_features_filled_with_default
+    # Subsoil clay was NOT given and must be tracked as subsoil default
+    assert "subsoil_clay_fraction_pct" in val_info.missing_features_filled_with_default
+    # Subsoil input dict must NOT have been contaminated with topsoil 32.0
+    assert "clay_fraction_pct" not in static_ctx["subsoil"]
+
+    resp = predictor.predict_single(partial_topsoil_record)
+    assert resp.status in ("SUCCESS", "WARNING")
+    assert np.isfinite(resp.predictions["sm_5cm"].volumetric_soil_moisture)
+    assert np.isfinite(resp.predictions["sm_50cm"].volumetric_soil_moisture)
+
+
+def test_depth_specific_static_inputs_resolution(predictor: Model1Predictor):
+    """
+    Verifies that explicit depth-specific static inputs (topsoil vs subsoil)
+    are routed to their exact corresponding depth models.
+    Supports both flattened prefixes (topsoil_*/subsoil_*) and nested dictionaries.
+    """
+    # 1. Test flattened depth-specific keys
+    flat_record = {
+        "date_utc": "2023-08-01",
+        "temperature_2m_mean_c": 25.0,
+        "precipitation_total_mm": 2.0,
+        "topsoil_clay_fraction_pct": 20.0,
+        "subsoil_clay_fraction_pct": 48.0,
+        "subsoil_sand_fraction_pct": 35.0,
+    }
+
+    _, _, static_ctx_flat = predictor._sanitize_and_validate_record(flat_record)
+    assert static_ctx_flat["topsoil"]["clay_fraction_pct"] == 20.0
+    assert static_ctx_flat["subsoil"]["clay_fraction_pct"] == 48.0
+    assert static_ctx_flat["subsoil"]["sand_fraction_pct"] == 35.0
+
+    resp_flat = predictor.predict_single(flat_record)
+    assert np.isfinite(resp_flat.predictions["sm_5cm"].volumetric_soil_moisture)
+    assert np.isfinite(resp_flat.predictions["sm_50cm"].volumetric_soil_moisture)
+
+    # 2. Test nested dictionaries
+    nested_record = {
+        "date_utc": "2023-08-01",
+        "temperature_2m_mean_c": 25.0,
+        "precipitation_total_mm": 2.0,
+        "hwsd_topsoil": {"clay_fraction_pct": 22.0, "sand_fraction_pct": 55.0},
+        "hwsd_subsoil": {"clay_fraction_pct": 46.0, "sand_fraction_pct": 38.0},
+    }
+
+    _, _, static_ctx_nested = predictor._sanitize_and_validate_record(nested_record)
+    assert static_ctx_nested["topsoil"]["clay_fraction_pct"] == 22.0
+    assert static_ctx_nested["subsoil"]["clay_fraction_pct"] == 46.0
+
+
+def test_enriched_catalog_metadata(predictor: Model1Predictor):
+    """
+    Verifies that the catalog exposes training station, period, depth,
+    edaphic source layers, and explicit scientific limitations.
+    """
+    catalog = predictor.get_model_catalog()
+
+    assert catalog.training_station_id == "AAMU-JTG"
+    assert "2015-01-01" in catalog.training_period
+    assert "Alabama" in catalog.target_geography
+    assert "limitations" in catalog.model_dump()
+
+    for d_key, detail in catalog.models.items():
+        assert detail.training_station_id == "AAMU-JTG"
+        assert "2015-01-01" in detail.training_period
+        assert "2022-01-01" in detail.test_period
+        assert detail.edaphic_source_layer != ""
+        assert "limitations" in detail.model_dump()
+

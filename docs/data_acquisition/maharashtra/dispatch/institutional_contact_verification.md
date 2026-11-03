@@ -137,3 +137,4 @@ For the remaining 11 candidate stations in the Maharashtra network inventory, in
 
 > [!CAUTION]
 > In accordance with SoilDepth-AI high-assurance protocols, **no request letters shall be drafted or dispatched for stations 06 to 16** until their contacts achieve formal `VERIFIED_INSTITUTIONAL_CONTACT` or `VERIFIED_PORTAL_ROUTE` certification.
+

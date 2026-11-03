@@ -10,7 +10,7 @@ Purpose: Ingests, normalizes, and strictly validates heterogeneous in-situ groun
 import math
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Any, List, Optional, Tuple, Set
+from typing import Dict, Any, List, Optional, Tuple, Set, Union
 import numpy as np
 import pandas as pd
 
@@ -58,10 +58,11 @@ class MaharashtraGroundTruthAdapter:
 
     def __init__(self, station_registry_path: Optional[Path] = None):
         self.station_registry_path = station_registry_path or (METADATA_DIR / "station_registry.csv")
+        self.depth_matrix_path = METADATA_DIR / "depth_compatibility_matrix.csv"
         self._load_registry()
 
     def _load_registry(self):
-        """Loads known station metadata for coordinate and depth verification."""
+        """Loads known station metadata and depth compatibility for coordinate and depth verification."""
         self.known_stations: Dict[str, Dict[str, Any]] = {}
         if self.station_registry_path.exists():
             df_reg = pd.read_csv(self.station_registry_path)
@@ -82,6 +83,20 @@ class MaharashtraGroundTruthAdapter:
                     "sensor_depths_cm": depths,
                     "district": str(r.get("district", "")),
                     "access_status": str(r.get("data_access_classification", "")),
+                }
+
+        self.depth_matrix: Dict[str, Dict[str, str]] = {}
+        if self.depth_matrix_path.exists():
+            df_mat = pd.read_csv(self.depth_matrix_path)
+            for _, r in df_mat.iterrows():
+                sid = str(r["station_id"])
+                self.depth_matrix[sid] = {
+                    "sensor_modality": str(r.get("sensor_modality", "")),
+                    "model1_5cm": str(r.get("model1_5cm_compatibility", "")),
+                    "model1_10cm": str(r.get("model1_10cm_compatibility", "")),
+                    "model1_20cm": str(r.get("model1_20cm_compatibility", "")),
+                    "model1_50cm": str(r.get("model1_50cm_compatibility", "")),
+                    "interpolation_prohibited": str(r.get("prohibited_interpolation_flag", "")),
                 }
 
     def normalize(
@@ -178,6 +193,12 @@ class MaharashtraGroundTruthAdapter:
         # Quality flag
         if "quality_flag" in column_mapping:
             flags = df[column_mapping["quality_flag"]].astype(str).str.upper()
+            is_synthetic = flags.isin(["SYNTHETIC", "INTERPOLATED", "SIMULATED", "INTERPOLATED_PROHIBITED", "ARTIFICIAL"])
+            if is_synthetic.any():
+                raise GroundTruthValidationError(
+                    "Synthetic or interpolated observation flag detected in ground-truth records. "
+                    "Strict SoilDepth-AI protocol prohibits training or validating on synthetic ground-truth data."
+                )
             df_norm["quality_flag"] = flags.apply(lambda f: f if f in ALLOWED_QUALITY_FLAGS else "SUSPECT")
         else:
             df_norm["quality_flag"] = "GOOD"
@@ -191,14 +212,17 @@ class MaharashtraGroundTruthAdapter:
 
         return df_norm[NORMALIZED_COLUMNS]
 
-    def validate(self, df: pd.DataFrame) -> Dict[str, Any]:
+    def validate(self, df: pd.DataFrame, strict: bool = False) -> Dict[str, Any]:
         """
         Applies exhaustive high-assurance data integrity validation to normalized ground truth.
+        If strict=True, raises GroundTruthValidationError on any integrity violation.
         """
         issues: List[str] = []
         total_records = len(df)
 
         if total_records == 0:
+            if strict:
+                raise GroundTruthValidationError("Dataset is empty")
             return {"is_valid": False, "total_records": 0, "issues": ["Dataset is empty"]}
 
         # 1. Schema check
@@ -260,15 +284,189 @@ class MaharashtraGroundTruthAdapter:
             issues.append(f"{unknown_flag_count} records have unrecognized quality_flag values")
 
         good_records = int((df["quality_flag"] == "GOOD").sum())
+        is_valid = len(issues) == 0
+
+        if strict and not is_valid:
+            raise GroundTruthValidationError(
+                f"Ground-truth data validation failed with {len(issues)} issues:\n"
+                + "\n".join(f"- {iss}" for iss in issues)
+            )
 
         return {
             "adapter": "MaharashtraGroundTruthAdapter",
             "total_records": total_records,
             "good_records": good_records,
-            "usable_pct": round(100.0 * good_records / total_records, 2),
+            "usable_pct": round(100.0 * good_records / total_records, 2) if total_records > 0 else 0.0,
             "duplicate_count": dup_count,
             "out_of_bounds_count": oob_count,
             "invalid_depth_count": invalid_depth_count,
-            "is_valid": len(issues) == 0,
+            "is_valid": is_valid,
             "issues": issues,
+        }
+
+    def ingest_file(
+        self,
+        file_path: Union[str, Path],
+        column_mapping: Dict[str, str],
+        source_dataset: str,
+        default_station_id: Optional[str] = None,
+        input_vwc_unit: str = "m3/m3",
+        input_timezone: str = "UTC",
+        sheet_name: Optional[Union[str, int]] = 0,
+        strict: bool = True,
+    ) -> pd.DataFrame:
+        """
+        Ingests ground-truth observations from CSV, TSV, TXT, or Excel files,
+        normalizes the schema to SoilDepth-AI standards, and runs strict integrity validation.
+        """
+        fp = Path(file_path)
+        if not fp.exists():
+            raise FileNotFoundError(f"Ground-truth file does not exist: {fp}")
+
+        ext = fp.suffix.lower()
+        if ext in [".csv", ".txt"]:
+            df_raw = pd.read_csv(fp)
+        elif ext == ".tsv":
+            df_raw = pd.read_csv(fp, sep="\t")
+        elif ext in [".xlsx", ".xls"]:
+            df_raw = pd.read_excel(fp, sheet_name=sheet_name)
+        else:
+            raise ValueError(
+                f"Unsupported file format '{ext}'. Must be CSV (.csv, .txt), TSV (.tsv), or Excel (.xlsx, .xls)."
+            )
+
+        # Validate that mapped source columns exist in raw dataframe
+        for target_key, raw_col in column_mapping.items():
+            if raw_col not in df_raw.columns:
+                raise GroundTruthValidationError(
+                    f"Mapped source column '{raw_col}' (for '{target_key}') not found in file '{fp.name}'. "
+                    f"Available columns: {list(df_raw.columns)}"
+                )
+
+        # Normalize schema
+        df_norm = self.normalize(
+            df=df_raw,
+            column_mapping=column_mapping,
+            source_dataset=source_dataset,
+            default_station_id=default_station_id,
+            input_vwc_unit=input_vwc_unit,
+            input_timezone=input_timezone,
+        )
+
+        # Strict validation
+        self.validate(df_norm, strict=strict)
+
+        return df_norm
+
+    def validate_temporal_alignment(
+        self,
+        df: pd.DataFrame,
+        window_start: str = "2017-01-01",
+        window_end: str = "2023-12-31",
+    ) -> Dict[str, Any]:
+        """
+        Validates temporal alignment against the environmental feature timeline (2017-01-01 to 2023-12-31).
+        Checks coverage, start/end dates, and records within/outside window.
+        """
+        if "timestamp" not in df.columns:
+            raise GroundTruthValidationError("DataFrame must contain 'timestamp' column for temporal alignment")
+
+        ts_series = pd.to_datetime(df["timestamp"], utc=True)
+        if ts_series.empty:
+            return {
+                "window_start": window_start,
+                "window_end": window_end,
+                "data_start": None,
+                "data_end": None,
+                "total_records": 0,
+                "records_in_window": 0,
+                "coverage_pct": 0.0,
+                "is_aligned": False,
+            }
+
+        t_min = ts_series.min()
+        t_max = ts_series.max()
+
+        start_dt = pd.to_datetime(window_start, utc=True)
+        end_dt = pd.to_datetime(window_end, utc=True) + pd.Timedelta(days=1) - pd.Timedelta(nanoseconds=1)
+
+        in_window_mask = (ts_series >= start_dt) & (ts_series <= end_dt)
+        in_window_count = int(in_window_mask.sum())
+        total_records = len(df)
+        coverage_pct = round(100.0 * in_window_count / max(total_records, 1), 2)
+
+        pre_window_count = int((ts_series < start_dt).sum())
+        post_window_count = int((ts_series > end_dt).sum())
+
+        return {
+            "window_start": window_start,
+            "window_end": window_end,
+            "data_start": t_min.strftime("%Y-%m-%d"),
+            "data_end": t_max.strftime("%Y-%m-%d"),
+            "total_records": total_records,
+            "records_in_window": in_window_count,
+            "records_pre_window": pre_window_count,
+            "records_post_window": post_window_count,
+            "coverage_pct": coverage_pct,
+            "is_aligned": (in_window_count > 0) and (coverage_pct >= 90.0),
+        }
+
+    def generate_coverage_summary(
+        self,
+        df: pd.DataFrame,
+        min_obs_for_training: int = 180,
+    ) -> Dict[str, Any]:
+        """
+        Produces exhaustive data coverage summary report per station and depth.
+        Evaluates against the 180-observation minimum threshold required for depth model training.
+        """
+        if df.empty:
+            return {"total_records": 0, "total_stations": 0, "stations": {}}
+
+        df_copy = df.copy()
+        df_copy["date_utc"] = pd.to_datetime(df_copy["timestamp"], utc=True).dt.strftime("%Y-%m-%d")
+
+        stations_summary: Dict[str, Dict[str, Any]] = {}
+        for sid, s_group in df_copy.groupby("station_id"):
+            depth_summaries: Dict[float, Dict[str, Any]] = {}
+            for depth, d_group in s_group.groupby("sensor_depth_cm"):
+                n_records = len(d_group)
+                unique_dates = int(d_group["date_utc"].nunique())
+                min_date = str(d_group["date_utc"].min())
+                max_date = str(d_group["date_utc"].max())
+
+                span_days = (pd.to_datetime(max_date) - pd.to_datetime(min_date)).days + 1
+                completeness_pct = round(100.0 * unique_dates / max(span_days, 1), 2)
+
+                vwc = d_group["soil_moisture_vwc"].dropna()
+                vwc_min = float(vwc.min()) if len(vwc) > 0 else None
+                vwc_max = float(vwc.max()) if len(vwc) > 0 else None
+                vwc_mean = float(vwc.mean()) if len(vwc) > 0 else None
+                vwc_std = float(vwc.std()) if len(vwc) > 1 else 0.0
+
+                flags = {k: int(v) for k, v in d_group["quality_flag"].value_counts().items()}
+                sufficient = bool(unique_dates >= min_obs_for_training)
+
+                depth_summaries[float(depth)] = {
+                    "record_count": n_records,
+                    "daily_observation_count": unique_dates,
+                    "start_date": min_date,
+                    "end_date": max_date,
+                    "span_days": span_days,
+                    "temporal_completeness_pct": completeness_pct,
+                    "vwc_min": round(vwc_min, 4) if vwc_min is not None else None,
+                    "vwc_max": round(vwc_max, 4) if vwc_max is not None else None,
+                    "vwc_mean": round(vwc_mean, 4) if vwc_mean is not None else None,
+                    "vwc_std": round(vwc_std, 4) if vwc_std is not None else None,
+                    "quality_flags": flags,
+                    "sufficient_for_training": sufficient,
+                    "verdict": "SUFFICIENT" if sufficient else f"INSUFFICIENT_OBSERVATIONS ({unique_dates}/{min_obs_for_training} days)",
+                }
+
+            stations_summary[str(sid)] = depth_summaries
+
+        return {
+            "total_records": len(df_copy),
+            "total_stations": len(stations_summary),
+            "stations": stations_summary,
         }

@@ -92,3 +92,4 @@ Immediately upon dispatch:
 3. Record the transaction ID, speed post barcode, or DSP portal application number.
 4. Store these evidence files under: `dataset/Maharashtra/evidence/submissions/<REQUEST_ID>/`.
 5. Update the tracking status from `READY_FOR_SUBMISSION` to `REQUEST_SUBMITTED` in `ground_truth_request_tracker.md` and `station_registry.csv`.
+

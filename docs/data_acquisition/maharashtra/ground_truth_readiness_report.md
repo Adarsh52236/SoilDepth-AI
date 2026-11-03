@@ -19,7 +19,7 @@ This independent readiness audit evaluated the operational and physical availabi
 ### Core Finding:
 - **Zero in-situ ground-truth observations are currently accessible via open public download.**
 - **Zero synthetic ground-truth values have been fabricated.**
-- **Environmental predictor extraction is 100% operational across Maharashtra**, but **supervised model training is strictly BLOCKED** pending the receipt and cryptographic verification of official ground-truth telemetry.
+- **Environmental predictor extraction has completed for the 2 configured pilot stations (IITM-PUNE and MPKV-RAHURI-CAAST)**; the remaining 14 statewide candidate stations remain in `FALSE_EXTRACTION_PENDING` status. **Supervised regional model training is strictly BLOCKED** pending the receipt and cryptographic verification of official ground-truth telemetry.
 
 ---
 
@@ -67,22 +67,22 @@ A comprehensive tracker of institutional requisitions and blockers is documented
 
 | Station ID | Institutional Authority | Access Classification | Requisition Status | Specific Blocker / Prerequisite |
 | :--- | :--- | :--- | :--- | :--- |
-| `IITM-PUNE-COSMOS` | Indian Institute of Tropical Meteorology (MoES) | `VERIFIED_RESTRICTED_ACCESS` | `DRAFTED_NOT_SENT` | Official institutional requisition letter drafted (`iitm_moes_cosmos_pune_request.md`); awaiting dispatch. |
-| `IMD-AGRIMET-PUNE` | India Meteorological Department (IMD) Pune | `VERIFIED_RESTRICTED_ACCESS` | `PORTAL_PREREQUISITE_PENDING` | Requires formal purchase through IMD National Data Centre portal with non-commercial tariff payment via Bharatkosh. |
-| `MPKV-RAHURI-CAAST` | MPKV Rahuri / ICAR-NAHEP CAAST | `VERIFIED_RESTRICTED_ACCESS` | `REQUEST_DRAFTED` | Requires bilateral academic Memorandum of Understanding (MOU) with MPKV Director of Research. |
-| `NIASM-BARAMATI-FLUX` | ICAR National Institute of Abiotic Stress Management | `VERIFIED_RESTRICTED_ACCESS` | `REQUEST_DRAFTED` | Requires formal data-sharing request endorsed by institute director for eddy covariance & profile probe logs. |
-| `AICRPDA-SOLAPUR` | All India Coordinated Research Project for Dryland Agriculture | `VERIFIED_RESTRICTED_ACCESS` | `REQUEST_DRAFTED` | Daily digital telemetry unreleased; archived in printed annual progress reports. |
-| `PDKV-AKOLA-COSMOS` | Dr. PDKV Akola / UKCEH COSMOS-India | `VERIFIED_RESTRICTED_ACCESS` | `REQUEST_DRAFTED` | Campaign-based calibration data held under restricted NERC-MoES research agreement. |
-| `VNMKV-PARBHANI-AWS` | Vasantrao Naik Marathwada Krishi Vidyapeeth | `VERIFIED_RESTRICTED_ACCESS` | `REQUEST_DRAFTED` | Requires academic data agreement with Department of Agricultural Meteorology. |
-| `CICR-NAGPUR-EDDY` | ICAR Central Institute for Cotton Research | `VERIFIED_RESTRICTED_ACCESS` | `REQUEST_DRAFTED` | Research farm profile probes gated by Division of Crop Production clearance. |
-| `NBSS-LUP-NAGPUR` | ICAR National Bureau of Soil Survey & Land Use Planning | `VERIFIED_RESTRICTED_ACCESS` | `REQUEST_DRAFTED` | Benchmark pedon database requires institutional authorization. |
-| `BSKKV-DAPOLI-AGROMET` | Dr. Balasaheb Sawant Konkan Krishi Vidyapeeth | `VERIFIED_RESTRICTED_ACCESS` | `REQUEST_DRAFTED` | Operational observatory records archived in manual paper registers; digitization pending. |
-| `POCRA-CHHATRAPATI-SAMBHAJINAGAR` | PoCRA / Govt of Maharashtra / World Bank | `VERIFIED_RESTRICTED_ACCESS` | `REQUEST_DRAFTED` | Requires Government of Maharashtra Agriculture Department API access credentials. |
-| `POCRA-JALNA-CLUSTER` | PoCRA / Govt of Maharashtra / World Bank | `VERIFIED_RESTRICTED_ACCESS` | `REQUEST_DRAFTED` | Project Management Unit (PMU) Mumbai clearance required for IoT gateway stream. |
-| `CRIDA-KVK-BARAMATI` | ICAR-CRIDA NICRA Project / KVK Baramati | `ACCESS_STATUS_UNKNOWN` | `PRELIMINARY_CONTACT` | Continuous digital logging unverified; station existence confirmed. |
-| `MPKV-KASBE-DIGRAJ` | MPKV Regional Sugarcane Research Station | `ACCESS_STATUS_UNKNOWN` | `PRELIMINARY_CONTACT` | Field trials active; permanent digital logging unconfirmed. |
-| `PDKV-YAVATMAL-COTTON` | Dr. PDKV Cotton Research Station Yavatmal | `ACCESS_STATUS_UNKNOWN` | `PRELIMINARY_CONTACT` | Historical neutron probe records in paper archives; continuous digital sensors unverified. |
-| `VNMKV-BADNAPUR-PULSES` | VNMKV ARS Badnapur | `ACCESS_STATUS_UNKNOWN` | `PRELIMINARY_CONTACT` | Periodic trial measurements during drydown; no continuous digital telemetry. |
+| `IITM-PUNE-COSMOS` | Indian Institute of Tropical Meteorology (MoES) | `VERIFIED_RESTRICTED_ACCESS` | `READY_FOR_SUBMISSION` | Official institutional dispatch packet finalized (`SOILDEPTH-REQ-2026-001`); awaiting user dispatch. |
+| `IMD-AGRIMET-PUNE` | India Meteorological Department (IMD) Pune | `VERIFIED_RESTRICTED_ACCESS` | `READY_FOR_SUBMISSION` | Formal academic data supply packet finalized (`SOILDEPTH-REQ-2026-004`); pending NDC portal submission & Bharatkosh payment. |
+| `MPKV-RAHURI-CAAST` | MPKV Rahuri / ICAR-NAHEP CAAST | `VERIFIED_RESTRICTED_ACCESS` | `READY_FOR_SUBMISSION` | Academic bilateral data-sharing packet finalized (`SOILDEPTH-REQ-2026-003`); addressed to Director of Research. |
+| `NIASM-BARAMATI-FLUX` | ICAR National Institute of Abiotic Stress Management | `VERIFIED_RESTRICTED_ACCESS` | `READY_FOR_SUBMISSION` | Academic collaborative research packet finalized (`SOILDEPTH-REQ-2026-002`); addressed to Director, ICAR-NIASM. |
+| `POCRA-CHHATRAPATI-SAMBHAJINAGAR` | PoCRA / Govt of Maharashtra / World Bank | `VERIFIED_RESTRICTED_ACCESS` | `READY_FOR_SUBMISSION` | Formal academic request packet finalized (`SOILDEPTH-REQ-2026-005`); addressed to Project Director, PoCRA PMU. |
+| `POCRA-JALNA-CLUSTER` | PoCRA / Govt of Maharashtra / World Bank | `VERIFIED_RESTRICTED_ACCESS` | `READY_FOR_SUBMISSION` | Covered under PoCRA PMU Mumbai dispatch packet (`SOILDEPTH-REQ-2026-005`). |
+| `AICRPDA-SOLAPUR` | All India Coordinated Research Project for Dryland Agriculture | `VERIFIED_RESTRICTED_ACCESS` | `DRAFTED_NOT_SENT` | Daily digital telemetry unreleased; archived in printed annual progress reports. |
+| `PDKV-AKOLA-COSMOS` | Dr. PDKV Akola / UKCEH COSMOS-India | `VERIFIED_RESTRICTED_ACCESS` | `DRAFTED_NOT_SENT` | Campaign-based calibration data held under restricted NERC-MoES research agreement. |
+| `VNMKV-PARBHANI-AWS` | Vasantrao Naik Marathwada Krishi Vidyapeeth | `VERIFIED_RESTRICTED_ACCESS` | `DRAFTED_NOT_SENT` | Requires academic data agreement with Department of Agricultural Meteorology. |
+| `CICR-NAGPUR-EDDY` | ICAR Central Institute for Cotton Research | `VERIFIED_RESTRICTED_ACCESS` | `DRAFTED_NOT_SENT` | Research farm profile probes gated by Division of Crop Production clearance. |
+| `NBSS-LUP-NAGPUR` | ICAR National Bureau of Soil Survey & Land Use Planning | `VERIFIED_RESTRICTED_ACCESS` | `DRAFTED_NOT_SENT` | Benchmark pedon database requires institutional authorization. |
+| `BSKKV-DAPOLI-AGROMET` | Dr. Balasaheb Sawant Konkan Krishi Vidyapeeth | `VERIFIED_RESTRICTED_ACCESS` | `DRAFTED_NOT_SENT` | Operational observatory records archived in manual paper registers; continuous digital telemetry unverified. |
+| `CRIDA-KVK-BARAMATI` | ICAR-CRIDA NICRA Project / KVK Baramati | `ACCESS_STATUS_UNKNOWN` | `MERELY_IDENTIFIED` | Continuous digital logging unverified; station existence confirmed. |
+| `MPKV-KASBE-DIGRAJ` | MPKV Regional Sugarcane Research Station | `ACCESS_STATUS_UNKNOWN` | `MERELY_IDENTIFIED` | Field trials active; permanent digital logging unconfirmed. |
+| `PDKV-YAVATMAL-COTTON` | Dr. PDKV Cotton Research Station Yavatmal | `ACCESS_STATUS_UNKNOWN` | `MERELY_IDENTIFIED` | Historical neutron probe records in paper archives; continuous digital sensors unverified. |
+| `VNMKV-BADNAPUR-PULSES` | VNMKV ARS Badnapur | `ACCESS_STATUS_UNKNOWN` | `MERELY_IDENTIFIED` | Periodic trial measurements during drydown; no continuous digital telemetry. |
 
 ---
 

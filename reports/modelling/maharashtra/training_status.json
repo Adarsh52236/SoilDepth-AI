@@ -1,0 +1,46 @@
+{
+  "timestamp_utc": "2026-11-03T19:00:35.129059+00:00",
+  "status": "BLOCKED_AWAITING_IN_SITU_GROUND_TRUTH",
+  "model_phase": "Model 1 \u2014 Maharashtra Regional Expansion",
+  "alabama_baseline_status": "COMPLETED_AND_INDEPENDENTLY_VALIDATED",
+  "ground_truth_records_received": 0,
+  "ground_truth_stations_received": 0,
+  "training_permitted": false,
+  "reason": "Supervised training of Maharashtra regional models is strictly prohibited until verified in-situ soil moisture observations are received from authorized institutions. Training on synthetic, simulated, reanalysis-derived, or inter-depth interpolated observations is strictly prohibited by SoilDepth-AI scientific data integrity protocols.",
+  "candidate_stations_awaited": {
+    "total_candidate_stations": 16,
+    "tier_1_pilot_candidates": [
+      "IMD-AGRIMET-PUNE",
+      "MPKV-RAHURI-CAAST",
+      "NIASM-BARAMATI-FLUX",
+      "IITM-PUNE-COSMOS"
+    ],
+    "formal_request_dispatch_packets_ready": 5,
+    "institutional_targets": [
+      "IITM/MoES COSMOS Pune",
+      "ICAR-NIASM Baramati",
+      "MPKV Rahuri CAAST",
+      "IMD National Data Centre Pune",
+      "Maharashtra PoCRA PMU"
+    ]
+  },
+  "environmental_predictors_readiness": {
+    "status": "PREPARED_FOR_CONFIGURED_PILOT_STATIONS",
+    "extracted_stations_count": 2,
+    "extracted_station_ids": [
+      "IITM-PUNE",
+      "MPKV-RAHURI-CAAST"
+    ],
+    "temporal_coverage": "2017-01-01 to 2023-12-31 (2,556 daily timesteps)",
+    "data_leakage_audit": "PASSED (Zero ERA5 deep SM swvl2-4, zero SMAP L4, past-only lags)"
+  },
+  "unblocking_execution_plan": [
+    "Step 1: Receive authorized in-situ observation files from institutional providers.",
+    "Step 2: Ingest and normalize files via MaharashtraGroundTruthAdapter.ingest_file().",
+    "Step 3: Validate physical VWC bounds [0.00, 0.65] m3/m3, documented sensor depths, and coordinate matching.",
+    "Step 4: Align chronologically with daily environmental timelines (2017-2023).",
+    "Step 5: Partition chronological splits (Train: 2017-2021, Val: 2022, Test: 2023) and Leave-One-Station-Out CV.",
+    "Step 6: Train separate XGBoost depth regressors for depths with >= 180 valid daily observations.",
+    "Step 7: Compute independent evaluation metrics (RMSE, MAE, R\u00b2, Bias, ubRMSE) and residual diagnostics."
+  ]
+}
