@@ -186,3 +186,4 @@ Where:
 - $D_r$ is the root-zone moisture depletion (mm).
 
 This framework mathematically couples SoilGrids hydraulic parameters ($\theta_{FC}$, $\theta_{WP}$), ERA5-Land atmospheric evaporative demand ($ET_0$), and the crop registry root profiles ($Z_r$, $p$).
+

@@ -112,3 +112,4 @@ Models must be evaluated using four complementary hydrological metrics:
 > [!CAUTION]
 > **Strict Generalization Rule:** Under no circumstances shall SoilDepth-AI claim "statewide Maharashtra generalization" based solely on performance at a single station (e.g. Pune) or single agro-climatic pocket.
 > Statewide operational generalization claims require verified spatial holdout validation across **at least four distinct agro-ecological zones** (Western Ghats transition, Western canal plateau, Marathwada semi-arid plateau, and Vidarbha heavy Vertisol plains).
+

@@ -85,3 +85,4 @@ DECISION: GO FOR MULTI-STATION ENVIRONMENTAL PREDICTOR EXTRACTION
 ```
 
 The environmental acquisition pipeline is approved for extracting multi-modal predictors at any coordinates across Maharashtra.
+

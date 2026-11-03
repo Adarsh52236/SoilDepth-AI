@@ -67,7 +67,7 @@ A comprehensive tracker of institutional requisitions and blockers is documented
 
 | Station ID | Institutional Authority | Access Classification | Requisition Status | Specific Blocker / Prerequisite |
 | :--- | :--- | :--- | :--- | :--- |
-| `IITM-PUNE-COSMOS` | Indian Institute of Tropical Meteorology (MoES) | `VERIFIED_RESTRICTED_ACCESS` | `REQUEST_SENT` | Official institutional requisition submitted; waiting on MoES data release committee. |
+| `IITM-PUNE-COSMOS` | Indian Institute of Tropical Meteorology (MoES) | `VERIFIED_RESTRICTED_ACCESS` | `DRAFTED_NOT_SENT` | Official institutional requisition letter drafted (`iitm_moes_cosmos_pune_request.md`); awaiting dispatch. |
 | `IMD-AGRIMET-PUNE` | India Meteorological Department (IMD) Pune | `VERIFIED_RESTRICTED_ACCESS` | `PORTAL_PREREQUISITE_PENDING` | Requires formal purchase through IMD National Data Centre portal with non-commercial tariff payment via Bharatkosh. |
 | `MPKV-RAHURI-CAAST` | MPKV Rahuri / ICAR-NAHEP CAAST | `VERIFIED_RESTRICTED_ACCESS` | `REQUEST_DRAFTED` | Requires bilateral academic Memorandum of Understanding (MOU) with MPKV Director of Research. |
 | `NIASM-BARAMATI-FLUX` | ICAR National Institute of Abiotic Stress Management | `VERIFIED_RESTRICTED_ACCESS` | `REQUEST_DRAFTED` | Requires formal data-sharing request endorsed by institute director for eddy covariance & profile probe logs. |
@@ -108,3 +108,4 @@ DECISION: NO-GO FOR MODEL 2 / REGIONAL TRAINING
    - Cryptographic SHA-256 manifest registration
 3. **If CRNS data (`IITM-PUNE-COSMOS`) arrives first:** A dedicated layer-averaged calibration model or neutron moderation forward operator must be developed. CRNS cannot be mixed with discrete point-sensor depth targets.
 4. **If IMD or MPKV point probes arrive first:** Multi-depth point models can be trained strictly on verified instrumented depths (e.g. 5, 10, 20, 50 cm for IMD; 10, 20, 30, 60 cm for MPKV).
+

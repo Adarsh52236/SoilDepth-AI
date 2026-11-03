@@ -26,6 +26,8 @@ Each station is audited and classified under one of the following explicit categ
 | `VERIFIED_PUBLIC_DATA` | Publicly downloadable without credentials or institutional gating. | Programmatic HTTP download verified; public data repository active. |
 | `VERIFIED_RESTRICTED_ACCESS` | Station existence and operational data verified, but access requires formal institutional requisition, government clearances, or paid supply. | Peer-reviewed literature, official agency directory, or government data portal confirmation. |
 | `ACCESS_STATUS_UNKNOWN` | Station verified physically operational, but digital data archiving continuity or telemetry accessibility is unverified. | University research farm verified, but online portal is unavailable or records are archived in paper agronomy logbooks. |
+| `MERELY_IDENTIFIED` | Station identified as a potential ground-truth source; formal requisition not yet drafted. | Station presence in regional agronomic directories. |
+| `DRAFTED_NOT_SENT` | Formal academic data requisition letter prepared and finalized; awaiting institutional transmission. | Structured draft letter stored under `docs/data_acquisition/maharashtra/requests/`. |
 | `REQUEST_SENT` | Formal data requisition letter or RTI application submitted to custodian authority. | Dispatch timestamp, reference ID, and receiving agency logged. |
 | `DATA_RECEIVED` | Raw data archive received from custodian. | Physical files staged in `dataset/Maharashtra/COSMOS/raw/<station_id>/`. |
 | `DATA_VERIFIED` | Raw data passed schema validation, timestamp monotonicity, and physical sanity audit. | Cryptographic manifest generated and audit tests passing. |
@@ -50,7 +52,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Cosmic-Ray Neutron Probe (CRNS, $0–30\text{ cm}$ integrated profile) + Stevens Hydra Probe FDR point probes ($5, 15, 50\text{ cm}$).
 - **Period & Sampling:** 2017-01-01 to Present | Hourly
 - **Classification:** `VERIFIED_RESTRICTED_ACCESS`
-- **Request Status:** `REQUEST_SENT` (Official request submitted to CCCR/IITM Pune; awaiting approval)
+- **Request Status:** `DRAFTED_NOT_SENT` (Official academic request letter drafted under `docs/data_acquisition/maharashtra/requests/iitm_moes_cosmos_pune_request.md`; awaiting institutional dispatch)
 - **Evidence:** Mujumdar et al. (2021) *J. Hydrol.*; Upadhyaya et al. (2021); COSMOS-India Network Directory.
 
 #### 2. `IMD-AGRIMET-PUNE` (Pune District)
@@ -203,3 +205,4 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Classification:** `ACCESS_STATUS_UNKNOWN` (Lowland rice ecosystem; continuous soil moisture unverified).
 - **Request Status:** `REQUEST_DRAFTED`
 - **Evidence:** BSKKV Regional Station Profiles; National Rice Research Archive (`bskkv.org`).
+
