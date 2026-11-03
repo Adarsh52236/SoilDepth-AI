@@ -140,3 +140,4 @@ def test_protocol_and_status_documents_exist():
     assert "SHA-256" in proto_text
     assert "DATA_VERIFIED" in proto_text
     assert "PROHIBITED" in proto_text.upper()
+

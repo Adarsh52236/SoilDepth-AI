@@ -1,10 +1,10 @@
 # SoilDepth-AI — Maharashtra Ground-Truth Acquisition Registry
 
 **Document ID:** `DOC-MAHA-GT-REGISTRY-2026`  
-**Phase:** Phase 2D (Multi-Station Expansion & Ground-Truth Readiness)  
+**Phase:** Phase 2F (Institutional Request Dispatch Readiness)  
 **Standard:** ISO-19115 (Metadata) / SoilDepth-AI Quality Assurance Policy  
 **Branch:** `main`  
-**Last Updated:** 2026-10-31  
+**Last Updated:** November 3, 2026  
 
 ---
 
@@ -17,21 +17,21 @@ This registry provides a systematic inventory of all 16 candidate in-situ ground
 
 ---
 
-## 2. Station Classification & Status Definitions
+## 2. Station Classification & Status Definitions (9-State Taxonomy)
 
-Each station is audited and classified under one of the following explicit categories:
+Each station and institutional requisition is audited and classified under one of the following explicit categories:
 
 | Status Code | Definition | Criterion for Assignment |
 | :--- | :--- | :--- |
-| `VERIFIED_PUBLIC_DATA` | Publicly downloadable without credentials or institutional gating. | Programmatic HTTP download verified; public data repository active. |
-| `VERIFIED_RESTRICTED_ACCESS` | Station existence and operational data verified, but access requires formal institutional requisition, government clearances, or paid supply. | Peer-reviewed literature, official agency directory, or government data portal confirmation. |
-| `ACCESS_STATUS_UNKNOWN` | Station verified physically operational, but digital data archiving continuity or telemetry accessibility is unverified. | University research farm verified, but online portal is unavailable or records are archived in paper agronomy logbooks. |
 | `MERELY_IDENTIFIED` | Station identified as a potential ground-truth source; formal requisition not yet drafted. | Station presence in regional agronomic directories. |
-| `DRAFTED_NOT_SENT` | Formal academic data requisition letter prepared and finalized; awaiting institutional transmission. | Structured draft letter stored under `docs/data_acquisition/maharashtra/requests/`. |
-| `REQUEST_SENT` | Formal data requisition letter or RTI application submitted to custodian authority. | Dispatch timestamp, reference ID, and receiving agency logged. |
-| `DATA_RECEIVED` | Raw data archive received from custodian. | Physical files staged in `dataset/Maharashtra/COSMOS/raw/<station_id>/`. |
-| `DATA_VERIFIED` | Raw data passed schema validation, timestamp monotonicity, and physical sanity audit. | Cryptographic manifest generated and audit tests passing. |
-| `DATA_REJECTED` | Data received fails quality, integrity, or physical plausibility tests. | Unresolvable sensor calibration defects or extensive missingness. |
+| `DRAFTED_NOT_SENT` | Formal academic data requisition letter prepared and finalized; awaiting attachments or contact verification. | Structured draft letter stored under `docs/data_acquisition/maharashtra/requests/`. |
+| `READY_FOR_SUBMISSION` | Requisition packet finalized, contacts verified, attachments specified; awaiting PI signature & dispatch. | Complete dispatch packet stored under `docs/data_acquisition/maharashtra/dispatch/`. |
+| `REQUEST_SUBMITTED` | Formal data requisition letter or portal application submitted to custodian authority. | Portal transaction ID, sent email header logs, or registered speed post tracking slip archived. |
+| `ACKNOWLEDGED` | Target institution or portal issues formal receipt, ticket number, or proforma invoice. | Institutional correspondence or ticket ID on record. |
+| `APPROVED` | Data access formally approved by competent authority; payment cleared or bilateral MOU signed. | Formal approval order, signed bilateral agreement, or cleared receipt. |
+| `DATA_RECEIVED` | Raw data archive received from custodian. | Physical files staged in `dataset/Maharashtra/raw/<station_id>/`. |
+| `DATA_VERIFIED` | Raw data passed schema validation, timestamp monotonicity, and 10-gate physical sanity audit. | Cryptographic manifest generated and audit tests passing. |
+| `DATA_REJECTED` | Data received fails quality, integrity, or physical plausibility tests, or requisition declined. | Unresolvable sensor calibration defects, excessive missingness, or formal denial. |
 
 ---
 
@@ -52,7 +52,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Cosmic-Ray Neutron Probe (CRNS, $0–30\text{ cm}$ integrated profile) + Stevens Hydra Probe FDR point probes ($5, 15, 50\text{ cm}$).
 - **Period & Sampling:** 2017-01-01 to Present | Hourly
 - **Classification:** `VERIFIED_RESTRICTED_ACCESS`
-- **Request Status:** `DRAFTED_NOT_SENT` (Official academic request letter drafted under `docs/data_acquisition/maharashtra/requests/iitm_moes_cosmos_pune_request.md`; awaiting institutional dispatch)
+- **Request Status:** `READY_FOR_SUBMISSION` (Packet finalized under [`docs/data_acquisition/maharashtra/dispatch/iitm_cosmos_pune_request.md`](file:///c:/Users/adars/OneDrive/Documents/PROJECTS/SoilDepth-AI/docs/data_acquisition/maharashtra/dispatch/iitm_cosmos_pune_request.md); awaiting institutional dispatch)
 - **Evidence:** Mujumdar et al. (2021) *J. Hydrol.*; Upadhyaya et al. (2021); COSMOS-India Network Directory.
 
 #### 2. `IMD-AGRIMET-PUNE` (Pune District)
@@ -61,7 +61,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Digital Capacitive Probes (SDI-12) + Gravimetric core auger ($10, 30, 70, 100\text{ cm}$).
 - **Period & Sampling:** 2013-01-01 to Present | Hourly / Daily
 - **Classification:** `VERIFIED_RESTRICTED_ACCESS`
-- **Request Status:** `REQUEST_DRAFTED` (Requires commercial supply payment via Ministry of Earth Sciences Bharatkosh Portal Min 081 and Non-Commercial Research Undertaking).
+- **Request Status:** `READY_FOR_SUBMISSION` (Packet finalized under [`docs/data_acquisition/maharashtra/dispatch/imd_national_data_centre_request.md`](file:///c:/Users/adars/OneDrive/Documents/PROJECTS/SoilDepth-AI/docs/data_acquisition/maharashtra/dispatch/imd_national_data_centre_request.md); portal purchase via Bharatkosh Min 081).
 - **Evidence:** IMD Agrimet Network Directory; National Data Centre Portal (`dsp.imdpune.gov.in`).
 
 #### 3. `MPKV-RAHURI-CAAST` (Ahmednagar District)
@@ -70,7 +70,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Multi-depth IoT Capacitive/FDR telemetry probes ($10, 20, 30, 60\text{ cm}$) under precision automated irrigation network.
 - **Period & Sampling:** 2018-06-01 to Present | Hourly / 15-min
 - **Classification:** `VERIFIED_RESTRICTED_ACCESS`
-- **Request Status:** `REQUEST_DRAFTED` (Requires institutional MoU / academic data sharing agreement with Vice-Chancellor, MPKV Rahuri).
+- **Request Status:** `READY_FOR_SUBMISSION` (Packet finalized under [`docs/data_acquisition/maharashtra/dispatch/mpkv_rahuri_caast_request.md`](file:///c:/Users/adars/OneDrive/Documents/PROJECTS/SoilDepth-AI/docs/data_acquisition/maharashtra/dispatch/mpkv_rahuri_caast_request.md); awaiting institutional MoU dispatch).
 - **Evidence:** World Bank / ICAR-NAHEP CAAST-CSAWM Annual Reports (`mpkv-caast.ac.in`).
 
 #### 4. `NIASM-BARAMATI-FLUX` (Pune District)
@@ -79,7 +79,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Multi-depth TDR Probes ($5, 15, 30, 60, 100\text{ cm}$) + Eddy Covariance Flux Tower + Lysimeter.
 - **Period & Sampling:** 2014-01-01 to Present | 30-min / Daily
 - **Classification:** `VERIFIED_RESTRICTED_ACCESS`
-- **Request Status:** `REQUEST_DRAFTED` (Formal ICAR institutional requisition to Director, ICAR-NIASM).
+- **Request Status:** `READY_FOR_SUBMISSION` (Packet finalized under [`docs/data_acquisition/maharashtra/dispatch/icar_niasm_baramati_request.md`](file:///c:/Users/adars/OneDrive/Documents/PROJECTS/SoilDepth-AI/docs/data_acquisition/maharashtra/dispatch/icar_niasm_baramati_request.md); formal ICAR institutional requisition).
 - **Evidence:** ICAR-NIASM Annual Reports; National Eddy Covariance Network Database (`niam.res.in`).
 
 #### 5. `AICRPDA-SOLAPUR` (Solapur District)
@@ -88,7 +88,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Gravimetric core profile + Neutron Moisture Probe / FDR profile ($0–15, 15–30, 30–60, 60–90, 90–120\text{ cm}$).
 - **Period & Sampling:** 2015-01-01 to Present | Weekly / Event-based
 - **Classification:** `VERIFIED_RESTRICTED_ACCESS`
-- **Request Status:** `REQUEST_DRAFTED` (Requisition to Project Coordinator AICRPDA / Director CRIDA Hyderabad).
+- **Request Status:** `MERELY_IDENTIFIED` (Contact verification required before requisition drafting).
 - **Evidence:** AICRPDA All-India Dryland Research Network Technical Bulletins (`crida.in`).
 
 #### 6. `NHP-CWC-PUNE` (Pune District)
@@ -97,7 +97,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Automated in-situ hydrological soil moisture probe ($0–10\text{ cm}$ surface and root-zone).
 - **Period & Sampling:** 2018-01-01 to Present | Daily
 - **Classification:** `VERIFIED_RESTRICTED_ACCESS`
-- **Request Status:** `REQUEST_DRAFTED` (India-WRIS portal user registration and departmental approval).
+- **Request Status:** `MERELY_IDENTIFIED` (Contact verification required before requisition drafting).
 - **Evidence:** National Hydrology Project Station Directory; India-WRIS Portal (`indiawris.gov.in`).
 
 ---
@@ -110,7 +110,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** TDR Multi-Depth Probes + Long-term Benchmark Pedon Monitoring ($0–15, 15–30, 30–60, 60–100\text{ cm}$).
 - **Period & Sampling:** 2012-01-01 to Present | Daily / Campaign
 - **Classification:** `VERIFIED_RESTRICTED_ACCESS`
-- **Request Status:** `REQUEST_DRAFTED` (Formal ICAR Requisition via Bhoomi Geoportal).
+- **Request Status:** `MERELY_IDENTIFIED` (Contact verification required before requisition drafting).
 - **Evidence:** ICAR-NBSS&LUP Benchmark Soil Series Reports; Bhoomi Geoportal (`bhoomigeoportal-nbsslup.in`).
 
 #### 8. `PDKV-AKOLA-CRS` (Akola District)
@@ -119,7 +119,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Gravimetric Core Auger + Multi-Depth TDR Probes ($0–15, 15–30, 30–45, 45–60, 60–90\text{ cm}$).
 - **Period & Sampling:** 2015-01-01 to Present | Weekly / Daily campaign
 - **Classification:** `VERIFIED_RESTRICTED_ACCESS`
-- **Request Status:** `REQUEST_DRAFTED` (Requisition to Director of Research, Dr. PDKV Akola).
+- **Request Status:** `MERELY_IDENTIFIED` (Contact verification required before requisition drafting).
 - **Evidence:** AICRPAM / AICRPDA Annual Reports; Dr. PDKV University Bulletins (`pdkv.ac.in`).
 
 #### 9. `POCRA-AMRAVATI-DARYAPUR` (Amravati District)
@@ -128,7 +128,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Multi-depth IoT Capacitive Soil Probes ($10, 30, 60, 100\text{ cm}$).
 - **Period & Sampling:** 2019-06-01 to Present | Hourly / Daily
 - **Classification:** `VERIFIED_RESTRICTED_ACCESS`
-- **Request Status:** `REQUEST_DRAFTED` (Requires State Project Director, PoCRA Mumbai clearance).
+- **Request Status:** `READY_FOR_SUBMISSION` (Packet finalized under [`docs/data_acquisition/maharashtra/dispatch/maharashtra_pocra_pmu_request.md`](file:///c:/Users/adars/OneDrive/Documents/PROJECTS/SoilDepth-AI/docs/data_acquisition/maharashtra/dispatch/maharashtra_pocra_pmu_request.md); awaiting State Project Director clearance).
 - **Evidence:** World Bank Implementation Status & Results Reports; PoCRA Soil Health Dashboard (`mahapocra.gov.in`).
 
 #### 10. `CICR-NAGPUR-FARM` (Nagpur District)
@@ -137,7 +137,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Capacitive FDR Probes + Neutron Moisture Gauge ($15, 30, 60, 90, 120\text{ cm}$).
 - **Period & Sampling:** 2015-06-01 to Present | Weekly (Kharif-Rabi)
 - **Classification:** `VERIFIED_RESTRICTED_ACCESS`
-- **Request Status:** `REQUEST_DRAFTED` (ICAR Institutional Requisition to Director, ICAR-CICR).
+- **Request Status:** `MERELY_IDENTIFIED` (Contact verification required before requisition drafting).
 - **Evidence:** ICAR-CICR Rainfed Cotton Agrometeorology Trials (`cicr.icar.gov.in`).
 
 ---
@@ -150,7 +150,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Gravimetric Core Sampling + Digital Capacitive Sensors ($0–15, 15–30, 30–45, 45–60, 60–100\text{ cm}$).
 - **Period & Sampling:** 2015-06-01 to Present | Weekly / Seasonal
 - **Classification:** `VERIFIED_RESTRICTED_ACCESS`
-- **Request Status:** `REQUEST_DRAFTED` (Requisition to Director of Research, VNMKV Parbhani).
+- **Request Status:** `MERELY_IDENTIFIED` (Contact verification required before requisition drafting).
 - **Evidence:** AICRPAM Parbhani Agromet Bulletins (`vnmkv.ac.in`).
 
 #### 12. `POCRA-JALNA-BADNAPUR` (Jalna District)
@@ -159,7 +159,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Multi-depth IoT Capacitive Probes ($10, 30, 60, 100\text{ cm}$).
 - **Period & Sampling:** 2020-01-01 to Present | Hourly / Daily
 - **Classification:** `VERIFIED_RESTRICTED_ACCESS`
-- **Request Status:** `REQUEST_DRAFTED` (State Project Director Departmental Clearance).
+- **Request Status:** `READY_FOR_SUBMISSION` (Packet finalized under [`docs/data_acquisition/maharashtra/dispatch/maharashtra_pocra_pmu_request.md`](file:///c:/Users/adars/OneDrive/Documents/PROJECTS/SoilDepth-AI/docs/data_acquisition/maharashtra/dispatch/maharashtra_pocra_pmu_request.md); awaiting State Project Director clearance).
 - **Evidence:** PoCRA Cluster Monitoring Dashboard (`mahapocra.gov.in`).
 
 ---
@@ -172,7 +172,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Gravimetric Core Auger + Experimental FDR ($0–15, 15–30, 30–60, 60–90\text{ cm}$).
 - **Period & Sampling:** 2016-01-01 to Present | Weekly (Seasonal)
 - **Classification:** `ACCESS_STATUS_UNKNOWN` (Station operational, but continuous digital archiving unverified; physical agronomy logbooks).
-- **Request Status:** `REQUEST_DRAFTED`
+- **Request Status:** `MERELY_IDENTIFIED`
 - **Evidence:** MPKV Research Station Directory (`mpkv.ac.in`).
 
 #### 14. `MPKV-DHULE-ARS` (Dhule District)
@@ -181,7 +181,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Gravimetric Core Auger ($0–15, 15–30, 30–45, 45–60\text{ cm}$).
 - **Period & Sampling:** 2016-06-01 to Present | Weekly (Kharif/Rabi)
 - **Classification:** `ACCESS_STATUS_UNKNOWN` (Intermittent campaign sampling).
-- **Request Status:** `REQUEST_DRAFTED`
+- **Request Status:** `MERELY_IDENTIFIED`
 - **Evidence:** MPKV Scarcity Zone Agronomy Bulletins (`mpkv.ac.in`).
 
 ---
@@ -194,7 +194,7 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Campaign FDR Probes + Gravimetric Core ($0–15, 15–30, 30–45\text{ cm}$).
 - **Period & Sampling:** 2016-01-01 to Present | Weekly / Campaign
 - **Classification:** `ACCESS_STATUS_UNKNOWN` (High rainfall laterite soil; data continuity unverified).
-- **Request Status:** `REQUEST_DRAFTED`
+- **Request Status:** `MERELY_IDENTIFIED`
 - **Evidence:** BSKKV Research Council Proceedings (`bskkv.org`).
 
 #### 16. `BSKKV-KARJAT-ARS` (Raigad District)
@@ -203,6 +203,5 @@ pie title Maharashtra Candidate Station Data Access Classification
 - **Measurement Modality:** Hydrological Water Table Dipwells + Gravimetric Core Sampling ($0–15, 15–30\text{ cm}$).
 - **Period & Sampling:** 2016-06-01 to Present | Weekly (Kharif season)
 - **Classification:** `ACCESS_STATUS_UNKNOWN` (Lowland rice ecosystem; continuous soil moisture unverified).
-- **Request Status:** `REQUEST_DRAFTED`
+- **Request Status:** `MERELY_IDENTIFIED`
 - **Evidence:** BSKKV Regional Station Profiles; National Rice Research Archive (`bskkv.org`).
-

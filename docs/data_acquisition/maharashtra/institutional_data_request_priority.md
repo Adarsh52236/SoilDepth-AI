@@ -94,3 +94,4 @@ To establish a scientifically sound, defensible, and achievable pilot without wa
 4. **Actionable Acquisition Pathways:**
    - IMD NDC can be purchased immediately via Bharatkosh without committee delays.
    - MPKV and NIASM require standard bilateral academic research agreements between university departments.
+
