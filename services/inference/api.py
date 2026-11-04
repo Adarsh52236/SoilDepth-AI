@@ -15,8 +15,9 @@ from services.inference.schemas import (
     PredictionRequest,
     BatchPredictionRequest,
     ModelCatalogResponse,
+    RegionNotAvailableResponse,
 )
-from services.inference.predictor import Model1Predictor
+from services.inference.predictor import Model1Predictor, RegionModelNotAvailableError
 
 
 app = FastAPI(
@@ -79,23 +80,53 @@ def health_check():
         )
 
 
-@app.get("/catalog", response_model=ModelCatalogResponse, tags=["Metadata"])
-def get_model_catalog():
+@app.get("/catalog", tags=["Metadata"])
+def get_model_catalog(region: str = Query("alabama", description="Target region ('alabama' or 'maharashtra')")):
     """Returns the operational catalog describing all four active models, depths, and feature requirements."""
     predictor = get_predictor()
-    return predictor.get_model_catalog()
+    catalog_res = predictor.get_model_catalog(region=region)
+    if isinstance(catalog_res, RegionNotAvailableResponse):
+        return JSONResponse(status_code=status.HTTP_200_OK, content=catalog_res.model_dump())
+    return catalog_res
 
 
-@app.post("/predict", response_model=Model1PredictionResponse, tags=["Inference"])
+@app.post("/predict", tags=["Inference"])
 def predict_single_day(payload: PredictionRequest):
     """
     Executes single-day point-depth soil moisture inference across all 4 sensor depths.
     Accepts daily weather and remote-sensing features.
     """
+    if payload.region.lower() in ["maharashtra", "mh"]:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={
+                "status": "MODEL_NOT_AVAILABLE",
+                "region": "maharashtra",
+                "message": "Maharashtra regional models are not available.",
+                "reason": (
+                    "Supervised training for Maharashtra regional models is strictly prohibited "
+                    "until verified in-situ ground truth data is received from authorized institutions. "
+                    "Using Alabama Model 1 weights for Maharashtra inference is strictly forbidden."
+                ),
+                "candidate_stations_count": 16,
+                "ground_truth_records_received": 0,
+                "alabama_baseline_status": "COMPLETED_AND_INDEPENDENTLY_VALIDATED",
+            },
+        )
+
     predictor = get_predictor()
     try:
-        response = predictor.predict_single(data=payload.features, date_str=payload.date)
+        response = predictor.predict_single(data=payload.features, date_str=payload.date, region=payload.region)
         return response
+    except RegionModelNotAvailableError as e:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={
+                "status": "MODEL_NOT_AVAILABLE",
+                "region": e.region,
+                "reason": e.reason,
+            },
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -103,15 +134,42 @@ def predict_single_day(payload: PredictionRequest):
         )
 
 
-@app.post("/predict/batch", response_model=Model1BatchPredictionResponse, tags=["Inference"])
+@app.post("/predict/batch", tags=["Inference"])
 def predict_batch_days(payload: BatchPredictionRequest):
     """
     Executes multi-day batch inference across a sequence of daily feature dictionaries.
     """
+    if payload.region.lower() in ["maharashtra", "mh"]:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={
+                "status": "MODEL_NOT_AVAILABLE",
+                "region": "maharashtra",
+                "message": "Maharashtra regional models are not available.",
+                "reason": (
+                    "Supervised training for Maharashtra regional models is strictly prohibited "
+                    "until verified in-situ ground truth data is received from authorized institutions. "
+                    "Using Alabama Model 1 weights for Maharashtra inference is strictly forbidden."
+                ),
+                "candidate_stations_count": 16,
+                "ground_truth_records_received": 0,
+                "alabama_baseline_status": "COMPLETED_AND_INDEPENDENTLY_VALIDATED",
+            },
+        )
+
     predictor = get_predictor()
     try:
-        response = predictor.predict_batch(records=payload.records)
+        response = predictor.predict_batch(records=payload.records, region=payload.region)
         return response
+    except RegionModelNotAvailableError as e:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={
+                "status": "MODEL_NOT_AVAILABLE",
+                "region": e.region,
+                "reason": e.reason,
+            },
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

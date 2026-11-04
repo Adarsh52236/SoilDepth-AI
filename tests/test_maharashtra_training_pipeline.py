@@ -101,3 +101,62 @@ def test_pipeline_train_depth_model(pipeline):
     assert Path(result["feature_importances_path"]).exists()
     assert "rmse" in result["test_metrics"]
 
+
+def test_pipeline_train_baselines(pipeline):
+    """Verifies that reference baselines (Historical Mean, DOY Climatology) evaluate properly."""
+    dates_train = pd.date_range("2020-01-01", periods=100, freq="D")
+    dates_val = pd.date_range("2020-04-10", periods=30, freq="D")
+    dates_test = pd.date_range("2020-05-10", periods=30, freq="D")
+
+    df_train = pd.DataFrame({
+        "date_utc": [d.strftime("%Y-%m-%d") for d in dates_train],
+        "soil_moisture_vwc": [0.25] * 100,
+    })
+    df_val = pd.DataFrame({
+        "date_utc": [d.strftime("%Y-%m-%d") for d in dates_val],
+        "soil_moisture_vwc": [0.25] * 30,
+    })
+    df_test = pd.DataFrame({
+        "date_utc": [d.strftime("%Y-%m-%d") for d in dates_test],
+        "soil_moisture_vwc": [0.25] * 30,
+    })
+
+    base_results = pipeline.train_baselines(df_train, df_val, df_test)
+    assert "historical_mean" in base_results
+    assert "climatology" in base_results
+    assert abs(base_results["historical_mean"]["test"]["rmse"]) < 1e-5
+
+
+def test_pipeline_train_weather_only_model(pipeline):
+    """Verifies that weather-only model uses meteorological features only."""
+    import numpy as np
+    np.random.seed(42)
+    n = 100
+    features = [
+        "temperature_2m_mean_c",
+        "precipitation_total_mm",
+        "s1_vv_db_locf",
+        "soilgrids_clay_0_5cm",
+    ]
+    X = pd.DataFrame(np.random.randn(n, len(features)), columns=features)
+    y = pd.Series(0.25 + 0.02 * np.random.randn(n))
+
+    result = pipeline.train_weather_only_model(
+        X_train=X.iloc[:60],
+        y_train=y.iloc[:60],
+        X_val=X.iloc[60:80],
+        y_val=y.iloc[60:80],
+        X_test=X.iloc[80:],
+        y_test=y.iloc[80:],
+        feature_names=features,
+        depth_cm=10.0,
+        station_id="MPKV-RAHURI-CAAST",
+        hyperparams={"n_estimators": 5, "max_depth": 2, "learning_rate": 0.1, "random_state": 42},
+    )
+    assert "_weather_only" in result["model_path"]
+    df_imp = pd.read_csv(result["feature_importances_path"])
+    # Features must not include s1 or soilgrids
+    for feat in df_imp["feature"]:
+        assert "s1_" not in feat
+        assert "soilgrids_" not in feat
+

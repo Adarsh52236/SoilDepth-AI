@@ -94,6 +94,7 @@ class Model1BatchPredictionResponse(BaseModel):
 class PredictionRequest(BaseModel):
     """Single-day prediction request payload."""
     station_id: Optional[str] = Field(default="AAMU-JTG", description="Target station ID (default: AAMU-JTG)")
+    region: str = Field(default="alabama", description="Target geographic region ('alabama' or 'maharashtra')")
     date: Optional[str] = Field(None, description="Calendar date YYYY-MM-DD")
     features: Dict[str, Any] = Field(
         ...,
@@ -104,6 +105,7 @@ class PredictionRequest(BaseModel):
 class BatchPredictionRequest(BaseModel):
     """Batch prediction request payload."""
     station_id: Optional[str] = Field(default="AAMU-JTG", description="Target station ID (default: AAMU-JTG)")
+    region: str = Field(default="alabama", description="Target geographic region ('alabama' or 'maharashtra')")
     records: List[Dict[str, Any]] = Field(
         ...,
         description="List of daily feature dictionaries, each containing date and required predictor variables"
@@ -136,6 +138,7 @@ class ModelDetail(BaseModel):
 
 class ModelCatalogResponse(BaseModel):
     """Model 1 operational deployment catalog and metadata."""
+    region: str = Field(default="alabama", description="Target geographic domain")
     station_id: str
     station_lat: float
     station_lon: float
@@ -151,3 +154,17 @@ class ModelCatalogResponse(BaseModel):
         description="Governing model limitations"
     )
     models: Dict[str, ModelDetail]
+
+
+class RegionNotAvailableResponse(BaseModel):
+    """Structured response when an uncalibrated regional model is requested."""
+    status: str = Field(default="MODEL_NOT_AVAILABLE", description="Model availability status")
+    region: str = Field(..., description="Requested region")
+    message: str = Field(..., description="User-facing explanation")
+    reason: str = Field(..., description="Detailed scientific justification")
+    candidate_stations_count: int = Field(default=16, description="Candidate stations in registry")
+    ground_truth_records_received: int = Field(default=0, description="In-situ records verified to date")
+    alabama_baseline_status: str = Field(
+        default="COMPLETED_AND_INDEPENDENTLY_VALIDATED",
+        description="Alabama Model 1 benchmark status"
+    )

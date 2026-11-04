@@ -7,6 +7,8 @@ Purpose: Ingests, normalizes, and strictly validates heterogeneous in-situ groun
          and absolute prohibition of inter-depth synthetic interpolation.
 """
 
+import hashlib
+import json
 import math
 from datetime import datetime, timezone
 from pathlib import Path
@@ -330,9 +332,16 @@ class MaharashtraGroundTruthAdapter:
             df_raw = pd.read_csv(fp, sep="\t")
         elif ext in [".xlsx", ".xls"]:
             df_raw = pd.read_excel(fp, sheet_name=sheet_name)
+        elif ext == ".json":
+            try:
+                df_raw = pd.read_json(fp)
+            except ValueError:
+                df_raw = pd.read_json(fp, lines=True)
+        elif ext == ".parquet":
+            df_raw = pd.read_parquet(fp)
         else:
             raise ValueError(
-                f"Unsupported file format '{ext}'. Must be CSV (.csv, .txt), TSV (.tsv), or Excel (.xlsx, .xls)."
+                f"Unsupported file format '{ext}'. Must be CSV (.csv, .txt), TSV (.tsv), Excel (.xlsx, .xls), JSON (.json), or Parquet (.parquet)."
             )
 
         # Validate that mapped source columns exist in raw dataframe
@@ -470,3 +479,150 @@ class MaharashtraGroundTruthAdapter:
             "total_stations": len(stations_summary),
             "stations": stations_summary,
         }
+
+    def generate_receipt_reports(
+        self,
+        df_norm: pd.DataFrame,
+        output_dir: Union[str, Path],
+        source_files: Optional[List[Union[str, Path]]] = None,
+        rejected_records: Optional[Union[pd.DataFrame, List[Dict[str, Any]]]] = None,
+        min_obs_for_training: int = 180,
+    ) -> Dict[str, Any]:
+        """
+        Generates standard receipt package for incoming in-situ ground truth:
+        1. dataset_receipt_report.json
+        2. dataset_receipt_report.md
+        3. station_depth_coverage.csv
+        4. rejected_records.csv
+        5. data_hash_manifest.json
+        """
+        out_p = Path(output_dir)
+        out_p.mkdir(parents=True, exist_ok=True)
+        now_utc = datetime.now(timezone.utc).isoformat()
+
+        # 1. Manifest
+        manifest_files = []
+        if source_files:
+            for sfp in source_files:
+                p = Path(sfp)
+                if p.exists() and p.is_file():
+                    hasher = hashlib.sha256()
+                    with open(p, "rb") as f:
+                        while chunk := f.read(65536):
+                            hasher.update(chunk)
+                    manifest_files.append({
+                        "filename": p.name,
+                        "file_path": str(p),
+                        "sha256": hasher.hexdigest(),
+                        "size_bytes": p.stat().st_size,
+                    })
+
+        manifest = {
+            "manifest_timestamp_utc": now_utc,
+            "total_files": len(manifest_files),
+            "files": manifest_files,
+        }
+        with open(out_p / "data_hash_manifest.json", "w", encoding="utf-8") as f:
+            json.dump(manifest, f, indent=2)
+
+        # 2. Coverage summary and station_depth_coverage.csv
+        coverage_summary = self.generate_coverage_summary(df_norm, min_obs_for_training=min_obs_for_training)
+        coverage_rows = []
+        for sid, depths in coverage_summary.get("stations", {}).items():
+            for depth, info in depths.items():
+                coverage_rows.append({
+                    "station_id": sid,
+                    "sensor_depth_cm": depth,
+                    "total_records": info["record_count"],
+                    "daily_records": info["daily_observation_count"],
+                    "start_date": info["start_date"],
+                    "end_date": info["end_date"],
+                    "temporal_completeness_pct": info["temporal_completeness_pct"],
+                    "vwc_min": info["vwc_min"],
+                    "vwc_max": info["vwc_max"],
+                    "vwc_mean": info["vwc_mean"],
+                    "vwc_std": info["vwc_std"],
+                    "sufficient_for_training": info["sufficient_for_training"],
+                    "verdict": info["verdict"],
+                })
+
+        df_coverage = pd.DataFrame(coverage_rows, columns=[
+            "station_id", "sensor_depth_cm", "total_records", "daily_records",
+            "start_date", "end_date", "temporal_completeness_pct",
+            "vwc_min", "vwc_max", "vwc_mean", "vwc_std",
+            "sufficient_for_training", "verdict"
+        ])
+        df_coverage.to_csv(out_p / "station_depth_coverage.csv", index=False)
+
+        # 3. Rejected records
+        if isinstance(rejected_records, pd.DataFrame):
+            df_rejected = rejected_records.copy()
+        elif isinstance(rejected_records, list) and len(rejected_records) > 0:
+            df_rejected = pd.DataFrame(rejected_records)
+        else:
+            df_rejected = pd.DataFrame(columns=[
+                "timestamp", "station_id", "sensor_depth_cm", "soil_moisture_vwc", "rejection_reason"
+            ])
+        df_rejected.to_csv(out_p / "rejected_records.csv", index=False)
+
+        # 4. Receipt report (JSON & MD)
+        total_ingested = len(df_norm)
+        total_rejected = len(df_rejected)
+        overall_report = {
+            "receipt_timestamp_utc": now_utc,
+            "total_ingested_records": total_ingested,
+            "total_rejected_records": total_rejected,
+            "total_stations": len(coverage_summary.get("stations", {})),
+            "manifest": manifest,
+            "coverage_summary": coverage_summary,
+            "trainable_depths_count": sum(1 for r in coverage_rows if r["sufficient_for_training"]),
+        }
+        with open(out_p / "dataset_receipt_report.json", "w", encoding="utf-8") as f:
+            json.dump(overall_report, f, indent=2)
+
+        md_content = self._format_receipt_markdown(overall_report, coverage_rows)
+        with open(out_p / "dataset_receipt_report.md", "w", encoding="utf-8") as f:
+            f.write(md_content)
+
+        return overall_report
+
+    def _format_receipt_markdown(self, rep: Dict[str, Any], coverage_rows: List[Dict[str, Any]]) -> str:
+        lines = [
+            "# SoilDepth-AI — Ground-Truth Ingestion & Receipt Report",
+            "",
+            f"**Receipt Timestamp:** `{rep['receipt_timestamp_utc']}`  ",
+            f"**Total Valid Records Ingested:** `{rep['total_ingested_records']}`  ",
+            f"**Total Rejected Records:** `{rep['total_rejected_records']}`  ",
+            f"**Total Stations:** `{rep['total_stations']}`  ",
+            f"**Trainable Depths (>= 180 days):** `{rep['trainable_depths_count']}`  ",
+            "",
+            "## 1. Input File Manifest & Integrity",
+            "",
+            "| Filename | SHA-256 Checksum | File Size (Bytes) |",
+            "|---|---|---|",
+        ]
+        if rep["manifest"]["files"]:
+            for f in rep["manifest"]["files"]:
+                lines.append(f"| `{f['filename']}` | `{f['sha256'][:16]}...` | {f['size_bytes']:,} |")
+        else:
+            lines.append("| *None specified* | - | - |")
+
+        lines.extend([
+            "",
+            "## 2. Station and Sensor Depth Coverage",
+            "",
+            "| Station ID | Depth (cm) | Daily Obs | Date Range | Completeness | VWC Mean | Training Status |",
+            "|---|---|---|---|---|---|---|",
+        ])
+        if coverage_rows:
+            for r in coverage_rows:
+                lines.append(
+                    f"| `{r['station_id']}` | {r['sensor_depth_cm']} cm | {r['daily_records']} | "
+                    f"{r['start_date']} to {r['end_date']} | {r['temporal_completeness_pct']}% | "
+                    f"{r['vwc_mean']} | `{r['verdict']}` |"
+                )
+        else:
+            lines.append("| *No records ingested* | - | - | - | - | - | - |")
+
+        lines.append("")
+        return "\n".join(lines)

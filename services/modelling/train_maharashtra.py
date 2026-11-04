@@ -31,12 +31,25 @@ from services.data_acquisition.maharashtra.ground_truth_adapter import (
     MaharashtraGroundTruthAdapter,
     GroundTruthValidationError,
 )
+from services.modelling.baselines import (
+    HistoricalMeanBaseline,
+    ClimatologyBaseline,
+    PersistenceBaseline,
+)
+from services.modelling.maharashtra_dataset_builder import (
+    MaharashtraDatasetBuilder,
+    MIN_DAILY_OBSERVATIONS_FOR_TRAINING,
+)
 from services.modelling.evaluate import (
     compute_metrics,
     compute_residual_diagnostics,
     format_metrics_markdown_table,
 )
 from services.modelling.config import XGB_HYPERPARAMS
+
+WEATHER_FEATURE_KEYWORDS = [
+    "temperature", "dewpoint", "vpd", "precip", "solar", "wind", "doy_sin", "doy_cos",
+]
 
 
 # Strict prohibition lists
@@ -235,6 +248,95 @@ As soon as institutional ground-truth data is received:
 
         return feature_names
 
+    def train_baselines(
+        self,
+        df_train: pd.DataFrame,
+        df_val: pd.DataFrame,
+        df_test: pd.DataFrame,
+        target_col: str = "soil_moisture_vwc",
+        date_col: str = "date_utc",
+    ) -> Dict[str, Dict[str, Any]]:
+        """
+        Fits standard reference baselines: Historical Mean, DOY Climatology, Persistence.
+        """
+        results = {}
+
+        # Historical Mean
+        hm = HistoricalMeanBaseline()
+        hm.fit(df_train, target_col=target_col)
+        hm_val_preds = hm.predict(df_val)
+        hm_test_preds = hm.predict(df_test)
+        results["historical_mean"] = {
+            "val": compute_metrics(df_val[target_col].to_numpy(), hm_val_preds),
+            "test": compute_metrics(df_test[target_col].to_numpy(), hm_test_preds),
+        }
+
+        # DOY Climatology
+        if date_col in df_train.columns and date_col in df_test.columns:
+            clim = ClimatologyBaseline(date_col=date_col)
+            clim.fit(df_train, target_col=target_col)
+            clim_val_preds = clim.predict(df_val)
+            clim_test_preds = clim.predict(df_test)
+            results["climatology"] = {
+                "val": compute_metrics(df_val[target_col].to_numpy(), clim_val_preds),
+                "test": compute_metrics(df_test[target_col].to_numpy(), clim_test_preds),
+            }
+
+        # Persistence
+        if "target_lag_1d" in df_test.columns:
+            pers = PersistenceBaseline(lag_col="target_lag_1d")
+            pers_val_preds = pers.predict(df_val)
+            pers_test_preds = pers.predict(df_test)
+            results["persistence"] = {
+                "val": compute_metrics(df_val[target_col].to_numpy(), pers_val_preds),
+                "test": compute_metrics(df_test[target_col].to_numpy(), pers_test_preds),
+            }
+        elif len(df_test) > 1:
+            test_pers_preds = df_test[target_col].shift(1).bfill().to_numpy()
+            results["persistence"] = {
+                "test": compute_metrics(df_test[target_col].to_numpy(), test_pers_preds),
+            }
+
+        return results
+
+    def train_weather_only_model(
+        self,
+        X_train: pd.DataFrame,
+        y_train: pd.Series,
+        X_val: pd.DataFrame,
+        y_val: pd.Series,
+        X_test: pd.DataFrame,
+        y_test: pd.Series,
+        feature_names: List[str],
+        depth_cm: float,
+        station_id: str,
+        hyperparams: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Trains an XGBoost model restricted strictly to meteorological weather features.
+        """
+        weather_features = [
+            f for f in feature_names
+            if any(k in f.lower() for k in WEATHER_FEATURE_KEYWORDS)
+            and not any(rf in f.lower() for rf in ["s1_", "s2_", "smap_", "soilgrids_", "elevation_", "slope_", "aspect_"])
+        ]
+        if not weather_features:
+            weather_features = feature_names[:min(4, len(feature_names))]
+
+        return self.train_depth_model(
+            X_train=X_train[weather_features],
+            y_train=y_train,
+            X_val=X_val[weather_features],
+            y_val=y_val,
+            X_test=X_test[weather_features],
+            y_test=y_test,
+            feature_names=weather_features,
+            depth_cm=depth_cm,
+            station_id=station_id,
+            hyperparams=hyperparams,
+            model_suffix="_weather_only",
+        )
+
     def train_depth_model(
         self,
         X_train: pd.DataFrame,
@@ -247,6 +349,7 @@ As soon as institutional ground-truth data is received:
         depth_cm: float,
         station_id: str,
         hyperparams: Optional[Dict[str, Any]] = None,
+        model_suffix: str = "",
     ) -> Dict[str, Any]:
         """
         Trains an XGBoost regression model for a single verified sensor depth.
@@ -280,11 +383,11 @@ As soon as institutional ground-truth data is received:
 
         # Artifact paths
         self.models_dir.mkdir(parents=True, exist_ok=True)
-        model_filename = f"maharashtra_{station_id}_{int(depth_cm)}cm_xgb.json"
+        model_filename = f"maharashtra_{station_id}_{int(depth_cm)}cm{model_suffix}_xgb.json"
         model_path = self.models_dir / model_filename
         model.save_model(str(model_path))
 
-        imp_filename = f"maharashtra_{station_id}_{int(depth_cm)}cm_feature_importances.csv"
+        imp_filename = f"maharashtra_{station_id}_{int(depth_cm)}cm{model_suffix}_feature_importances.csv"
         imp_path = self.models_dir / imp_filename
         importances.to_csv(imp_path, index=False)
 

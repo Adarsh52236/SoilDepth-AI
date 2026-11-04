@@ -40,7 +40,21 @@ from services.inference.schemas import (
     Model1BatchPredictionResponse,
     ModelDetail,
     ModelCatalogResponse,
+    RegionNotAvailableResponse,
 )
+
+
+class RegionModelNotAvailableError(ValueError):
+    """Raised when an inference request is routed to an uncalibrated regional model."""
+    def __init__(self, region: str, reason: Optional[str] = None):
+        self.region = region
+        self.reason = reason or (
+            f"Model weights for region '{region}' are not available. "
+            "Supervised training for Maharashtra regional models is strictly prohibited "
+            "until verified in-situ ground truth data is received from authorized institutions. "
+            "Using Alabama Model 1 weights for Maharashtra inference is strictly forbidden."
+        )
+        super().__init__(self.reason)
 
 
 # ==============================================================================
@@ -200,8 +214,23 @@ class Model1Predictor:
             self.models[depth_key] = reg
             self.features_per_depth[depth_key] = features
 
-    def get_model_catalog(self) -> ModelCatalogResponse:
+    def get_model_catalog(self, region: str = "alabama") -> Union[ModelCatalogResponse, RegionNotAvailableResponse]:
         """Returns metadata description of the active operational Model 1 ensemble."""
+        if region.lower() in ["maharashtra", "mh"]:
+            return RegionNotAvailableResponse(
+                status="MODEL_NOT_AVAILABLE",
+                region="maharashtra",
+                message="Maharashtra regional models are not yet calibrated or deployed.",
+                reason=(
+                    "Supervised training for Maharashtra regional models is strictly prohibited "
+                    "until verified in-situ ground truth data is received from authorized institutions. "
+                    "Using Alabama Model 1 weights for Maharashtra inference is strictly forbidden."
+                ),
+                candidate_stations_count=16,
+                ground_truth_records_received=0,
+                alabama_baseline_status="COMPLETED_AND_INDEPENDENTLY_VALIDATED",
+            )
+
         details = {}
         for d_key, cfg in SELECTED_MODELS_CONFIG.items():
             details[d_key] = ModelDetail(
@@ -498,10 +527,14 @@ class Model1Predictor:
         self,
         data: Dict[str, Any],
         date_str: Optional[str] = None,
+        region: str = "alabama",
     ) -> Model1PredictionResponse:
         """
         Executes single-day inference across all four sensor depths.
         """
+        if region.lower() in ["maharashtra", "mh"]:
+            raise RegionModelNotAvailableError(region)
+
         rec_date = str(date_str or data.get("date_utc") or data.get("date") or datetime.now(timezone.utc).strftime("%Y-%m-%d"))
         cleaned_features, val_info, static_context = self._sanitize_and_validate_record(data, date_str=rec_date)
 
@@ -533,16 +566,20 @@ class Model1Predictor:
     def predict_batch(
         self,
         records: List[Dict[str, Any]],
+        region: str = "alabama",
     ) -> Model1BatchPredictionResponse:
         """
         Executes multi-day batch inference over a list of daily feature records.
         """
+        if region.lower() in ["maharashtra", "mh"]:
+            raise RegionModelNotAvailableError(region)
+
         if not records:
             raise ValueError("Input records list cannot be empty for batch prediction.")
 
         results: List[Model1PredictionResponse] = []
         for rec in records:
-            res = self.predict_single(rec)
+            res = self.predict_single(rec, region=region)
             results.append(res)
 
         # Extract date bounds

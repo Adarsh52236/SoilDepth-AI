@@ -6,6 +6,7 @@ Purpose: Tests schema normalization, physical bounds validation, synthetic data 
          and coverage summary generation.
 """
 
+import json
 from pathlib import Path
 import tempfile
 import pandas as pd
@@ -292,16 +293,79 @@ def test_ingest_file_nonexistent(adapter):
 
 def test_ingest_file_unsupported_extension(adapter):
     """Verifies that unsupported file extension raises ValueError."""
-    with tempfile.NamedTemporaryFile(suffix=".parquet", mode="wb", delete=False) as f:
+    with tempfile.NamedTemporaryFile(suffix=".h5", mode="wb", delete=False) as f:
         f.write(b"dummy")
-        temp_pq = Path(f.name)
+        temp_h5 = Path(f.name)
 
     try:
         with pytest.raises(ValueError, match="Unsupported file format"):
-            adapter.ingest_file(temp_pq, {}, "SOURCE")
+            adapter.ingest_file(temp_h5, {}, "SOURCE")
+    finally:
+        if temp_h5.exists():
+            temp_h5.unlink()
+
+
+def test_ingest_file_parquet(adapter):
+    """Verifies that Parquet files are ingested and normalized properly."""
+    df_raw = pd.DataFrame({
+        "timestamp": ["2020-07-01T00:00:00Z", "2020-07-02T00:00:00Z"],
+        "depth": [10.0, 10.0],
+        "vwc": [0.24, 0.28],
+    })
+    with tempfile.NamedTemporaryFile(suffix=".parquet", mode="wb", delete=False) as f:
+        temp_pq = Path(f.name)
+    df_raw.to_parquet(temp_pq)
+
+    mapping = {
+        "timestamp": "timestamp",
+        "sensor_depth_cm": "depth",
+        "soil_moisture_vwc": "vwc",
+    }
+    try:
+        df_ingested = adapter.ingest_file(
+            file_path=temp_pq,
+            column_mapping=mapping,
+            source_dataset="PARQUET_TEST",
+            default_station_id="MPKV-RAHURI-CAAST",
+        )
+        assert len(df_ingested) == 2
+        assert list(df_ingested.columns) == NORMALIZED_COLUMNS
+        assert df_ingested["soil_moisture_vwc"].iloc[0] == 0.24
     finally:
         if temp_pq.exists():
             temp_pq.unlink()
+
+
+def test_ingest_file_json(adapter):
+    """Verifies that JSON files (standard and lines) are ingested properly."""
+    df_raw = pd.DataFrame({
+        "timestamp": ["2020-07-01T00:00:00Z", "2020-07-02T00:00:00Z"],
+        "depth": [10.0, 10.0],
+        "vwc": [0.31, 0.33],
+    })
+    mapping = {
+        "timestamp": "timestamp",
+        "sensor_depth_cm": "depth",
+        "soil_moisture_vwc": "vwc",
+    }
+
+    # Standard JSON
+    with tempfile.NamedTemporaryFile(suffix=".json", mode="w", delete=False) as f:
+        temp_json = Path(f.name)
+    df_raw.to_json(temp_json, orient="records")
+
+    try:
+        df_ingested = adapter.ingest_file(
+            file_path=temp_json,
+            column_mapping=mapping,
+            source_dataset="JSON_TEST",
+            default_station_id="MPKV-RAHURI-CAAST",
+        )
+        assert len(df_ingested) == 2
+        assert df_ingested["soil_moisture_vwc"].iloc[1] == 0.33
+    finally:
+        if temp_json.exists():
+            temp_json.unlink()
 
 
 def test_validate_temporal_alignment(adapter):
@@ -362,3 +426,51 @@ def test_generate_coverage_summary(adapter):
     assert stat2["daily_observation_count"] == 200
     assert stat2["sufficient_for_training"]
     assert stat2["verdict"] == "SUFFICIENT"
+
+
+def test_generate_receipt_reports(adapter, tmp_path):
+    """Verifies generation of complete receipt package: JSON, MD, CSVs, manifest."""
+    # Create sample ground truth dataframe
+    dates = pd.date_range("2020-01-01", periods=10, freq="D")
+    df_norm = pd.DataFrame({
+        "station_id": ["MPKV-RAHURI-CAAST"] * 10,
+        "timestamp": [d.strftime("%Y-%m-%dT00:00:00Z") for d in dates],
+        "latitude": [19.3333] * 10,
+        "longitude": [74.65] * 10,
+        "sensor_depth_cm": [10.0] * 10,
+        "soil_moisture_vwc": [0.25] * 10,
+        "measurement_unit": ["m3/m3"] * 10,
+        "quality_flag": ["GOOD"] * 10,
+        "source_dataset": ["TEST_DATASET"] * 10,
+        "source_record_id": [f"REC_{i}" for i in range(10)],
+    })
+
+    # Create dummy source file
+    src_file = tmp_path / "raw_telemetry.csv"
+    src_file.write_text("raw,test,data\n1,2,3\n", encoding="utf-8")
+
+    out_dir = tmp_path / "receipt_output"
+    rep = adapter.generate_receipt_reports(
+        df_norm=df_norm,
+        output_dir=out_dir,
+        source_files=[src_file],
+        rejected_records=[{"timestamp": "2020-01-01", "rejection_reason": "out of bounds"}],
+    )
+
+    assert (out_dir / "dataset_receipt_report.json").exists()
+    assert (out_dir / "dataset_receipt_report.md").exists()
+    assert (out_dir / "station_depth_coverage.csv").exists()
+    assert (out_dir / "rejected_records.csv").exists()
+    assert (out_dir / "data_hash_manifest.json").exists()
+
+    # Check manifest content
+    with open(out_dir / "data_hash_manifest.json", "r", encoding="utf-8") as f:
+        manifest_data = json.load(f)
+    assert manifest_data["total_files"] == 1
+    assert manifest_data["files"][0]["filename"] == "raw_telemetry.csv"
+    assert len(manifest_data["files"][0]["sha256"]) == 64
+
+    # Check coverage csv
+    df_cov = pd.read_csv(out_dir / "station_depth_coverage.csv")
+    assert len(df_cov) == 1
+    assert df_cov["station_id"].iloc[0] == "MPKV-RAHURI-CAAST"

@@ -47,6 +47,12 @@ def predictor() -> Model1Predictor:
 
 
 @pytest.fixture(scope="module")
+def client() -> TestClient:
+    """Fixture providing a FastAPI TestClient."""
+    return TestClient(app)
+
+
+@pytest.fixture(scope="module")
 def sample_test_df() -> pd.DataFrame:
     """Fixture providing real sample test-split records from processed data."""
     csv_path = PROCESSED_DATA_DIR / f"{STATION_ID}_all_depths_features_daily.csv"
@@ -472,4 +478,42 @@ def test_enriched_catalog_metadata(predictor: Model1Predictor):
         assert "2022-01-01" in detail.test_period
         assert detail.edaphic_source_layer != ""
         assert "limitations" in detail.model_dump()
+
+
+def test_regional_routing_maharashtra_refusal(predictor: Model1Predictor, client: TestClient):
+    """
+    Verifies that requests explicitly specifying Maharashtra regional models are refused
+    with structured MODEL_NOT_AVAILABLE status, preventing Alabama weight leakage.
+    """
+    from services.inference.predictor import RegionModelNotAvailableError
+
+    # 1. Direct Predictor call
+    with pytest.raises(RegionModelNotAvailableError, match="Model weights for region 'maharashtra' are not available"):
+        predictor.predict_single({"date_utc": "2023-08-01", "temperature_2m_mean_c": 25.0}, region="maharashtra")
+
+    with pytest.raises(RegionModelNotAvailableError):
+        predictor.predict_batch([{"date_utc": "2023-08-01", "temperature_2m_mean_c": 25.0}], region="maharashtra")
+
+    # 2. Predictor catalog query for Maharashtra
+    cat_mh = predictor.get_model_catalog(region="maharashtra")
+    assert cat_mh.status == "MODEL_NOT_AVAILABLE"
+    assert cat_mh.region == "maharashtra"
+    assert "Supervised training" in cat_mh.reason
+
+    # 3. HTTP API /catalog?region=maharashtra
+    res_cat = client.get("/catalog?region=maharashtra")
+    assert res_cat.status_code == 200
+    assert res_cat.json()["status"] == "MODEL_NOT_AVAILABLE"
+
+    # 4. HTTP API /predict with region="maharashtra"
+    payload = {
+        "region": "maharashtra",
+        "station_id": "IITM-PUNE-COSMOS",
+        "date": "2023-08-01",
+        "features": {"temperature_2m_mean_c": 26.5, "precipitation_total_mm": 5.0},
+    }
+    res_pred = client.post("/predict", json=payload)
+    assert res_pred.status_code == 503
+    assert res_pred.json()["status"] == "MODEL_NOT_AVAILABLE"
+    assert res_pred.json()["region"] == "maharashtra"
 
