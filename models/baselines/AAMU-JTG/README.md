@@ -111,3 +111,4 @@ curl -X POST "http://localhost:8000/predict" -H "Content-Type: application/json"
 > - **Maharashtra Deployment:** Do NOT use these model weights directly for quantitative agricultural decision-making in Maharashtra, India.
 > - **Vertisol Shrink-Swell Dynamics:** Maharashtra deep black soils (Vertisols) exhibit high smectitic clay content (35–60%), extreme swelling/shrinkage, and distinct cracking behavior not present in Alabama soils.
 > - **Retraining Requirement:** A dedicated Maharashtra regional model must be trained using the pipeline in `services/modelling/train_maharashtra.py` once official in-situ ground-truth observations are released.
+

@@ -152,3 +152,4 @@ Model 1 has reached its **maximum honest completion state**:
 - **Supervised regional model training remains strictly and properly BLOCKED** pending delivery of genuine in-situ soil moisture observations.
 
 *SoilDepth-AI maintains strict scientific integrity: no synthetic observations, no data leakage, and no unsupported progress claims.*
+

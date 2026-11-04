@@ -100,3 +100,4 @@ def test_pipeline_train_depth_model(pipeline):
     assert Path(result["model_path"]).exists()
     assert Path(result["feature_importances_path"]).exists()
     assert "rmse" in result["test_metrics"]
+
